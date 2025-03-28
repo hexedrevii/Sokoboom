@@ -30,7 +30,7 @@ void Menu::awake()
 		)
 	);
 
-	play.on_click = [this](Button* self) {
+	play.on_click = [this](Button* /*self*/) {
 		if (!this->m_data->mute_sfx) PlaySound(this->m_click);
 
 		this->m_data->state_handler->set(
@@ -50,7 +50,7 @@ void Menu::awake()
 		)
 	);
 
-	options.on_click = [this](Button* self) {
+	options.on_click = [this](Button* /*self*/) {
 		if (!this->m_data->mute_sfx) PlaySound(this->m_click);
 
 		this->m_data->state_handler->set(
@@ -70,7 +70,7 @@ void Menu::awake()
 		)
 	);
 
-	exit.on_click = [this](Button* self) {
+	exit.on_click = [this](Button* /*self*/) {
 		if (!this->m_data->mute_sfx) PlaySound(this->m_click);
 
 		this->m_data->exit = true;

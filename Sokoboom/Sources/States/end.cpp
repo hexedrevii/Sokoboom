@@ -16,7 +16,7 @@ void End::awake()
 		)
 	);
 
-	menu.on_click = [this](Button* self) {
+	menu.on_click = [this](Button* /*self*/) {
 		if (!this->m_data->mute_sfx) PlaySound(this->m_click);
 
 		this->m_data->active_map_index = 0;

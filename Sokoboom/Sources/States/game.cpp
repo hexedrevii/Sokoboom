@@ -309,7 +309,7 @@ void Game::awake()
 		)
 	);
 
-	resume.on_click = [this](Button* self) {
+	resume.on_click = [this](Button* /*self*/) {
 		this->m_paused = false;
 	};
 
@@ -325,7 +325,7 @@ void Game::awake()
 		)
 	);
 
-	menu.on_click = [this](Button* self) {
+	menu.on_click = [this](Button* /*self*/) {
 		this->m_data->active_map_index = 0;
 		this->m_data->total_moves = 0;
 
@@ -470,7 +470,6 @@ void Game::process()
 
 				if (!this->m_data->mute_sfx) PlaySound(this->m_next);
 
-				int max = (int)this->m_data->maps.size();
 				this->m_data->active_map_index++;
 
 				this->m_data->state_handler->set(

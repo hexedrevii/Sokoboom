@@ -45,4 +45,9 @@ namespace utilities
 
 		return LoadSound(legacy.c_str());
 	}
+
+	inline int shrink(float x)
+	{
+		return int(x);
+	}
 }

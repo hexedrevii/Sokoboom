@@ -30,7 +30,7 @@ void Settings::awake()
 		)
 	);
 
-	menu.on_click = [this](Button* self) {
+	menu.on_click = [this](Button* /*self*/) {
 		if (!this->m_mute_sfx) PlaySound(this->m_click);
 
 		std::filesystem::path path = GetApplicationDirectory() / std::filesystem::path("Content/settings.json");

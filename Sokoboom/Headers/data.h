@@ -29,7 +29,7 @@ struct GameData
 	static constexpr Vector2 GAME_SIZE = Vector2(TILE_SIZE * MAP_SIZE, TILE_SIZE * MAP_SIZE + GAP);
 
 	const std::unique_ptr<StateController> state_handler = std::make_unique<StateController>();
-	Vector2 virtual_mouse;
+	Vector2 virtual_mouse {};
 
 	bool exit = false;
 };

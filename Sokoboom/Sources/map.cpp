@@ -30,7 +30,7 @@ void Map::draw()
 
 				DrawTexture(
 					this->m_tiles[layer[row][col]],
-					row * this->tile_size.x, col * this->tile_size.y,
+					utilities::shrink(row * this->tile_size.x), utilities::shrink(col * this->tile_size.y),
 					WHITE
 				);
 			}
