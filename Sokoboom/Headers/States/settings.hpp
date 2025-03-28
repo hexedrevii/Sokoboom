@@ -24,20 +24,18 @@ private:
 	Sound m_click = { 0 };
 	Font m_font = { 0 };
 
-	std::shared_ptr<GameData> m_data;
-
 	bool m_mute_move = false;
 	bool m_mute_sfx = false;
 public:
-	Settings(std::shared_ptr<GameData> data) : m_data(data)
+	Settings()
 	{
 		this->m_font = utilities::load_font_relative(std::filesystem::path("Content/pico-8.ttf"));
 		this->m_click = utilities::load_sound_relative(std::filesystem::path("Content/Audio/click.wav"));
 	};
 
-	void awake() override;
-	void process() override;
-	void render() override;
+	void awake(GameData& data) override;
+	void process(GameData& data) override;
+	void render(GameData& data) override;
 	void leave() override;
 };
 

@@ -9,7 +9,7 @@
 
 namespace sokoboom {
 
-void Settings::awake()
+void Settings::awake(GameData& data)
 {
 	std::filesystem::path path = GetApplicationDirectory() / std::filesystem::path("Content/settings.json");
 	std::ifstream f(path);
@@ -32,7 +32,7 @@ void Settings::awake()
 		)
 	);
 
-	menu.on_click = [this](Button* /*self*/) {
+	menu.on_click = [this, &data](Button* /*self*/) {
 		if (!this->m_mute_sfx) PlaySound(this->m_click);
 
 		std::filesystem::path path = GetApplicationDirectory() / std::filesystem::path("Content/settings.json");
@@ -43,16 +43,14 @@ void Settings::awake()
 			json["mute_sfx"] = this->m_mute_sfx;
 			json["mute_move"] = this->m_mute_move;
 
-			this->m_data->mute_sfx = this->m_mute_sfx;
-			this->m_data->mute_move = this->m_mute_move;
+			data.mute_sfx = this->m_mute_sfx;
+			data.mute_move = this->m_mute_move;
 
 			f << json.dump(4);
 			f.close();
 		}
 
-		this->m_data->state_handler->set(
-			std::make_unique<Menu>(this->m_data)
-		);
+		data.state_handler->set(std::make_unique<Menu>());
 	};
 
 	this->m_buttons.push_back(menu);
@@ -90,15 +88,15 @@ void Settings::awake()
 	this->m_buttons.push_back(move);
 }
 
-void Settings::process()
+void Settings::process(GameData& data)
 {
 	for (Button& btn : this->m_buttons)
 	{
-		btn.process(this->m_data->virtual_mouse);
+		btn.process(data.virtual_mouse);
 	}
 }
 
-void Settings::render()
+void Settings::render(GameData& /*data*/)
 {
 	ClearBackground(SKYBLUE);
 

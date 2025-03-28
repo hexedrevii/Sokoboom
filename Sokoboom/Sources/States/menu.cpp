@@ -11,7 +11,7 @@
 
 namespace sokoboom {
 
-Menu::Menu(std::shared_ptr<GameData> data) : m_data(data)
+Menu::Menu()
 {
 	this->m_font = utilities::load_font_relative(std::filesystem::path("Content/pico-8.ttf"));
 	SetTextureFilter(this->m_font.texture, TEXTURE_FILTER_POINT);
@@ -20,7 +20,7 @@ Menu::Menu(std::shared_ptr<GameData> data) : m_data(data)
 }
 
 // Build UI here since `this` will be incomplete in Menu::Menu
-void Menu::awake()
+void Menu::awake(GameData& data)
 {
 	Vector2 play_dim = MeasureTextEx(this->m_font, "play", 10.0f, 0.1f);
 	Button play = Button(
@@ -32,12 +32,10 @@ void Menu::awake()
 		)
 	);
 
-	play.on_click = [this](Button* /*self*/) {
-		if (!this->m_data->mute_sfx) PlaySound(this->m_click);
+	play.on_click = [this, &data](Button* /*self*/) {
+		if (!data.mute_sfx) PlaySound(this->m_click);
 
-		this->m_data->state_handler->set(
-			std::make_unique<Game>(this->m_data, this->m_data->maps[this->m_data->active_map_index])
-		);
+		data.state_handler->set(std::make_unique<Game>(data.maps[data.active_map_index]));
 	};
 
 	this->m_buttons.push_back(play);
@@ -52,12 +50,10 @@ void Menu::awake()
 		)
 	);
 
-	options.on_click = [this](Button* /*self*/) {
-		if (!this->m_data->mute_sfx) PlaySound(this->m_click);
+	options.on_click = [this, &data](Button* /*self*/) {
+		if (!data.mute_sfx) PlaySound(this->m_click);
 
-		this->m_data->state_handler->set(
-			std::make_unique<Settings>(this->m_data)
-		);
+		data.state_handler->set(std::make_unique<Settings>());
 	};
 
 	this->m_buttons.push_back(options);
@@ -72,24 +68,24 @@ void Menu::awake()
 		)
 	);
 
-	exit.on_click = [this](Button* /*self*/) {
-		if (!this->m_data->mute_sfx) PlaySound(this->m_click);
+	exit.on_click = [this, &data](Button* /*self*/) {
+		if (!data.mute_sfx) PlaySound(this->m_click);
 
-		this->m_data->exit = true;
+		data.exit = true;
 	};
 
 	this->m_buttons.push_back(exit);
 }
 
-void Menu::process()
+void Menu::process(GameData& data)
 {
 	for (Button& btn : this->m_buttons)
 	{
-		btn.process(this->m_data->virtual_mouse);
+		btn.process(data.virtual_mouse);
 	}
 }
 
-void Menu::render()
+void Menu::render(GameData& /*data*/)
 {
 	ClearBackground(SKYBLUE);
 

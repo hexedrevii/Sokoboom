@@ -6,7 +6,7 @@
 
 namespace sokoboom {
 
-void End::awake()
+void End::awake(GameData& data)
 {
 	Vector2 menu_dim = MeasureTextEx(this->m_font, "menu", 10.0f, 0.1f);
 	Button menu = Button(
@@ -18,29 +18,27 @@ void End::awake()
 		)
 	);
 
-	menu.on_click = [this](Button* /*self*/) {
-		if (!this->m_data->mute_sfx) PlaySound(this->m_click);
+	menu.on_click = [this, &data](Button* /*self*/) {
+		if (!data.mute_sfx) PlaySound(this->m_click);
 
-		this->m_data->active_map_index = 0;
-		this->m_data->total_moves = 0;
+		data.active_map_index = 0;
+		data.total_moves = 0;
 
-		this->m_data->state_handler->set(
-			std::make_unique<Menu>(this->m_data)
-		);
+		data.state_handler->set(std::make_unique<Menu>());
 	};
 
 	this->m_buttons.push_back(menu);
 }
 
-void End::process()
+void End::process(GameData& data)
 {
 	for (Button& btn : this->m_buttons)
 	{
-		btn.process(this->m_data->virtual_mouse);
+		btn.process(data.virtual_mouse);
 	}
 }
 
-void End::render()
+void End::render(GameData& data)
 {
 	ClearBackground(SKYBLUE);
 	
@@ -78,7 +76,7 @@ void End::render()
 
 	DrawTextPro(
 		this->m_font,
-		std::format("{} total moves!", this->m_data->total_moves).c_str(),
+		std::format("{} total moves!", data.total_moves).c_str(),
 		Vector2(1, 47),
 		Vector2Zero(),
 		0, 5.0f, 0.1f, WHITE

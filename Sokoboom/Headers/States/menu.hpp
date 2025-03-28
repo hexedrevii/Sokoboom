@@ -17,15 +17,13 @@ private:
 	Font m_font = { 0 };
 	Sound m_click = { 0 };
 
-	std::shared_ptr<GameData> m_data;
-
 	std::vector<Button> m_buttons;
 public:
-	Menu(std::shared_ptr<GameData> data);
+	Menu();
 
-	void awake() override;
-	void process() override;
-	void render() override;
+	void awake(GameData& data) override;
+	void process(GameData& data) override;
+	void render(GameData& data) override;
 	void leave() override;
 };
 

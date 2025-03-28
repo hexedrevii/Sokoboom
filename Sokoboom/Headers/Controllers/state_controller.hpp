@@ -24,8 +24,8 @@ public:
 	Color colour() const;
 	void set(std::unique_ptr<State> state);
 
-	void process();
-	void render();
+	void process(GameData& data);
+	void render(GameData& data);
 	void leave();
 };
 
@@ -40,7 +40,7 @@ inline void StateController::set(std::unique_ptr<State> state)
 	this->m_temporary = std::move(state);
 }
 
-inline void StateController::process()
+inline void StateController::process(GameData& data)
 {
 	if (this->switching)
 	{
@@ -58,7 +58,7 @@ inline void StateController::process()
 				}
 
 				this->m_state = std::move(this->m_temporary);
-				this->m_state->awake();
+				this->m_state->awake(data);
 			}
 		}
 		else
@@ -75,13 +75,13 @@ inline void StateController::process()
 	}
 
 	if (this->m_state == nullptr) return;
-	this->m_state->process();
+	this->m_state->process(data);
 }
 
-inline void StateController::render()
+inline void StateController::render(GameData& data)
 {
 	if (this->m_state == nullptr) return;
-	this->m_state->render();
+	this->m_state->render(data);
 }
 
 inline void StateController::leave()

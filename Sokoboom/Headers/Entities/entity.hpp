@@ -12,14 +12,14 @@ public:
 	Vector2 position = Vector2(0, 0);
 	Vector2 velocity = Vector2(0, 0);
 
-	Entity(int id) : id(id) {};
+	Entity(int id) : id(id) {}
 
-	virtual void awake() {};
+	virtual void awake() {}
 
-	virtual void process() {};
-	virtual void render() {};
+	virtual void process() {}
+	virtual void render() {}
 
-	virtual void leave() {};
+	virtual void leave() {}
 };
 
 } // namespace sokoboom

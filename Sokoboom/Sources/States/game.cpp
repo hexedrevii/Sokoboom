@@ -20,7 +20,7 @@ static constexpr int PLAYER_ID = 4;
 static constexpr int SOLID_LAYER = 0;
 static constexpr int SOLID_WALL = 1;
 
-void Game::on_player_moved(Vector2 position, Direction direction)
+void Game::on_player_moved(GameData& data, Vector2 position, Direction direction)
 {
 	std::shared_ptr<Player> player = this->m_player.lock();
 	if (!player)
@@ -40,9 +40,9 @@ void Game::on_player_moved(Vector2 position, Direction direction)
 		if (player_grid.x == 9 && (player_grid.y == 8 || player_grid.y == 7))
 		{
 			player->locked = true;
-			this->m_data->total_moves += player->tyler_the_creator;
+			data.total_moves += player->tyler_the_creator;
 
-			this->m_data->state_handler->set(std::make_unique<End>(this->m_data));
+			data.state_handler->set(std::make_unique<End>());
 		}
 	}
 
@@ -178,7 +178,7 @@ void Game::on_player_moved(Vector2 position, Direction direction)
 
 	if (!hit_box && !hit_corner)
 	{
-		if (!this->m_data->mute_sfx && !this->m_data->mute_move) PlaySound(this->m_move);
+		if (!data.mute_sfx && !data.mute_move) PlaySound(this->m_move);
 	}
 }
 
@@ -215,7 +215,7 @@ void Game::undo()
 	}
 }
 
-void Game::awake()
+void Game::awake(GameData& data)
 {
 	// Sound 
 	this->m_move = utilities::load_sound_relative(std::filesystem::path("Content/Audio/move.wav"));
@@ -268,7 +268,9 @@ void Game::awake()
 						);
 
 						player_t->on_player_moved = 
-							std::bind_front(&Game::on_player_moved, this);
+							[this, &data] (Vector2 position, Direction direction) {
+								this->on_player_moved(data, position, direction);
+							};
 					
 						this->m_entities.add(player_t);
 						this->m_player = player_t;
@@ -327,19 +329,17 @@ void Game::awake()
 		)
 	);
 
-	menu.on_click = [this](Button* /*self*/) {
-		this->m_data->active_map_index = 0;
-		this->m_data->total_moves = 0;
+	menu.on_click = [this, &data](Button* /*self*/) {
+		data.active_map_index = 0;
+		data.total_moves = 0;
 
-		this->m_data->state_handler->set(
-			std::make_unique<Menu>(this->m_data)
-		);
+		data.state_handler->set(std::make_unique<Menu>());
 	};
 
 	this->m_buttons.push_back(menu);
 }
 
-void Game::process()
+void Game::process(GameData& data)
 {
 	if (IsKeyPressed(KEY_ESCAPE))
 	{
@@ -350,7 +350,7 @@ void Game::process()
 	{
 		for (Button& btn : this->m_buttons)
 		{
-			btn.process(this->m_data->virtual_mouse);
+			btn.process(data.virtual_mouse);
 		}
 
 		return;
@@ -367,11 +367,7 @@ void Game::process()
 	{
 		if (!this->m_switched)
 		{
-			this->m_data->state_handler->set(
-				std::make_unique<Game>(
-					this->m_data, this->m_data->maps[this->m_data->active_map_index]
-				)
-			);
+			data.state_handler->set(std::make_unique<Game>(data.maps[data.active_map_index]));
 
 			this->m_switched = true;
 		}
@@ -449,7 +445,7 @@ void Game::process()
 			if (!this->m_switched)
 			{
 				// The end
-				if (this->m_data->active_map_index == 11)
+				if (data.active_map_index == 11)
 				{
 					this->m_entities.remove<Box>();
 
@@ -460,25 +456,21 @@ void Game::process()
 					this->m_map.map.set_at_position(9, 8, 0, 0);
 					this->m_map.map.set_at_position(9, 7, 0, 0);
 
-					if (!this->m_data->mute_sfx) PlaySound(this->m_explode);
+					if (!data.mute_sfx) PlaySound(this->m_explode);
 
 					return;
 				}
 
 				if (std::shared_ptr<Player> player = this->m_player.lock())
 				{
-					this->m_data->total_moves += player->tyler_the_creator;
+					data.total_moves += player->tyler_the_creator;
 				}
 
-				if (!this->m_data->mute_sfx) PlaySound(this->m_next);
+				if (!data.mute_sfx) PlaySound(this->m_next);
 
-				this->m_data->active_map_index++;
+				data.active_map_index++;
 
-				this->m_data->state_handler->set(
-					std::make_unique<Game>(
-						this->m_data, this->m_data->maps[this->m_data->active_map_index]
-					)
-				);
+				data.state_handler->set(std::make_unique<Game>(data.maps[data.active_map_index]));
 
 				this->m_switched = true;
 			}
@@ -486,7 +478,7 @@ void Game::process()
 	}
 }
 
-void Game::render()
+void Game::render(GameData& /*data*/)
 {
 	ClearBackground(DARKBLUE);
 
@@ -496,11 +488,11 @@ void Game::render()
 	if (std::shared_ptr<Player> player = this->m_player.lock())
 	{
 		DrawRectangle(
-			0, (int)GameData::GAME_SIZE.y - GameData::GAP, (int)GameData::GAME_SIZE.x, GameData::GAP, GRAY
+			0, utilities::shrink(GameData::GAME_SIZE.y) - GameData::GAP, utilities::shrink(GameData::GAME_SIZE.x), GameData::GAP, GRAY
 		);
 
 		DrawTextPro(
-			this->m_font, 
+			this->m_font,
 			std::format("{:03} MOVES", player->tyler_the_creator).c_str(), 
 			Vector2(1, GameData::GAME_SIZE.y - GameData::GAP + 1), 
 			Vector2Zero(), 0, 5.0f, 0.1f, WHITE
@@ -510,8 +502,8 @@ void Game::render()
 		Vector2 name_dim = MeasureTextEx(this->m_font, name.c_str(), 5.0f, 0.1f);
 
 		DrawTextPro(
-			this->m_font, 
-			name.c_str(), 
+			this->m_font,
+			name.c_str(),
 			Vector2(
 				floor(GameData::GAME_SIZE.x - name_dim.x), 
 				floor(GameData::GAME_SIZE.y - GameData::GAP + 1)

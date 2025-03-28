@@ -9,6 +9,8 @@
 
 namespace sokoboom {
 
+struct GameData;
+
 class Player : public Entity
 {
 private:

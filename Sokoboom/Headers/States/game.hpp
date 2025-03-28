@@ -34,7 +34,6 @@ private:
 	Sound m_next {};
 	Sound m_explode {};
 
-	std::shared_ptr<GameData> m_data;
 	MapData m_map;
 
 	EntityController m_entities = EntityController();
@@ -46,7 +45,7 @@ private:
 
 	std::vector<MoveData> m_undos;
 
-	void on_player_moved(Vector2 position, Direction direction);
+	void on_player_moved(GameData& data, Vector2 position, Direction direction);
 
 	bool m_switched = false;
 
@@ -60,11 +59,11 @@ private:
 	bool m_paused = false;
 	std::vector<Button> m_buttons;
 public:
-	Game(std::shared_ptr<GameData> data, MapData map) : m_data(data), m_map(map) {}
+	Game(MapData map) : m_map(map) {}
 
-	void awake() override;
-	void process() override;
-	void render() override;
+	void awake(GameData& data) override;
+	void process(GameData& data) override;
+	void render(GameData& data) override;
 	void leave() override;
 };
 
