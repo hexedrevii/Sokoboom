@@ -147,22 +147,22 @@
     <ClCompile Include="Sources\States\settings.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="Headers\button.h" />
-    <ClInclude Include="Headers\Controllers\entity_controller.h" />
-    <ClInclude Include="Headers\Controllers\state_controller.h" />
-    <ClInclude Include="Headers\Entities\box.h" />
-    <ClInclude Include="Headers\Entities\entity.h" />
-    <ClInclude Include="Headers\data.h" />
-    <ClInclude Include="Headers\Entities\goal.h" />
-    <ClInclude Include="Headers\Entities\player.h" />
-    <ClInclude Include="Headers\Entities\player_direction.h" />
-    <ClInclude Include="Headers\map.h" />
-    <ClInclude Include="Headers\States\end.h" />
-    <ClInclude Include="Headers\States\game.h" />
-    <ClInclude Include="Headers\States\menu.h" />
-    <ClInclude Include="Headers\States\settings.h" />
-    <ClInclude Include="Headers\States\state.h" />
-    <ClInclude Include="Headers\utilities.h" />
+    <ClInclude Include="Headers\button.hpp" />
+    <ClInclude Include="Headers\Controllers\entity_controller.hpp" />
+    <ClInclude Include="Headers\Controllers\state_controller.hpp" />
+    <ClInclude Include="Headers\Entities\box.hpp" />
+    <ClInclude Include="Headers\Entities\entity.hpp" />
+    <ClInclude Include="Headers\data.hpp" />
+    <ClInclude Include="Headers\Entities\goal.hpp" />
+    <ClInclude Include="Headers\Entities\player.hpp" />
+    <ClInclude Include="Headers\Entities\player_direction.hpp" />
+    <ClInclude Include="Headers\map.hpp" />
+    <ClInclude Include="Headers\States\end.hpp" />
+    <ClInclude Include="Headers\States\game.hpp" />
+    <ClInclude Include="Headers\States\menu.hpp" />
+    <ClInclude Include="Headers\States\settings.hpp" />
+    <ClInclude Include="Headers\States\state.hpp" />
+    <ClInclude Include="Headers\utilities.hpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

@@ -1,11 +1,11 @@
-#include "../../Headers/States/settings.h"
-#include "../../Headers/States/menu.h"
+#include "../../Headers/States/settings.hpp"
+
+#include "../../Headers/States/menu.hpp"
 
 #include <filesystem>
 #include <fstream>
-#include <sstream>
-
 #include <iostream>
+#include <sstream>
 
 namespace sokoboom {
 

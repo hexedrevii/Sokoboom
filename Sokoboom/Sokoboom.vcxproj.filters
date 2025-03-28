@@ -41,52 +41,52 @@
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="Headers\data.h">
+    <ClInclude Include="Headers\data.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Headers\States\state.h">
+    <ClInclude Include="Headers\States\state.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Headers\Entities\entity.h">
+    <ClInclude Include="Headers\Entities\entity.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Headers\Controllers\entity_controller.h">
+    <ClInclude Include="Headers\Controllers\entity_controller.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Headers\Controllers\state_controller.h">
+    <ClInclude Include="Headers\Controllers\state_controller.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Headers\States\game.h">
+    <ClInclude Include="Headers\States\game.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Headers\map.h">
+    <ClInclude Include="Headers\map.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Headers\Entities\box.h">
+    <ClInclude Include="Headers\Entities\box.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Headers\Entities\goal.h">
+    <ClInclude Include="Headers\Entities\goal.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Headers\utilities.h">
+    <ClInclude Include="Headers\utilities.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Headers\Entities\player.h">
+    <ClInclude Include="Headers\Entities\player.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Headers\Entities\player_direction.h">
+    <ClInclude Include="Headers\Entities\player_direction.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Headers\States\menu.h">
+    <ClInclude Include="Headers\States\menu.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Headers\button.h">
+    <ClInclude Include="Headers\button.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Headers\States\end.h">
+    <ClInclude Include="Headers\States\end.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Headers\States\settings.h">
+    <ClInclude Include="Headers\States\settings.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

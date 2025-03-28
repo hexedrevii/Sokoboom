@@ -1,15 +1,15 @@
+#include "../Headers/data.hpp"
+#include "../Headers/map.hpp"
+#include "../Headers/States/game.hpp"
+#include "../Headers/States/menu.hpp"
+
+#include <raylib.h>
+#include <raymath.h>
+
 #include <iostream>
 #include <memory>
 #include <cmath>
 #include <map>
-
-#include "../Headers/map.h"
-#include "../Headers/data.h"
-#include "../Headers/States/game.h"
-#include "../Headers/States/menu.h"
-
-#include <raylib.h>
-#include <raymath.h>
 
 namespace sokoboom {
 

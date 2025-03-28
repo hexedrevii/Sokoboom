@@ -1,7 +1,7 @@
-#include "../../Headers/Entities/player.h"
-#include "../../Headers/utilities.h"
+#include "../../Headers/Entities/player.hpp"
 
-#include "../../Headers/data.h"
+#include "../../Headers/data.hpp"
+#include "../../Headers/utilities.hpp"
 
 namespace sokoboom {
 

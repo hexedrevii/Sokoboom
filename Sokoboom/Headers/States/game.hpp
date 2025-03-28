@@ -1,21 +1,19 @@
 #pragma once
 
+#include "state.hpp"
+#include "../map.hpp"
+#include "../Entities/player_direction.hpp"
+#include "../Entities/player.hpp"
+#include "../Entities/goal.hpp"
+#include "../Entities/box.hpp"
+#include "../data.hpp"
+#include "../button.hpp"
+
+#include <raylib.h>
+
 #include <vector>
 #include <iostream>
 #include <memory>
-
-#include "state.h"
-#include "../data.h"
-#include "../map.h"
-#include "../button.h"
-
-#include "../Entities/box.h"
-#include "../Entities/goal.h"
-
-#include "../Entities/player.h"
-#include "../Entities/player_direction.h"
-
-#include <raylib.h>
 
 namespace sokoboom {
 

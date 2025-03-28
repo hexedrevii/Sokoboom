@@ -1,9 +1,9 @@
 #pragma once
 
-#include <vector>
-#include <memory>
+#include "../Entities/entity.hpp"
 
-#include "../Entities/entity.h"
+#include <memory>
+#include <vector>
 
 namespace sokoboom {
 

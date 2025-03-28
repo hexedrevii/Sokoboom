@@ -1,13 +1,13 @@
-#include "../../Headers/States/menu.h"
+#include "../../Headers/States/menu.hpp"
 
-#include "../../Headers/utilities.h"
-#include "../../Headers/States/game.h"
-#include "../../Headers/States/settings.h"
+#include "../../Headers/utilities.hpp"
+#include "../../Headers/States/settings.hpp"
+#include "../../Headers/States/game.hpp"
+
+#include <raymath.h>
 
 #include <filesystem>
 #include <format>
-
-#include <raymath.h>
 
 namespace sokoboom {
 

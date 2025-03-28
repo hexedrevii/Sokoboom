@@ -1,7 +1,7 @@
 #pragma once
 
-#include "Controllers/state_controller.h"
-#include "map.h"
+#include "map.hpp"
+#include "Controllers/state_controller.hpp"
 
 #include <raylib.h>
 

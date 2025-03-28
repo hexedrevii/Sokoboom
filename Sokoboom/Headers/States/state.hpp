@@ -1,6 +1,6 @@
 #pragma once
 
-#include "../Controllers/entity_controller.h"
+#include "../Controllers/entity_controller.hpp"
 
 namespace sokoboom {
 

@@ -1,6 +1,6 @@
-#include "../../Headers/States/end.h"
+#include "../../Headers/States/end.hpp"
 
-#include "../../Headers/States/menu.h"
+#include "../../Headers/States/menu.hpp"
 
 #include <format>
 

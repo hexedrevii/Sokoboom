@@ -1,9 +1,9 @@
 #pragma once
 
-#include "state.h"
-#include "../button.h"
-#include "../data.h"
-#include "../utilities.h"
+#include "../button.hpp"
+#include "../data.hpp"
+#include "../utilities.hpp"
+#include "state.hpp"
 
 #include <raylib.h>
 #include <raymath.h>

@@ -1,5 +1,6 @@
-#include "../Headers/map.h"
-#include "../Headers/utilities.h"
+#include "../Headers/map.hpp"
+
+#include "../Headers/utilities.hpp"
 
 #include <iostream>
 #include <stdexcept>

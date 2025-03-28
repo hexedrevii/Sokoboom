@@ -1,11 +1,11 @@
 #pragma once
 
-#include "entity.h"
-#include "../utilities.h"
-
-#include <filesystem>
+#include "../utilities.hpp"
+#include "entity.hpp"
 
 #include <raylib.h>
+
+#include <filesystem>
 
 namespace sokoboom {
 

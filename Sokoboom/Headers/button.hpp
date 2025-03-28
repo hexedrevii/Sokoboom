@@ -1,10 +1,10 @@
 #pragma once
 
-#include <functional>
-#include <string>
-
 #include <raylib.h>
 #include <raymath.h>
+
+#include <string>
+#include <functional>
 
 namespace sokoboom {
 

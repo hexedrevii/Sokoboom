@@ -1,13 +1,13 @@
 #pragma once
 
-#include "state.h"
-#include "../data.h"
-#include "../button.h"
+#include "../button.hpp"
+#include "../data.hpp"
+#include "state.hpp"
+
+#include <raylib.h>
 
 #include <vector>
 #include <memory>
-
-#include <raylib.h>
 
 namespace sokoboom {
 

@@ -1,15 +1,15 @@
-#include "../../Headers/States/game.h"
+#include "../../Headers/States/game.hpp"
 
-#include "../../Headers/States/end.h"
-#include "../../Headers/States/menu.h"
-#include "../../Headers/utilities.h"
-#include "../../Headers/data.h"
-
-#include <cmath>
-#include <stdexcept>
-#include <format>
+#include "../../Headers/data.hpp"
+#include "../../Headers/States/end.hpp"
+#include "../../Headers/States/menu.hpp"
+#include "../../Headers/utilities.hpp"
 
 #include <raymath.h>
+
+#include <cmath>
+#include <format>
+#include <stdexcept>
 
 namespace sokoboom {
 

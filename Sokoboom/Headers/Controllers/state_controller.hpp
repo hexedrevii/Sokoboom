@@ -1,9 +1,8 @@
 #pragma once
 
-#include "entity_controller.h"
-#include "../States/state.h"
-
-#include "../data.h"
+#include "../data.hpp"
+#include "../States/state.hpp"
+#include "entity_controller.hpp"
 
 #include <memory>
 

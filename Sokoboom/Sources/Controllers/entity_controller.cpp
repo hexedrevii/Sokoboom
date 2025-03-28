@@ -1,4 +1,4 @@
-#include "../../Headers/Controllers/entity_controller.h"
+#include "../../Headers/Controllers/entity_controller.hpp"
 
 namespace sokoboom {
 
