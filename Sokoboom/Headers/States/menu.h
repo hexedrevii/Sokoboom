@@ -9,6 +9,8 @@
 
 #include <raylib.h>
 
+namespace sokoboom {
+
 class Menu : public State
 {
 private:
@@ -32,3 +34,5 @@ inline void Menu::leave()
 	UnloadFont(this->m_font);
 	UnloadSound(this->m_click);
 }
+
+} // namespace sokoboom

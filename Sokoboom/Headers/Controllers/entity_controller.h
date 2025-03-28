@@ -5,6 +5,8 @@
 
 #include "../Entities/entity.h"
 
+namespace sokoboom {
+
 class EntityController
 {
 private:
@@ -36,3 +38,5 @@ inline void EntityController::remove()
 		}
 	}
 }
+
+} // namespace sokoboom

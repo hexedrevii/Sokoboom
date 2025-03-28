@@ -10,6 +10,8 @@
 #include <json.hpp>
 #include <raylib.h>
 
+namespace sokoboom {
+
 class Map
 {
 private:
@@ -27,3 +29,5 @@ public:
 	int get_at_position(int x, int y, int layer);
 	void set_at_position(int x, int y, int layer, int id);
 };
+
+} // namespace sokoboom

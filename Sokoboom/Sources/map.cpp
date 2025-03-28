@@ -4,6 +4,8 @@
 #include <iostream>
 #include <stdexcept>
 
+namespace sokoboom {
+
 Map::Map(const std::filesystem::path& path)
 {
 	std::filesystem::path full = GetApplicationDirectory() / path;
@@ -56,3 +58,5 @@ void Map::set_at_position(int x, int y, int layer, int id)
 {
 	this->layers[layer][x][y] = id;
 }
+
+} // namespace sokoboom

@@ -7,6 +7,8 @@
 
 #include <raylib.h>
 
+namespace sokoboom {
+
 class Goal : public Entity 
 {
 private:
@@ -32,3 +34,5 @@ inline void Goal::leave()
 {
 	UnloadTexture(this->m_texture);
 }
+
+} // namespace sokoboom

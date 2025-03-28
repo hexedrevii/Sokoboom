@@ -7,6 +7,8 @@
 
 #include <iostream>
 
+namespace sokoboom {
+
 void Settings::awake()
 {
 	std::filesystem::path path = GetApplicationDirectory() / std::filesystem::path("Content/settings.json");
@@ -120,3 +122,5 @@ void Settings::render()
 		btn.render();
 	}
 }
+
+} // namespace sokoboom

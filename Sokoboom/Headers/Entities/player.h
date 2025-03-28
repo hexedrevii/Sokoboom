@@ -7,6 +7,8 @@
 
 #include <raylib.h>
 
+namespace sokoboom {
+
 class Player : public Entity
 {
 private:
@@ -24,3 +26,5 @@ public:
 	void render() override;
 	void leave() override;
 };
+
+} // namespace sokoboom

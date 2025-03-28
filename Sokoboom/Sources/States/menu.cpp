@@ -9,6 +9,8 @@
 
 #include <raymath.h>
 
+namespace sokoboom {
+
 Menu::Menu(std::shared_ptr<GameData> data) : m_data(data)
 {
 	this->m_font = utilities::load_font_relative(std::filesystem::path("Content/pico-8.ttf"));
@@ -108,3 +110,5 @@ void Menu::render()
 		btn.render();
 	}
 }
+
+} // namespace sokoboom

@@ -7,6 +7,8 @@
 
 #include <memory>
 
+namespace sokoboom {
+
 class StateController
 {
 private:
@@ -90,3 +92,5 @@ inline void StateController::leave()
 
 	this->m_state.reset();
 }
+
+} // namespace sokoboom

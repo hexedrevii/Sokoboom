@@ -3,6 +3,8 @@
 
 #include "../../Headers/data.h"
 
+namespace sokoboom {
+
 Player::Player() : Entity(0)
 {
 	this->m_sprite = utilities::load_relative("Content/Entities/player.png");
@@ -66,3 +68,5 @@ void Player::leave()
 {
 	UnloadTexture(this->m_sprite);
 }
+
+} // namespace sokoboom

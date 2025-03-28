@@ -1,5 +1,7 @@
 #include "../../Headers/Controllers/entity_controller.h"
 
+namespace sokoboom {
+
 void EntityController::add(std::shared_ptr<Entity> e)
 {
 	this->m_entities.push_back(e);
@@ -28,3 +30,5 @@ void EntityController::leave()
 		entity->leave();
 	}
 }
+
+} // namespace sokoboom

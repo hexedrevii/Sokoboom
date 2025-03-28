@@ -6,6 +6,8 @@
 #include <raylib.h>
 #include <raymath.h>
 
+namespace sokoboom {
+
 class Button
 {
 private:
@@ -86,3 +88,5 @@ inline void Button::leave()
 {
 	UnloadFont(this->m_font);
 }
+
+} // namespace sokoboom

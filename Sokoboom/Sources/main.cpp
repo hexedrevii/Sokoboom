@@ -11,12 +11,9 @@
 #include <raylib.h>
 #include <raymath.h>
 
-// Disable terminal in release mode only
-#ifndef _DEBUG
-#pragma comment(linker, "/SUBSYSTEM:windows /ENTRY:mainCRTStartup")
-#endif // !_DEBUG
+namespace sokoboom {
 
-int main()
+void main()
 {
 	SetConfigFlags(FLAG_WINDOW_RESIZABLE);
 	InitWindow(800, 600, "Sokoboom");
@@ -24,7 +21,7 @@ int main()
 
 	InitAudioDevice();
 
-	std::shared_ptr<GameData> data = std::make_shared<GameData>();
+	std::shared_ptr<sokoboom::GameData> data = std::make_shared<GameData>();
 
 	// Load settings
 	std::filesystem::path path = GetApplicationDirectory() / std::filesystem::path("Content/settings.json");
@@ -139,4 +136,16 @@ int main()
 	// According to C++ 11 and later
 	// If a program reaches the end without return
 	// It is implictly assumed as 0.
+}
+
+} // namespace sokoboom
+
+// Disable terminal in release mode only
+#ifndef _DEBUG
+#pragma comment(linker, "/SUBSYSTEM:windows /ENTRY:mainCRTStartup")
+#endif // !_DEBUG
+
+int main()
+{
+	sokoboom::main();
 }

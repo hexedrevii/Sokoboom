@@ -14,6 +14,8 @@
 
 #include <json.hpp>
 
+namespace sokoboom {
+
 class Settings : public State
 {
 private:
@@ -44,3 +46,5 @@ inline void Settings::leave()
 	UnloadFont(this->m_font);
 	UnloadSound(this->m_click);
 }
+
+} // namespace sokoboom

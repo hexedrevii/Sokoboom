@@ -11,6 +11,8 @@
 
 #include <raymath.h>
 
+namespace sokoboom {
+
 static constexpr int BOX_ID = 2;
 static constexpr int GOAL_ID = 3;
 static constexpr int PLAYER_ID = 4;
@@ -563,3 +565,5 @@ void Game::leave()
 
 	UnloadFont(this->m_font);
 }
+
+} // namespace sokoboom

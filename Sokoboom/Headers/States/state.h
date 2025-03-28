@@ -2,6 +2,8 @@
 
 #include "../Controllers/entity_controller.h"
 
+namespace sokoboom {
+
 class State
 {
 public:
@@ -11,3 +13,4 @@ public:
 	virtual void leave() {};
 };
 
+} // namespace sokoboom

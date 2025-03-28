@@ -7,6 +7,8 @@
 
 #include <memory>
 
+namespace sokoboom {
+
 struct MapData
 {
 	std::string name;
@@ -33,3 +35,5 @@ struct GameData
 
 	bool exit = false;
 };
+
+} // namespace sokoboom

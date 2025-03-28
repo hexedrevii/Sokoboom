@@ -17,6 +17,8 @@
 
 #include <raylib.h>
 
+namespace sokoboom {
+
 struct MoveData
 {
 	Vector2 player_position;
@@ -67,3 +69,5 @@ public:
 	void render() override;
 	void leave() override;
 };
+
+} // namespace sokoboom

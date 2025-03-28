@@ -2,6 +2,8 @@
 
 #include <raylib.h>
 
+namespace sokoboom {
+
 class Entity 
 {
 public:
@@ -19,3 +21,5 @@ public:
 
 	virtual void leave() {};
 };
+
+} // namespace sokoboom

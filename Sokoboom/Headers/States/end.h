@@ -11,6 +11,8 @@
 #include <filesystem>
 #include <memory>
 
+namespace sokoboom {
+
 class End : public State
 {
 private:
@@ -38,3 +40,5 @@ inline void End::leave()
 	UnloadFont(this->m_font);
 	UnloadSound(this->m_click);
 }
+
+} // namespace sokoboom

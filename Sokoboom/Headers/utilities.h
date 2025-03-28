@@ -5,7 +5,7 @@
 #include <string>
 #include <filesystem>
 
-namespace utilities
+namespace sokoboom::utilities
 {
 	inline Texture2D load_relative(const std::filesystem::path& path)
 	{

@@ -4,6 +4,8 @@
 
 #include <format>
 
+namespace sokoboom {
+
 void End::awake()
 {
 	Vector2 menu_dim = MeasureTextEx(this->m_font, "menu", 10.0f, 0.1f);
@@ -87,3 +89,5 @@ void End::render()
 		btn.render();
 	}
 }
+
+} // namespace sokoboom
