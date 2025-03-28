@@ -42,7 +42,7 @@ void Game::on_player_moved(GameData& data, Vector2 position, Direction direction
 			player->locked = true;
 			data.total_moves += player->tyler_the_creator;
 
-			data.state_handler->set(std::make_unique<End>());
+			data.state_handler.set(std::make_unique<End>());
 		}
 	}
 
@@ -333,7 +333,7 @@ void Game::awake(GameData& data)
 		data.active_map_index = 0;
 		data.total_moves = 0;
 
-		data.state_handler->set(std::make_unique<Menu>());
+		data.state_handler.set(std::make_unique<Menu>());
 	};
 
 	this->m_buttons.push_back(menu);
@@ -367,7 +367,7 @@ void Game::process(GameData& data)
 	{
 		if (!this->m_switched)
 		{
-			data.state_handler->set(std::make_unique<Game>(data.maps[data.active_map_index]));
+			data.state_handler.set(std::make_unique<Game>(data.maps[data.active_map_index]));
 
 			this->m_switched = true;
 		}
@@ -470,7 +470,7 @@ void Game::process(GameData& data)
 
 				data.active_map_index++;
 
-				data.state_handler->set(std::make_unique<Game>(data.maps[data.active_map_index]));
+				data.state_handler.set(std::make_unique<Game>(data.maps[data.active_map_index]));
 
 				this->m_switched = true;
 			}

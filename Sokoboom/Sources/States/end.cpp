@@ -24,7 +24,7 @@ void End::awake(GameData& data)
 		data.active_map_index = 0;
 		data.total_moves = 0;
 
-		data.state_handler->set(std::make_unique<Menu>());
+		data.state_handler.set(std::make_unique<Menu>());
 	};
 
 	this->m_buttons.push_back(menu);

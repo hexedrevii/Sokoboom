@@ -35,7 +35,7 @@ void Menu::awake(GameData& data)
 	play.on_click = [this, &data](Button* /*self*/) {
 		if (!data.mute_sfx) PlaySound(this->m_click);
 
-		data.state_handler->set(std::make_unique<Game>(data.maps[data.active_map_index]));
+		data.state_handler.set(std::make_unique<Game>(data.maps[data.active_map_index]));
 	};
 
 	this->m_buttons.push_back(play);
@@ -53,7 +53,7 @@ void Menu::awake(GameData& data)
 	options.on_click = [this, &data](Button* /*self*/) {
 		if (!data.mute_sfx) PlaySound(this->m_click);
 
-		data.state_handler->set(std::make_unique<Settings>());
+		data.state_handler.set(std::make_unique<Settings>());
 	};
 
 	this->m_buttons.push_back(options);

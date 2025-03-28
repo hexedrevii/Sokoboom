@@ -52,7 +52,7 @@ void main()
 
 	data.maps.push_back(MapData("END", Map(std::filesystem::path("Content/Maps/the_end.p8m"))));
 
-	data.state_handler->set(std::make_unique<Menu>());
+	data.state_handler.set(std::make_unique<Menu>());
 
 	RenderTexture2D renderer = LoadRenderTexture(utilities::trunc(GameData::GAME_SIZE.x), utilities::trunc(GameData::GAME_SIZE.y));
 	SetTextureFilter(renderer.texture, TEXTURE_FILTER_POINT);
@@ -90,15 +90,15 @@ void main()
 			)
 		);
 
-		data.state_handler->process(data);
+		data.state_handler.process(data);
 
 		BeginTextureMode(renderer);
 		{
-			data.state_handler->render(data);
+			data.state_handler.render(data);
 
-			if (data.state_handler->switching)
+			if (data.state_handler.switching)
 			{
-				DrawRectangleV(Vector2Zero(), GameData::GAME_SIZE, data.state_handler->colour());
+				DrawRectangleV(Vector2Zero(), GameData::GAME_SIZE, data.state_handler.colour());
 			}
 		}
 		EndTextureMode();
@@ -126,7 +126,7 @@ void main()
 	CloseWindow();
 
 	// Release data
-	data.state_handler->leave();
+	data.state_handler.leave();
 	for (MapData map_data : data.maps)
 	{
 		std::cout << "INFO: Removing data from map " << map_data.name << std::endl;

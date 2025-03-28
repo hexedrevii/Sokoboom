@@ -50,7 +50,7 @@ void Settings::awake(GameData& data)
 			f.close();
 		}
 
-		data.state_handler->set(std::make_unique<Menu>());
+		data.state_handler.set(std::make_unique<Menu>());
 	};
 
 	this->m_buttons.push_back(menu);
