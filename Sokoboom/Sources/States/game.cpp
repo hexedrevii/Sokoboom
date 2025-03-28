@@ -49,7 +49,7 @@ void Game::on_player_moved(GameData& data, Vector2 position, Direction direction
 	// Player hits wall
 	if (
 		this->m_map.map.get_at_position(
-			(int)player_grid.x, (int)player_grid.y,
+			utilities::trunc(player_grid.x), utilities::trunc(player_grid.y),
 			SOLID_LAYER
 		) == SOLID_WALL
 	)
@@ -101,7 +101,7 @@ void Game::on_player_moved(GameData& data, Vector2 position, Direction direction
 			switch (direction)
 			{
 			case Direction::LEFT:
-				if (this->m_map.map.get_at_position((int)box_grid.x - 1, (int)box_grid.y, SOLID_LAYER) == SOLID_WALL)
+				if (this->m_map.map.get_at_position(utilities::trunc(box_grid.x) - 1, utilities::trunc(box_grid.y), SOLID_LAYER) == SOLID_WALL)
 				{
 					player->position.x += GameData::TILE_SIZE;
 					player->tyler_the_creator--;
@@ -115,7 +115,7 @@ void Game::on_player_moved(GameData& data, Vector2 position, Direction direction
 				break;
 
 			case Direction::RIGHT:
-				if (this->m_map.map.get_at_position((int)box_grid.x + 1, (int)box_grid.y, SOLID_LAYER) == SOLID_WALL)
+				if (this->m_map.map.get_at_position(utilities::trunc(box_grid.x) + 1, utilities::trunc(box_grid.y), SOLID_LAYER) == SOLID_WALL)
 				{
 					player->position.x -= GameData::TILE_SIZE;
 					player->tyler_the_creator--;
@@ -129,7 +129,7 @@ void Game::on_player_moved(GameData& data, Vector2 position, Direction direction
 				break;
 
 			case Direction::UP:
-				if (this->m_map.map.get_at_position((int)box_grid.x, (int)box_grid.y - 1, SOLID_LAYER) == SOLID_WALL)
+				if (this->m_map.map.get_at_position(utilities::trunc(box_grid.x), utilities::trunc(box_grid.y) - 1, SOLID_LAYER) == SOLID_WALL)
 				{
 					player->position.y += GameData::TILE_SIZE;
 					player->tyler_the_creator--;
@@ -143,7 +143,7 @@ void Game::on_player_moved(GameData& data, Vector2 position, Direction direction
 				break;
 
 			case Direction::DOWN:
-				if (this->m_map.map.get_at_position((int)box_grid.x, (int)box_grid.y + 1, SOLID_LAYER) == SOLID_WALL)
+				if (this->m_map.map.get_at_position(utilities::trunc(box_grid.x), utilities::trunc(box_grid.y) + 1, SOLID_LAYER) == SOLID_WALL)
 				{
 					player->position.y -= GameData::TILE_SIZE;
 					player->tyler_the_creator--;
@@ -188,7 +188,7 @@ void Game::undo()
 
 	if (!this->m_undos.empty())
 	{
-		int last_idx = (int)this->m_undos.size() - 1;
+		std::size_t last_idx = this->m_undos.size() - 1;
 		MoveData last = this->m_undos[last_idx];
 
 		std::shared_ptr<Box> box = this->m_box.lock();
@@ -381,7 +381,7 @@ void Game::process(GameData& data)
 			// Remove the last stored movement if its the same position.
 			if (std::shared_ptr<Player> player = this->m_player.lock())
 			{
-				int last_idx = (int)this->m_undos.size() - 1;
+				std::size_t last_idx = this->m_undos.size() - 1;
 				MoveData last = this->m_undos[last_idx];
 				if (this->m_undos.size() > 1 && player->position == last.player_position)
 				{
@@ -394,7 +394,7 @@ void Game::process(GameData& data)
 				return;
 			}
 
-			this->undo();	
+			this->undo();
 			this->m_undoing = true;
 		}
 	}
@@ -488,7 +488,7 @@ void Game::render(GameData& /*data*/)
 	if (std::shared_ptr<Player> player = this->m_player.lock())
 	{
 		DrawRectangle(
-			0, utilities::shrink(GameData::GAME_SIZE.y) - GameData::GAP, utilities::shrink(GameData::GAME_SIZE.x), GameData::GAP, GRAY
+			0, utilities::trunc(GameData::GAME_SIZE.y) - GameData::GAP, utilities::trunc(GameData::GAME_SIZE.x), GameData::GAP, GRAY
 		);
 
 		DrawTextPro(

@@ -33,7 +33,7 @@ void Map::draw()
 
 				DrawTexture(
 					this->m_tiles[layer[row][col]],
-					utilities::shrink(row * this->tile_size.x), utilities::shrink(col * this->tile_size.y),
+					utilities::trunc(row * this->tile_size.x), utilities::trunc(col * this->tile_size.y),
 					WHITE
 				);
 			}

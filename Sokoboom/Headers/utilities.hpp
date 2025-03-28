@@ -46,7 +46,7 @@ namespace sokoboom::utilities
 		return LoadSound(legacy.c_str());
 	}
 
-	inline int shrink(float x)
+	inline int trunc(float x)
 	{
 		return int(x);
 	}

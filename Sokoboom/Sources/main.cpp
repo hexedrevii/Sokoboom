@@ -54,7 +54,7 @@ void main()
 
 	data.state_handler->set(std::make_unique<Menu>());
 
-	RenderTexture2D renderer = LoadRenderTexture(utilities::shrink(GameData::GAME_SIZE.x), utilities::shrink(GameData::GAME_SIZE.y));
+	RenderTexture2D renderer = LoadRenderTexture(utilities::trunc(GameData::GAME_SIZE.x), utilities::trunc(GameData::GAME_SIZE.y));
 	SetTextureFilter(renderer.texture, TEXTURE_FILTER_POINT);
 
 	std::cout << "INFO: Tile size: " << GameData::TILE_SIZE << "\n";
