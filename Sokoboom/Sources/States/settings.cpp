@@ -9,6 +9,18 @@
 
 namespace sokoboom {
 
+Settings::Settings()
+{
+	this->m_font = utilities::load_font_relative(std::filesystem::path("Content/pico-8.ttf"));
+	this->m_click = utilities::load_sound_relative(std::filesystem::path("Content/Audio/click.wav"));
+}
+
+Settings::~Settings()
+{
+	UnloadFont(this->m_font);
+	UnloadSound(this->m_click);
+}
+
 void Settings::awake(GameData& data)
 {
 	std::filesystem::path path = GetApplicationDirectory() / std::filesystem::path("Content/settings.json");
@@ -50,7 +62,7 @@ void Settings::awake(GameData& data)
 			f.close();
 		}
 
-		data.state_handler.set(std::make_unique<Menu>());
+		data.state_handler.set(GameState::menu);
 	};
 
 	this->m_buttons.push_back(menu);

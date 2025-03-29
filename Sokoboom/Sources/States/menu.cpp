@@ -19,6 +19,12 @@ Menu::Menu()
 	this->m_click = utilities::load_sound_relative(std::filesystem::path("Content/Audio/click.wav"));
 }
 
+Menu::~Menu()
+{
+	UnloadFont(this->m_font);
+	UnloadSound(this->m_click);
+}
+
 // Build UI here since `this` will be incomplete in Menu::Menu
 void Menu::awake(GameData& data)
 {
@@ -35,7 +41,7 @@ void Menu::awake(GameData& data)
 	play.on_click = [this, &data](Button* /*self*/) {
 		if (!data.mute_sfx) PlaySound(this->m_click);
 
-		data.state_handler.set(std::make_unique<Game>(data.maps[data.active_map_index]));
+		data.state_handler.set(GameState::game);
 	};
 
 	this->m_buttons.push_back(play);
@@ -53,7 +59,7 @@ void Menu::awake(GameData& data)
 	options.on_click = [this, &data](Button* /*self*/) {
 		if (!data.mute_sfx) PlaySound(this->m_click);
 
-		data.state_handler.set(std::make_unique<Settings>());
+		data.state_handler.set(GameState::settings);
 	};
 
 	this->m_buttons.push_back(options);

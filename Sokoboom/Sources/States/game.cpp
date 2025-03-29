@@ -20,6 +20,23 @@ static constexpr int PLAYER_ID = 4;
 static constexpr int SOLID_LAYER = 0;
 static constexpr int SOLID_WALL = 1;
 
+Game::Game()
+{
+	this->m_font = utilities::load_font_relative(std::filesystem::path("Content/pico-8.ttf"));
+	this->m_move = utilities::load_sound_relative(std::filesystem::path("Content/Audio/move.wav"));
+	this->m_next = utilities::load_sound_relative(std::filesystem::path("Content/Audio/next.wav"));
+	this->m_explode = utilities::load_sound_relative(std::filesystem::path("Content/Audio/explosion.wav"));
+}
+
+Game::~Game()
+{
+	UnloadSound(this->m_next);
+	UnloadSound(this->m_move);
+	UnloadSound(this->m_explode);
+
+	UnloadFont(this->m_font);
+}
+
 void Game::on_player_moved(GameData& data, Vector2 position, Direction direction)
 {
 	std::shared_ptr<Player> player = this->m_player.lock();
@@ -42,7 +59,7 @@ void Game::on_player_moved(GameData& data, Vector2 position, Direction direction
 			player->locked = true;
 			data.total_moves += player->tyler_the_creator;
 
-			data.state_handler.set(std::make_unique<End>());
+			data.state_handler.set(GameState::end);
 		}
 	}
 
@@ -217,11 +234,7 @@ void Game::undo()
 
 void Game::awake(GameData& data)
 {
-	// Sound 
-	this->m_move = utilities::load_sound_relative(std::filesystem::path("Content/Audio/move.wav"));
-	this->m_next = utilities::load_sound_relative(std::filesystem::path("Content/Audio/next.wav"));
-	this->m_explode = utilities::load_sound_relative(std::filesystem::path("Content/Audio/explosion.wav"));
-
+	this->m_map = data.maps[data.active_map_index];
 	for (int i = 0; i < this->m_map.map.layers.size(); i++)
 	{
 		std::vector<std::vector<int>> layer = this->m_map.map.layers[i];
@@ -300,8 +313,6 @@ void Game::awake(GameData& data)
 		MoveData(player->position, box->position)
 	);
 
-	this->m_font = utilities::load_font_relative(std::filesystem::path("Content/pico-8.ttf"));
-
 	// Pause UI
 	Vector2 resume_dim = MeasureTextEx(this->m_font, "resume", 10.0f, 0.1f);
 	Button resume = Button(
@@ -333,7 +344,7 @@ void Game::awake(GameData& data)
 		data.active_map_index = 0;
 		data.total_moves = 0;
 
-		data.state_handler.set(std::make_unique<Menu>());
+		data.state_handler.set(GameState::menu);
 	};
 
 	this->m_buttons.push_back(menu);
@@ -367,7 +378,7 @@ void Game::process(GameData& data)
 	{
 		if (!this->m_switched)
 		{
-			data.state_handler.set(std::make_unique<Game>(data.maps[data.active_map_index]));
+			data.state_handler.set(GameState::game);
 
 			this->m_switched = true;
 		}
@@ -470,7 +481,7 @@ void Game::process(GameData& data)
 
 				data.active_map_index++;
 
-				data.state_handler.set(std::make_unique<Game>(data.maps[data.active_map_index]));
+				data.state_handler.set(GameState::game);
 
 				this->m_switched = true;
 			}
@@ -546,16 +557,6 @@ void Game::render(GameData& /*data*/)
 void Game::leave()
 {
 	this->m_entities.leave();
-	
-	// This breaks the game if you press R
-	// for some reason
-	// this->m_map.map.leave();
-
-	UnloadSound(this->m_next);
-	UnloadSound(this->m_move);
-	UnloadSound(this->m_explode);
-
-	UnloadFont(this->m_font);
 }
 
 } // namespace sokoboom

@@ -138,6 +138,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="Sources\Controllers\entity_controller.cpp" />
+    <ClCompile Include="Sources\Controllers\state_controller.cpp" />
     <ClCompile Include="Sources\Entities\player.cpp" />
     <ClCompile Include="Sources\main.cpp" />
     <ClCompile Include="Sources\map.cpp" />

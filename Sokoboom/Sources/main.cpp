@@ -1,15 +1,13 @@
 #include "../Headers/data.hpp"
 #include "../Headers/map.hpp"
-#include "../Headers/States/game.hpp"
-#include "../Headers/States/menu.hpp"
+#include "../Headers/utilities.hpp"
 
 #include <raylib.h>
 #include <raymath.h>
 
+#include <fstream>
 #include <iostream>
-#include <memory>
 #include <cmath>
-#include <map>
 
 namespace sokoboom {
 
@@ -52,7 +50,7 @@ void main()
 
 	data.maps.push_back(MapData("END", Map(std::filesystem::path("Content/Maps/the_end.p8m"))));
 
-	data.state_handler.set(std::make_unique<Menu>());
+	data.state_handler.set(GameState::menu);
 
 	RenderTexture2D renderer = LoadRenderTexture(utilities::trunc(GameData::GAME_SIZE.x), utilities::trunc(GameData::GAME_SIZE.y));
 	SetTextureFilter(renderer.texture, TEXTURE_FILTER_POINT);
@@ -132,10 +130,6 @@ void main()
 		std::cout << "INFO: Removing data from map " << map_data.name << std::endl;
 		map_data.map.leave();
 	}
-
-	// According to C++ 11 and later
-	// If a program reaches the end without return
-	// It is implictly assumed as 0.
 }
 
 } // namespace sokoboom

@@ -6,6 +6,18 @@
 
 namespace sokoboom {
 
+End::End()
+{
+	this->m_font = utilities::load_font_relative(std::filesystem::path("Content/pico-8.ttf"));
+	this->m_click = utilities::load_sound_relative(std::filesystem::path("Content/Audio/click.wav"));
+}
+
+End::~End()
+{
+	UnloadFont(this->m_font);
+	UnloadSound(this->m_click);
+}
+
 void End::awake(GameData& data)
 {
 	Vector2 menu_dim = MeasureTextEx(this->m_font, "menu", 10.0f, 0.1f);
@@ -24,7 +36,7 @@ void End::awake(GameData& data)
 		data.active_map_index = 0;
 		data.total_moves = 0;
 
-		data.state_handler.set(std::make_unique<Menu>());
+		data.state_handler.set(GameState::menu);
 	};
 
 	this->m_buttons.push_back(menu);

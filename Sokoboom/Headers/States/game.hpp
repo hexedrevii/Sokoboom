@@ -59,7 +59,8 @@ private:
 	bool m_paused = false;
 	std::vector<Button> m_buttons;
 public:
-	Game(MapData map) : m_map(map) {}
+	Game();
+	~Game();
 
 	void awake(GameData& data) override;
 	void process(GameData& data) override;

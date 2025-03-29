@@ -27,22 +27,12 @@ private:
 	bool m_mute_move = false;
 	bool m_mute_sfx = false;
 public:
-	Settings()
-	{
-		this->m_font = utilities::load_font_relative(std::filesystem::path("Content/pico-8.ttf"));
-		this->m_click = utilities::load_sound_relative(std::filesystem::path("Content/Audio/click.wav"));
-	};
+	Settings();
+	~Settings();
 
 	void awake(GameData& data) override;
 	void process(GameData& data) override;
 	void render(GameData& data) override;
-	void leave() override;
 };
-
-inline void Settings::leave()
-{
-	UnloadFont(this->m_font);
-	UnloadSound(this->m_click);
-}
 
 } // namespace sokoboom

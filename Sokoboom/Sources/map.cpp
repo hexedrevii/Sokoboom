@@ -2,12 +2,12 @@
 
 #include "../Headers/utilities.hpp"
 
-#include <iostream>
+#include <fstream>
 #include <stdexcept>
 
 namespace sokoboom {
 
-Map::Map(const std::filesystem::path& path)
+void Map::load(const std::filesystem::path& path)
 {
 	std::filesystem::path full = GetApplicationDirectory() / path;
 	std::ifstream file(full);

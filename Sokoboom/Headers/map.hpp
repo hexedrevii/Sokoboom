@@ -5,9 +5,7 @@
 #include <raylib.h>
 
 #include <filesystem>
-#include <fstream>
 #include <map>
-#include <sstream>
 #include <vector>
 
 namespace sokoboom {
@@ -18,10 +16,13 @@ private:
 	std::map<int, Texture2D> m_tiles;
 	nlohmann::json m_data;
 public:
-	Map(const std::filesystem::path& path);
+	Map() = default;
+	Map(const std::filesystem::path& path) { load(path); }
 
 	std::vector<std::vector<std::vector<int>>> layers;
 	Vector2 tile_size;
+
+	void load(const std::filesystem::path& path);
 
 	void draw();
 	void leave();
