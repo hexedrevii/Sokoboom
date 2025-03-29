@@ -2,9 +2,6 @@
 
 #include "../button.hpp"
 #include "../data.hpp"
-#include "../Entities/box.hpp"
-#include "../Entities/goal.hpp"
-#include "../Entities/player.hpp"
 #include "state.hpp"
 
 #include <raylib.h>
@@ -34,14 +31,10 @@ private:
 
 	EntityController m_entities;
 
-	EntityController::Handle<Player> m_player;
-	EntityController::Handle<Box> m_box;
-	EntityController::Handle<Goal> m_goal;
-
 	std::vector<MoveData> m_undos;
 
-	void process_player(GameData& data, Player& player);
-	void on_player_moved(GameData& data, Player& player, Direction direction);
+	void process_player(GameData& data, Tyler& tyler, PlayerVarying& player);
+	void on_player_moved(GameData& data, Tyler& tyler, PlayerVarying& player, Direction direction);
 
 	bool m_switched = false;
 

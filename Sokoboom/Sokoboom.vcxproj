@@ -137,7 +137,6 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="Sources\Controllers\entity_controller.cpp" />
     <ClCompile Include="Sources\Controllers\state_controller.cpp" />
     <ClCompile Include="Sources\main.cpp" />
     <ClCompile Include="Sources\map.cpp" />
@@ -151,11 +150,7 @@
     <ClInclude Include="Headers\button.hpp" />
     <ClInclude Include="Headers\Controllers\entity_controller.hpp" />
     <ClInclude Include="Headers\Controllers\state_controller.hpp" />
-    <ClInclude Include="Headers\Entities\box.hpp" />
-    <ClInclude Include="Headers\Entities\entity.hpp" />
     <ClInclude Include="Headers\data.hpp" />
-    <ClInclude Include="Headers\Entities\goal.hpp" />
-    <ClInclude Include="Headers\Entities\player.hpp" />
     <ClInclude Include="Headers\map.hpp" />
     <ClInclude Include="Headers\resource.hpp" />
     <ClInclude Include="Headers\States\end.hpp" />

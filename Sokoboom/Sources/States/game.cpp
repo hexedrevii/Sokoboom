@@ -7,7 +7,6 @@
 
 #include <cmath>
 #include <format>
-#include <iostream>
 
 namespace sokoboom {
 
@@ -26,44 +25,42 @@ Game::Game()
 {
 }
 
-void Game::process_player(GameData& data, Player& player)
+void Game::process_player(GameData& data, Tyler& tyler, PlayerVarying& player)
 {
-	if (player.locked) return;
-
 	if (IsKeyPressed(KEY_A))
 	{
 		player.position.x -= GameData::TILE_SIZE;
-		player.tyler_the_creator++;
+		tyler.tyler_the_creator++;
 
-		this->on_player_moved(data, player, Direction::left);
+		this->on_player_moved(data, tyler, player, Direction::left);
 	}
 
 	if (IsKeyPressed(KEY_D))
 	{
 		player.position.x += GameData::TILE_SIZE;
-		player.tyler_the_creator++;
+		tyler.tyler_the_creator++;
 
-		this->on_player_moved(data, player, Direction::right);
+		this->on_player_moved(data, tyler, player, Direction::right);
 	}
 
 	if (IsKeyPressed(KEY_W))
 	{
 		player.position.y -= GameData::TILE_SIZE;
-		player.tyler_the_creator++;
+		tyler.tyler_the_creator++;
 	
-		this->on_player_moved(data, player, Direction::up);
+		this->on_player_moved(data, tyler, player, Direction::up);
 	}
 
 	if (IsKeyPressed(KEY_S))
 	{
 		player.position.y += GameData::TILE_SIZE;
-		player.tyler_the_creator++;
+		tyler.tyler_the_creator++;
 	
-		this->on_player_moved(data, player, Direction::down);
+		this->on_player_moved(data, tyler, player, Direction::down);
 	}
 }
 
-void Game::on_player_moved(GameData& data, Player& player, Direction direction)
+void Game::on_player_moved(GameData& data, Tyler& tyler, PlayerVarying& player, Direction direction)
 {
 	Vector2 position = player.position;
 	bool hit_corner = false;
@@ -77,7 +74,7 @@ void Game::on_player_moved(GameData& data, Player& player, Direction direction)
 		if (player_grid.x == 9 && (player_grid.y == 8 || player_grid.y == 7))
 		{
 			player.locked = true;
-			data.total_moves += player.tyler_the_creator;
+			data.total_moves += tyler.tyler_the_creator;
 
 			data.state_handler.set(GameState::end);
 		}
@@ -95,25 +92,25 @@ void Game::on_player_moved(GameData& data, Player& player, Direction direction)
 		{
 		case Direction::left:
 			player.position.x += GameData::TILE_SIZE;
-			player.tyler_the_creator--;
+			tyler.tyler_the_creator--;
 
 			break;
 
 		case Direction::right:
 			player.position.x -= GameData::TILE_SIZE;
-			player.tyler_the_creator--;
+			tyler.tyler_the_creator--;
 
 			break;
 
 		case Direction::up:
 			player.position.y += GameData::TILE_SIZE;
-			player.tyler_the_creator--;
+			tyler.tyler_the_creator--;
 
 			break;
 
 		case Direction::down:
 			player.position.y -= GameData::TILE_SIZE;
-			player.tyler_the_creator--;
+			tyler.tyler_the_creator--;
 
 			break;
 		}
@@ -123,94 +120,89 @@ void Game::on_player_moved(GameData& data, Player& player, Direction direction)
 
 	if (!this->m_finished)
 	{
-		if (!this->m_box)
-		{
-			std::cerr << "CRITICAL: Failed to get box.\n";
-			return;
-		}
+		this->m_entities.boxes.each([&](Textured&, Position& box) {
+			Vector2 box_grid = Vector2Scale(box.position, 1.0f / GameData::TILE_SIZE);
 
-		Box& box = this->m_entities[this->m_box];
-		Vector2 box_grid = Vector2Scale(box.position, 1.0f / GameData::TILE_SIZE);
-
-		// Box moves
-		if (player_grid == box_grid)
-		{
-			switch (direction)
+			// Box moves
+			if (player_grid == box_grid)
 			{
-			case Direction::left:
-				if (this->m_map.map.get_at_position(utilities::trunc(box_grid.x) - 1, utilities::trunc(box_grid.y), SOLID_LAYER) == SOLID_WALL)
+				switch (direction)
 				{
-					player.position.x += GameData::TILE_SIZE;
-					player.tyler_the_creator--;
+				case Direction::left:
+					if (this->m_map.map.get_at_position(utilities::trunc(box_grid.x) - 1, utilities::trunc(box_grid.y), SOLID_LAYER) == SOLID_WALL)
+					{
+						player.position.x += GameData::TILE_SIZE;
+						tyler.tyler_the_creator--;
 
-					hit_box = true;
+						hit_box = true;
+						break;
+					}
+
+					box.position.x -= GameData::TILE_SIZE;
+
+					break;
+
+				case Direction::right:
+					if (this->m_map.map.get_at_position(utilities::trunc(box_grid.x) + 1, utilities::trunc(box_grid.y), SOLID_LAYER) == SOLID_WALL)
+					{
+						player.position.x -= GameData::TILE_SIZE;
+						tyler.tyler_the_creator--;
+
+						hit_box = true;
+						break;
+					}
+
+					box.position.x += GameData::TILE_SIZE;
+
+					break;
+
+				case Direction::up:
+					if (this->m_map.map.get_at_position(utilities::trunc(box_grid.x), utilities::trunc(box_grid.y) - 1, SOLID_LAYER) == SOLID_WALL)
+					{
+						player.position.y += GameData::TILE_SIZE;
+						tyler.tyler_the_creator--;
+
+						hit_box = true;
+						break;
+					}
+
+					box.position.y -= GameData::TILE_SIZE;
+
+					break;
+
+				case Direction::down:
+					if (this->m_map.map.get_at_position(utilities::trunc(box_grid.x), utilities::trunc(box_grid.y) + 1, SOLID_LAYER) == SOLID_WALL)
+					{
+						player.position.y -= GameData::TILE_SIZE;
+						tyler.tyler_the_creator--;
+
+						hit_box = true;
+						break;
+					}
+
+					box.position.y += GameData::TILE_SIZE;
+
 					break;
 				}
-
-				box.position.x -= GameData::TILE_SIZE;
-
-				break;
-
-			case Direction::right:
-				if (this->m_map.map.get_at_position(utilities::trunc(box_grid.x) + 1, utilities::trunc(box_grid.y), SOLID_LAYER) == SOLID_WALL)
-				{
-					player.position.x -= GameData::TILE_SIZE;
-					player.tyler_the_creator--;
-
-					hit_box = true;
-					break;
-				}
-
-				box.position.x += GameData::TILE_SIZE;
-
-				break;
-
-			case Direction::up:
-				if (this->m_map.map.get_at_position(utilities::trunc(box_grid.x), utilities::trunc(box_grid.y) - 1, SOLID_LAYER) == SOLID_WALL)
-				{
-					player.position.y += GameData::TILE_SIZE;
-					player.tyler_the_creator--;
-
-					hit_box = true;
-					break;
-				}
-
-				box.position.y -= GameData::TILE_SIZE;
-
-				break;
-
-			case Direction::down:
-				if (this->m_map.map.get_at_position(utilities::trunc(box_grid.x), utilities::trunc(box_grid.y) + 1, SOLID_LAYER) == SOLID_WALL)
-				{
-					player.position.y -= GameData::TILE_SIZE;
-					player.tyler_the_creator--;
-
-					hit_box = true;
-					break;
-				}
-
-				box.position.y += GameData::TILE_SIZE;
-
-				break;
 			}
-		}
 
-		if (this->m_undos.empty())
-		{
-			this->m_undos.push_back(
-				MoveData(player.position, box.position)
-			);
-		}
-		else
-		{
-			MoveData last = this->m_undos[this->m_undos.size() - 1];
-			if (player.position != last.player_position)
+			if (this->m_undos.empty())
 			{
 				this->m_undos.push_back(
 					MoveData(player.position, box.position)
 				);
 			}
-		}
+			else
+			{
+				MoveData last = this->m_undos[this->m_undos.size() - 1];
+				if (player.position != last.player_position)
+				{
+					this->m_undos.push_back(
+						MoveData(player.position, box.position)
+					);
+				}
+			}
+		});
 	}
 
 	if (!hit_box && !hit_corner)
@@ -228,22 +220,9 @@ void Game::undo()
 		std::size_t last_idx = this->m_undos.size() - 1;
 		MoveData last = this->m_undos[last_idx];
 
-		if (!this->m_box)
-		{
-			std::cerr << "CRITICAL: Failed to get box.\n";
-			return;
-		}
-
-		if (!this->m_player)
-		{
-			std::cerr << "CRITICAL: Failed to get goal.\n";
-			return;
-		}
-
-		Box& box = m_entities[this->m_box];
-		Player& player = m_entities[this->m_player];
-		player.position = last.player_position;
-		box.position = last.box_position;
+		// todo: these don't make any sense. Just obeying strict rewrites until this is resolved later
+		this->m_entities.players.each([x = last.player_position](PlayerShared&, PlayerVarying& player) { player.position = x; });
+		this->m_entities.boxes  .each([x = last.box_position   ](Textured    &, Position     & box   ) { box   .position = x; });
 
 		if (this->m_undos.size() > 1)
 		{
@@ -271,17 +250,17 @@ void Game::awake(GameData& data)
 				switch (layer[row][col])
 				{
 					case BOX_ID: {
-						this->m_box = this->m_entities.add<Box>(position);
+						this->m_entities.boxes.add(position);
 						this->m_map.map.set_at_position(row, col, i, 0);
 					} break;
 
 					case GOAL_ID: {
-						this->m_goal = this->m_entities.add<Goal>(position);
+						this->m_entities.goals.add(position);
 						this->m_map.map.set_at_position(row, col, i, 0);
 					} break;
 
 					case PLAYER_ID: {
-						this->m_player = this->m_entities.add<Player>(position);
+						this->m_entities.players.add(position);
 						this->m_map.map.set_at_position(row, col, i, 0);
 					} break;
 				}
@@ -289,23 +268,9 @@ void Game::awake(GameData& data)
 		}
 	}
 
-	if (!this->m_player)
-	{
-		std::cerr << "CRITICAL: Failed to get player.\n";
-		return;
-	}
-
-	if (!this->m_box)
-	{
-		std::cerr << "CRITICAL: Failed to get box.\n";
-		return;
-	}
-
-	Player& player = m_entities[this->m_player];
-	Box& box = m_entities[this->m_box];
-	this->m_undos.push_back(
-		MoveData(player.position, box.position)
-	);
+	this->m_undos.emplace_back();
+	this->m_entities.players.each([&m = this->m_undos.back()](PlayerShared&, PlayerVarying& player) { m.player_position = player.position; });
+	this->m_entities.boxes  .each([&m = this->m_undos.back()](Textured    &, Position     & box   ) { m.box_position    = box   .position; });
 
 	// Pause UI
 	Vector2 resume_dim = this->m_font.measure_text_ex("resume", 10.0f, 0.1f);
@@ -366,15 +331,10 @@ void Game::process(GameData& data)
 		this->m_ticks++;
 	}
 
-	this->m_entities.process();
-	if (!this->m_player)
-	{
-		std::cerr << "CRITICAL: Failed to get player.\n";
-	}
-	else
-	{
-		this->process_player(data, this->m_entities[this->m_player]);
-	}
+	this->m_entities.players.each(
+		[this, &data](PlayerShared& shared, PlayerVarying& player) {
+			if (!player.locked) this->process_player(data, shared, player);
+		});
 
 	if (IsKeyPressed(KEY_R))
 	{
@@ -392,21 +352,14 @@ void Game::process(GameData& data)
 		if (!this->m_undoing)
 		{
 			// Remove the last stored movement if its the same position.
-			if (this->m_player)
-			{
-				Player& player = this->m_entities[this->m_player];
-				std::size_t last_idx = this->m_undos.size() - 1;
-				MoveData last = this->m_undos[last_idx];
-				if (this->m_undos.size() > 1 && player.position == last.player_position)
+			this->m_entities.players.each([&undos = this->m_undos](PlayerShared&, PlayerVarying& player) {
+				std::size_t last_idx = undos.size() - 1;
+				MoveData last = undos[last_idx];
+				if (undos.size() > 1 && player.position == last.player_position)
 				{
-					this->m_undos.erase(this->m_undos.begin() + last_idx);
+					undos.erase(undos.begin() + last_idx);
 				}
-			}
-			else
-			{
-				std::cerr << "CRITICAL: Failed to get player.\n";
-				return;
-			}
+			});
 
 			this->undo();
 			this->m_undoing = true;
@@ -437,57 +390,43 @@ void Game::process(GameData& data)
 	{
 		this->m_ticks = 0;
 
-		if (!this->m_box)
+		if (!this->m_switched)
 		{
-			std::cerr << "CRITICAL: Failed to get box.\n";
-			return;
-		}
+			this->m_entities.visitTylerBoxGoal(
+				[this, &data](Tyler& tyler, Position& box, Position& goal) {
+					if (
+						Vector2Scale(box.position, 1.0f / GameData::TILE_SIZE)
+						!=
+						Vector2Scale(goal.position, 1.0f / GameData::TILE_SIZE))
+					{
+						return;
+					}
 
-		if (!this->m_goal)
-		{
-			std::cerr << "CRITICAL: Failed to get goal.\n";
-			return;
-		}
+					// The end
+					if (data.active_map_index == 11)
+					{
+						this->m_entities.boxes.varying.clear();
 
-		Box& box = this->m_entities[this->m_box];
-		Goal& goal = this->m_entities[this->m_goal];
-		if (
-			Vector2Scale(box.position, 1.0f / GameData::TILE_SIZE) ==
-			Vector2Scale(goal.position, 1.0f / GameData::TILE_SIZE)
-		)
-		{
-			if (!this->m_switched)
-			{
-				// The end
-				if (data.active_map_index == 11)
-				{
-					this->m_entities.remove<Box>();
+						this->m_switched = true;
+						this->m_finished = true;
+
+						// Gate
+						this->m_map.map.set_at_position(9, 8, 0, 0);
+						this->m_map.map.set_at_position(9, 7, 0, 0);
+
+						if (!data.mute_sfx) this->m_explode();
+
+						return;
+					}
+
+					data.total_moves += tyler.tyler_the_creator;
+
+					if (!data.mute_sfx) this->m_next();
+					data.active_map_index++;
+					data.state_handler.set(GameState::game);
 
 					this->m_switched = true;
-					this->m_finished = true;
-
-					// Gate
-					this->m_map.map.set_at_position(9, 8, 0, 0);
-					this->m_map.map.set_at_position(9, 7, 0, 0);
-
-					if (!data.mute_sfx) this->m_explode();
-
-					return;
-				}
-
-				if (this->m_player)
-				{
-					data.total_moves += this->m_entities[this->m_player].tyler_the_creator;
-				}
-
-				if (!data.mute_sfx) this->m_next();
-
-				data.active_map_index++;
-
-				data.state_handler.set(GameState::game);
-
-				this->m_switched = true;
-			}
+				});
 		}
 	}
 }
@@ -496,18 +435,18 @@ void Game::render(GameData& /*data*/)
 {
 	ClearBackground(DARKBLUE);
 
-	this->m_entities.render();
+	this->m_entities.goals  .each([](Textured& tex, Position& p) { tex.texture.draw(p.position, WHITE); });
+	this->m_entities.boxes  .each([](Textured& tex, Position& p) { tex.texture.draw(p.position, WHITE); });
+	this->m_entities.players.each([](Textured& tex, Position& p) { tex.texture.draw(p.position, WHITE); });
 	this->m_map.map.draw();
 
-	if (this->m_player)
-	{
-		Player& player = this->m_entities[this->m_player];
+	this->m_entities.players.each([this](PlayerShared& shared, PlayerVarying& /*player*/) {
 		DrawRectangle(
 			0, utilities::trunc(GameData::GAME_SIZE.y) - GameData::GAP, utilities::trunc(GameData::GAME_SIZE.x), GameData::GAP, GRAY
 		);
 
 		this->m_font.draw_text_pro(
-			std::format("{:03} MOVES", player.tyler_the_creator).c_str(), 
+			std::format("{:03} MOVES", shared.tyler_the_creator).c_str(), 
 			Vector2(1, GameData::GAME_SIZE.y - GameData::GAP + 1), 
 			Vector2Zero(), 0, 5.0f, 0.1f, WHITE
 		);
@@ -523,12 +462,7 @@ void Game::render(GameData& /*data*/)
 			),
 			Vector2Zero(), 0, 5.0f, 0.1f, WHITE
 		);
-	}
-	else
-	{
-		std::cerr << "CRITICAL: Failed to get player.\n";
-		return;
-	}
+	});
 
 	if (this->m_paused)
 	{

@@ -25,9 +25,6 @@
     <Filter Include="Header Files\Controllers">
       <UniqueIdentifier>{8e3f417f-a5a4-413b-a8ca-a34c62fb68aa}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Header Files\Entities">
-      <UniqueIdentifier>{efd757cb-3561-4980-b257-832d3a12f5a9}</UniqueIdentifier>
-    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Sources\map.cpp">
@@ -38,9 +35,6 @@
     </ClCompile>
     <ClCompile Include="Sources\resource.cpp">
       <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Sources\Controllers\entity_controller.cpp">
-      <Filter>Source Files\Controllers</Filter>
     </ClCompile>
     <ClCompile Include="Sources\States\end.cpp">
       <Filter>Source Files\States</Filter>
@@ -77,26 +71,14 @@
     <ClInclude Include="Headers\States\end.hpp">
       <Filter>Header Files\States</Filter>
     </ClInclude>
-    <ClInclude Include="Headers\Entities\entity.hpp">
-      <Filter>Header Files\Entities</Filter>
-    </ClInclude>
-    <ClInclude Include="Headers\Entities\box.hpp">
-      <Filter>Header Files\Entities</Filter>
-    </ClInclude>
     <ClInclude Include="Headers\Controllers\entity_controller.hpp">
       <Filter>Header Files\Controllers</Filter>
     </ClInclude>
     <ClInclude Include="Headers\States\game.hpp">
       <Filter>Header Files\States</Filter>
     </ClInclude>
-    <ClInclude Include="Headers\Entities\goal.hpp">
-      <Filter>Header Files\Entities</Filter>
-    </ClInclude>
     <ClInclude Include="Headers\States\menu.hpp">
       <Filter>Header Files\States</Filter>
-    </ClInclude>
-    <ClInclude Include="Headers\Entities\player.hpp">
-      <Filter>Header Files\Entities</Filter>
     </ClInclude>
     <ClInclude Include="Headers\States\settings.hpp">
       <Filter>Header Files\States</Filter>
