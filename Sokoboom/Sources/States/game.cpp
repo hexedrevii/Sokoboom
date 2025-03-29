@@ -542,9 +542,4 @@ void Game::render(GameData& /*data*/)
 	}
 }
 
-void Game::leave()
-{
-	this->m_entities.leave();
-}
-
 } // namespace sokoboom

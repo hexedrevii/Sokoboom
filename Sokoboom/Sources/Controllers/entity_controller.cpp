@@ -23,12 +23,4 @@ void EntityController::render()
 	}
 }
 
-void EntityController::leave()
-{
-	for (const std::unique_ptr<Entity>& entity : this->m_entities)
-	{
-		entity->leave();
-	}
-}
-
 } // namespace sokoboom

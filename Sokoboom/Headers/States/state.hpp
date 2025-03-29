@@ -12,7 +12,6 @@ public:
 	virtual void awake(GameData& /*data*/) {}
 	virtual void process(GameData& /*data*/) {}
 	virtual void render(GameData& /*data*/) {}
-	virtual void leave() {}
 };
 
 } // namespace sokoboom

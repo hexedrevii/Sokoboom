@@ -125,9 +125,6 @@ void main()
 	
 	CloseAudioDevice();
 	CloseWindow();
-
-	// Release data
-	data.state_handler.leave();
 }
 
 } // namespace sokoboom

@@ -18,8 +18,6 @@ public:
 
 	virtual void process() {}
 	virtual void render() {}
-
-	virtual void leave() {}
 };
 
 } // namespace sokoboom

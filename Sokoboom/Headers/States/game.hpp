@@ -62,7 +62,6 @@ public:
 	void awake(GameData& data) override;
 	void process(GameData& data) override;
 	void render(GameData& data) override;
-	void leave() override;
 };
 
 } // namespace sokoboom

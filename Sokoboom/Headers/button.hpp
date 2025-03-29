@@ -38,6 +38,11 @@ public:
 		);
 	}
 
+	~Button()
+	{
+		resource.release(this->m_font);
+	}
+
 	void set_text(std::string new_text)
 	{
 		this->m_text = new_text;
@@ -84,11 +89,6 @@ inline void Button::render()
 		this->m_position, Vector2Zero(),
 		0, this->m_size, 0.1f, this->colour
 	);
-}
-
-inline void Button::leave()
-{
-	resource.release(this->m_font);
 }
 
 } // namespace sokoboom

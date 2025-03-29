@@ -41,7 +41,6 @@ public:
 
 	void process(GameData& data);
 	void render(GameData& data);
-	void leave();
 };
 
 inline Color StateController::colour() const

@@ -71,11 +71,6 @@ void StateController::process(GameData& data)
 				this->m_reverse = true;
 				this->m_opactity = 1;
 
-				if (this->m_state != nullptr)
-				{
-					this->m_state->leave();
-				}
-
 				this->m_state = std::move(this->m_temporary);
 				this->m_state->awake(data);
 			}
@@ -101,13 +96,6 @@ void StateController::render(GameData& data)
 {
 	if (this->m_state == nullptr) return;
 	this->m_state->render(data);
-}
-
-void StateController::leave()
-{
-	if (this->m_state == nullptr) return;
-	this->m_state->leave();
-	this->m_state = nullptr;
 }
 
 } // namespace sokoboom
