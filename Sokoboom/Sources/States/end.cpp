@@ -7,22 +7,16 @@
 namespace sokoboom {
 
 End::End()
+	: m_font(resource.font("Content/pico-8.ttf"))
+	, m_click(resource.sound("Content/Audio/click.wav"))
 {
-	this->m_font = utilities::load_font_relative(std::filesystem::path("Content/pico-8.ttf"));
-	this->m_click = utilities::load_sound_relative(std::filesystem::path("Content/Audio/click.wav"));
-}
-
-End::~End()
-{
-	UnloadFont(this->m_font);
-	UnloadSound(this->m_click);
 }
 
 void End::awake(GameData& data)
 {
-	Vector2 menu_dim = MeasureTextEx(this->m_font, "menu", 10.0f, 0.1f);
+	Vector2 menu_dim = this->m_font.measure_text_ex("menu", 10.0f, 0.1f);
 	Button menu = Button(
-		this->m_font,
+		this->m_font.get(),
 		"menu", 10.0f,
 		Vector2(
 			(GameData::GAME_SIZE.x - menu_dim.x) / 2,
@@ -31,7 +25,7 @@ void End::awake(GameData& data)
 	);
 
 	menu.on_click = [this, &data](Button* /*self*/) {
-		if (!data.mute_sfx) PlaySound(this->m_click);
+		if (!data.mute_sfx) this->m_click();
 
 		data.active_map_index = 0;
 		data.total_moves = 0;
@@ -54,9 +48,8 @@ void End::render(GameData& data)
 {
 	ClearBackground(SKYBLUE);
 	
-	Vector2 dim = MeasureTextEx(this->m_font, "GOOD JOB!", 10.0f, 0.1f);
-	DrawTextPro(
-		this->m_font,
+	Vector2 dim = this->m_font.measure_text_ex("GOOD JOB!", 10.0f, 0.1f);
+	this->m_font.draw_text_pro(
 		"GOOD JOB!",
 		Vector2(
 			(GameData::GAME_SIZE.x - dim.x) / 2,
@@ -66,9 +59,8 @@ void End::render(GameData& data)
 		0, 10.0f, 0.1f, WHITE
 	);
 
-	Vector2 end_dim = MeasureTextEx(this->m_font, "the end!", 5.0f, 0.1f);
-	DrawTextPro(
-		this->m_font,
+	Vector2 end_dim = this->m_font.measure_text_ex("the end!", 5.0f, 0.1f);
+	this->m_font.draw_text_pro(
 		"the end!",
 		Vector2(
 			(GameData::GAME_SIZE.x - end_dim.x) / 2,
@@ -78,16 +70,14 @@ void End::render(GameData& data)
 		0, 5.0f, 0.1f, WHITE
 	);
 
-	DrawTextPro(
-		this->m_font,
+	this->m_font.draw_text_pro(
 		"Hope you enjoyed! <3",
 		Vector2(1, 40),
 		Vector2Zero(),
 		0, 5.0f, 0.1f, WHITE
 	);
 
-	DrawTextPro(
-		this->m_font,
+	this->m_font.draw_text_pro(
 		std::format("{} total moves!", data.total_moves).c_str(),
 		Vector2(1, 47),
 		Vector2Zero(),

@@ -1,7 +1,7 @@
 #pragma once
 
 #include "entity.hpp"
-#include "../utilities.hpp"
+#include "../resource.hpp"
 
 #include <raylib.h>
 
@@ -18,22 +18,17 @@ public:
 	Box();
 
 	void render() override;
-	void leave() override;
 };
 
-inline Box::Box() : Entity(0)
+inline Box::Box()
+	: Entity(0)
+	, m_texture(resource.texture2d("Content/Entities/box.png"))
 {
-	this->m_texture = utilities::load_relative(std::filesystem::path("Content/Entities/box.png"));
 }
 
 inline void Box::render()
 {
-	DrawTextureV(this->m_texture, this->position, WHITE);
-}
-
-inline void Box::leave()
-{
-	UnloadTexture(this->m_texture);
+	this->m_texture.draw(this->position, WHITE);
 }
 
 } // namespace sokoboom

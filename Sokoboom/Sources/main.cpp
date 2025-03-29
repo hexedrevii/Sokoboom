@@ -1,5 +1,6 @@
 #include "../Headers/data.hpp"
 #include "../Headers/map.hpp"
+#include "../Headers/resource.hpp"
 #include "../Headers/utilities.hpp"
 
 #include <raylib.h>
@@ -10,6 +11,8 @@
 #include <cmath>
 
 namespace sokoboom {
+
+Resource resource;
 
 void main()
 {
@@ -125,11 +128,6 @@ void main()
 
 	// Release data
 	data.state_handler.leave();
-	for (MapData map_data : data.maps)
-	{
-		std::cout << "INFO: Removing data from map " << map_data.name << std::endl;
-		map_data.map.leave();
-	}
 }
 
 } // namespace sokoboom

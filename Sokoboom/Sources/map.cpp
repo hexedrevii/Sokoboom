@@ -1,11 +1,21 @@
 #include "../Headers/map.hpp"
-
 #include "../Headers/utilities.hpp"
 
 #include <fstream>
 #include <stdexcept>
 
 namespace sokoboom {
+
+Map::Map()
+	: m_wall(resource.texture2d("Content/Props/wall.png"))
+{
+}
+
+Map::Map(const std::filesystem::path& path)
+	: m_wall(resource.texture2d("Content/Props/wall.png"))
+{
+	load(path);
+}
 
 void Map::load(const std::filesystem::path& path)
 {
@@ -16,9 +26,6 @@ void Map::load(const std::filesystem::path& path)
 
 	this->layers = this->m_data["layers"];
 	this->tile_size = Vector2(this->m_data["tile_x"], this->m_data["tile_y"]);
-
-	// We can just straight up skip loading the other sprites
-	this->m_tiles[1] = utilities::load_relative(std::filesystem::path("Content/Props/wall.png"));
 }
 
 void Map::draw()
@@ -32,21 +39,12 @@ void Map::draw()
 				if (layer[row][col] == 0) continue;
 
 				DrawTexture(
-					this->m_tiles[layer[row][col]],
+					resource[this->m_wall],
 					utilities::trunc(row * this->tile_size.x), utilities::trunc(col * this->tile_size.y),
 					WHITE
 				);
 			}
 		}
-	}
-}
-
-void Map::leave()
-{
-	std::map<int, Texture2D>::iterator iter;
-	for (iter = this->m_tiles.begin(); iter != this->m_tiles.end(); iter++)
-	{
-		UnloadTexture(iter->second);
 	}
 }
 

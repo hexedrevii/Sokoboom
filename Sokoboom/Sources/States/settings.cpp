@@ -10,15 +10,9 @@
 namespace sokoboom {
 
 Settings::Settings()
+	: m_font(resource.font("Content/pico-8.ttf"))
+	, m_click(resource.sound("Content/Audio/click.wav"))
 {
-	this->m_font = utilities::load_font_relative(std::filesystem::path("Content/pico-8.ttf"));
-	this->m_click = utilities::load_sound_relative(std::filesystem::path("Content/Audio/click.wav"));
-}
-
-Settings::~Settings()
-{
-	UnloadFont(this->m_font);
-	UnloadSound(this->m_click);
 }
 
 void Settings::awake(GameData& data)
@@ -36,7 +30,7 @@ void Settings::awake(GameData& data)
 	}
 
 	Button menu = Button(
-		this->m_font,
+		this->m_font.get(),
 		"< BACK", 10.0f,
 		Vector2(
 			1,
@@ -45,7 +39,7 @@ void Settings::awake(GameData& data)
 	);
 
 	menu.on_click = [this, &data](Button* /*self*/) {
-		if (!this->m_mute_sfx) PlaySound(this->m_click);
+		if (!this->m_mute_sfx) this->m_click();
 
 		std::filesystem::path path = GetApplicationDirectory() / std::filesystem::path("Content/settings.json");
 		std::ofstream f(path);
@@ -69,13 +63,13 @@ void Settings::awake(GameData& data)
 
 	std::string sfx_text = this->m_mute_sfx ? "UNMUTE SFX" : "MUTE SFX";
 	Button sfx = Button(
-		this->m_font,
+		this->m_font.get(),
 		sfx_text, 5.0f,
 		Vector2(1, 30)
 	);
 
 	sfx.on_click = [this](Button* self) {
-		if (!this->m_mute_sfx) PlaySound(this->m_click);
+		if (!this->m_mute_sfx) this->m_click();
 
 		this->m_mute_sfx = !this->m_mute_sfx;
 		self->set_text(this->m_mute_sfx ? "UNMUTE SFX" : "MUTE SFX");
@@ -85,13 +79,13 @@ void Settings::awake(GameData& data)
 
 	std::string move_text = this->m_mute_move ? "UNMUTE MOVE" : "MUTE MOVE";
 	Button move = Button(
-		this->m_font,
+		this->m_font.get(),
 		move_text, 5.0f,
 		Vector2(1, 37)
 	);
 
 	move.on_click = [this](Button* self) {
-		if (!this->m_mute_sfx) PlaySound(this->m_click);
+		if (!this->m_mute_sfx) this->m_click();
 
 		this->m_mute_move = !this->m_mute_move;
 		self->set_text(this->m_mute_move ? "UNMUTE MOVE" : "MUTE MOVE");
@@ -115,9 +109,8 @@ void Settings::render(GameData& /*data*/)
 	// Background
 	DrawRectangleV(Vector2Zero(), GameData::GAME_SIZE, Fade(BLACK, 0.8f));
 
-	Vector2 dim = MeasureTextEx(this->m_font, "SETTINGS", 10.0f, 0.1f);
-	DrawTextPro(
-		this->m_font,
+	Vector2 dim = this->m_font.measure_text_ex("SETTINGS", 10.0f, 0.1f);
+	this->m_font.draw_text_pro(
 		"SETTINGS",
 		Vector2(
 			(GameData::GAME_SIZE.x - dim.x) / 2,

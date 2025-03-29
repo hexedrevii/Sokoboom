@@ -26,11 +26,11 @@ class Game : public State
 private:
 	int m_ticks = 0;
 
-	Font m_font = { 0 };
+	Font m_font;
 
-	Sound m_move {};
-	Sound m_next {};
-	Sound m_explode {};
+	Sound m_move;
+	Sound m_next;
+	Sound m_explode;
 
 	MapData m_map;
 
@@ -58,7 +58,6 @@ private:
 	std::vector<Button> m_buttons;
 public:
 	Game();
-	~Game();
 
 	void awake(GameData& data) override;
 	void process(GameData& data) override;

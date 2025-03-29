@@ -12,25 +12,18 @@
 namespace sokoboom {
 
 Menu::Menu()
+	: m_font(resource.font("Content/pico-8.ttf"))
+	, m_click(resource.sound("Content/Audio/click.wav"))
 {
-	this->m_font = utilities::load_font_relative(std::filesystem::path("Content/pico-8.ttf"));
-	SetTextureFilter(this->m_font.texture, TEXTURE_FILTER_POINT);
-
-	this->m_click = utilities::load_sound_relative(std::filesystem::path("Content/Audio/click.wav"));
-}
-
-Menu::~Menu()
-{
-	UnloadFont(this->m_font);
-	UnloadSound(this->m_click);
+	SetTextureFilter(resource[this->m_font.get()].texture, TEXTURE_FILTER_POINT); // todo: modified shared resource
 }
 
 // Build UI here since `this` will be incomplete in Menu::Menu
 void Menu::awake(GameData& data)
 {
-	Vector2 play_dim = MeasureTextEx(this->m_font, "play", 10.0f, 0.1f);
+	Vector2 play_dim = this->m_font.measure_text_ex("play", 10.0f, 0.1f);
 	Button play = Button(
-		this->m_font,
+		this->m_font.get(),
 		"play", 10.0f,
 		Vector2(
 			(GameData::GAME_SIZE.x - play_dim.x) / 2,
@@ -39,16 +32,16 @@ void Menu::awake(GameData& data)
 	);
 
 	play.on_click = [this, &data](Button* /*self*/) {
-		if (!data.mute_sfx) PlaySound(this->m_click);
+		if (!data.mute_sfx) this->m_click();
 
 		data.state_handler.set(GameState::game);
 	};
 
 	this->m_buttons.push_back(play);
 
-	Vector2 options_dim = MeasureTextEx(this->m_font, "options", 10.0f, 0.1f);
+	Vector2 options_dim = this->m_font.measure_text_ex("options", 10.0f, 0.1f);
 	Button options = Button(
-		this->m_font,
+		this->m_font.get(),
 		"options", 10.0f,
 		Vector2(
 			(GameData::GAME_SIZE.x - options_dim.x) / 2,
@@ -57,16 +50,16 @@ void Menu::awake(GameData& data)
 	);
 
 	options.on_click = [this, &data](Button* /*self*/) {
-		if (!data.mute_sfx) PlaySound(this->m_click);
+		if (!data.mute_sfx) this->m_click();
 
 		data.state_handler.set(GameState::settings);
 	};
 
 	this->m_buttons.push_back(options);
 
-	Vector2 exit_dim = MeasureTextEx(this->m_font, "exit", 10.0f, 0.1f);
+	Vector2 exit_dim = this->m_font.measure_text_ex("exit", 10.0f, 0.1f);
 	Button exit = Button(
-		this->m_font,
+		this->m_font.get(),
 		"exit", 10.0f,
 		Vector2(
 			(GameData::GAME_SIZE.x - exit_dim.x) / 2,
@@ -75,7 +68,7 @@ void Menu::awake(GameData& data)
 	);
 
 	exit.on_click = [this, &data](Button* /*self*/) {
-		if (!data.mute_sfx) PlaySound(this->m_click);
+		if (!data.mute_sfx) this->m_click();
 
 		data.exit = true;
 	};
@@ -95,9 +88,8 @@ void Menu::render(GameData& /*data*/)
 {
 	ClearBackground(SKYBLUE);
 
-	Vector2 dim = MeasureTextEx(this->m_font, "SOKOBOOM", 10.0f, 0.1f);
-	DrawTextPro(
-		this->m_font,
+	Vector2 dim = this->m_font.measure_text_ex("SOKOBOOM", 10.0f, 0.1f);
+	this->m_font.draw_text_pro(
 		"SOKOBOOM",
 		Vector2(
 			(GameData::GAME_SIZE.x - dim.x) / 2,

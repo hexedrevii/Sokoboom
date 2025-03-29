@@ -5,9 +5,10 @@
 
 namespace sokoboom {
 
-Player::Player() : Entity(0)
+Player::Player()
+	: Entity(0)
+	, m_sprite(resource.texture2d("Content/Entities/player.png"))
 {
-	this->m_sprite = utilities::load_relative("Content/Entities/player.png");
 }
 
 void Player::process()
@@ -61,12 +62,7 @@ void Player::process()
 
 void Player::render()
 {
-	DrawTextureV(this->m_sprite, this->position, WHITE);
-}
-
-void Player::leave()
-{
-	UnloadTexture(this->m_sprite);
+	this->m_sprite.draw(this->position, WHITE);
 }
 
 } // namespace sokoboom

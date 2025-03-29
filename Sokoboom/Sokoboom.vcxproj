@@ -142,6 +142,7 @@
     <ClCompile Include="Sources\Entities\player.cpp" />
     <ClCompile Include="Sources\main.cpp" />
     <ClCompile Include="Sources\map.cpp" />
+    <ClCompile Include="Sources\resource.cpp" />
     <ClCompile Include="Sources\States\end.cpp" />
     <ClCompile Include="Sources\States\game.cpp" />
     <ClCompile Include="Sources\States\menu.cpp" />
@@ -158,6 +159,7 @@
     <ClInclude Include="Headers\Entities\player.hpp" />
     <ClInclude Include="Headers\Entities\player_direction.hpp" />
     <ClInclude Include="Headers\map.hpp" />
+    <ClInclude Include="Headers\resource.hpp" />
     <ClInclude Include="Headers\States\end.hpp" />
     <ClInclude Include="Headers\States\game.hpp" />
     <ClInclude Include="Headers\States\menu.hpp" />

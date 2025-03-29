@@ -17,22 +17,17 @@ public:
 	Goal();
 
 	void render() override;
-	void leave() override;
 };
 
-inline Goal::Goal() : Entity(0)
+inline Goal::Goal()
+	: Entity(0)
+	, m_texture(resource.texture2d("Content/Entities/goal.png"))
 {
-	this->m_texture = utilities::load_relative("Content/Entities/goal.png");
 }
 
 inline void Goal::render()
 {
-	DrawTextureV(this->m_texture, this->position, WHITE);
-}
-
-inline void Goal::leave()
-{
-	UnloadTexture(this->m_texture);
+	this->m_texture.draw(this->position, WHITE);
 }
 
 } // namespace sokoboom

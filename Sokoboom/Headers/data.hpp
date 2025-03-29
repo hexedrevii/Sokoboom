@@ -5,8 +5,6 @@
 
 #include <raylib.h>
 
-#include <memory>
-
 namespace sokoboom {
 
 struct MapData

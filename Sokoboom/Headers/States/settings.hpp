@@ -2,7 +2,7 @@
 
 #include "../button.hpp"
 #include "../data.hpp"
-#include "../utilities.hpp"
+#include "../resource.hpp"
 #include "state.hpp"
 
 #include <json.hpp>
@@ -21,8 +21,8 @@ class Settings : public State
 private:
 	std::vector<Button> m_buttons;
 
-	Sound m_click = { 0 };
-	Font m_font = { 0 };
+	Sound m_click;
+	Font m_font;
 
 	bool m_mute_move = false;
 	bool m_mute_sfx = false;

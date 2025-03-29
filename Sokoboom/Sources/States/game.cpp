@@ -21,20 +21,11 @@ static constexpr int SOLID_LAYER = 0;
 static constexpr int SOLID_WALL = 1;
 
 Game::Game()
+	: m_font(resource.font("Content/pico-8.ttf"))
+	, m_move(resource.sound("Content/Audio/move.wav"))
+	, m_next(resource.sound("Content/Audio/next.wav"))
+	, m_explode(resource.sound("Content/Audio/explosion.wav"))
 {
-	this->m_font = utilities::load_font_relative(std::filesystem::path("Content/pico-8.ttf"));
-	this->m_move = utilities::load_sound_relative(std::filesystem::path("Content/Audio/move.wav"));
-	this->m_next = utilities::load_sound_relative(std::filesystem::path("Content/Audio/next.wav"));
-	this->m_explode = utilities::load_sound_relative(std::filesystem::path("Content/Audio/explosion.wav"));
-}
-
-Game::~Game()
-{
-	UnloadSound(this->m_next);
-	UnloadSound(this->m_move);
-	UnloadSound(this->m_explode);
-
-	UnloadFont(this->m_font);
 }
 
 void Game::on_player_moved(GameData& data, Vector2 position, Direction direction)
@@ -195,7 +186,7 @@ void Game::on_player_moved(GameData& data, Vector2 position, Direction direction
 
 	if (!hit_box && !hit_corner)
 	{
-		if (!data.mute_sfx && !data.mute_move) PlaySound(this->m_move);
+		if (!data.mute_sfx && !data.mute_move) this->m_move();
 	}
 }
 
@@ -314,9 +305,9 @@ void Game::awake(GameData& data)
 	);
 
 	// Pause UI
-	Vector2 resume_dim = MeasureTextEx(this->m_font, "resume", 10.0f, 0.1f);
+	Vector2 resume_dim = this->m_font.measure_text_ex("resume", 10.0f, 0.1f);
 	Button resume = Button(
-		this->m_font,
+		this->m_font.get(),
 		"resume", 10.0f,
 		Vector2(
 			(GameData::GAME_SIZE.x - resume_dim.x) / 2,
@@ -330,9 +321,9 @@ void Game::awake(GameData& data)
 
 	this->m_buttons.push_back(resume);
 
-	Vector2 menu_dim = MeasureTextEx(this->m_font, "menu", 10.0f, 0.1f);
+	Vector2 menu_dim = this->m_font.measure_text_ex("menu", 10.0f, 0.1f);
 	Button menu = Button(
-		this->m_font,
+		this->m_font.get(),
 		"menu", 10.0f,
 		Vector2(
 			(GameData::GAME_SIZE.x - menu_dim.x) / 2,
@@ -467,7 +458,7 @@ void Game::process(GameData& data)
 					this->m_map.map.set_at_position(9, 8, 0, 0);
 					this->m_map.map.set_at_position(9, 7, 0, 0);
 
-					if (!data.mute_sfx) PlaySound(this->m_explode);
+					if (!data.mute_sfx) this->m_explode();
 
 					return;
 				}
@@ -477,7 +468,7 @@ void Game::process(GameData& data)
 					data.total_moves += player->tyler_the_creator;
 				}
 
-				if (!data.mute_sfx) PlaySound(this->m_next);
+				if (!data.mute_sfx) this->m_next();
 
 				data.active_map_index++;
 
@@ -502,18 +493,16 @@ void Game::render(GameData& /*data*/)
 			0, utilities::trunc(GameData::GAME_SIZE.y) - GameData::GAP, utilities::trunc(GameData::GAME_SIZE.x), GameData::GAP, GRAY
 		);
 
-		DrawTextPro(
-			this->m_font,
+		this->m_font.draw_text_pro(
 			std::format("{:03} MOVES", player->tyler_the_creator).c_str(), 
 			Vector2(1, GameData::GAME_SIZE.y - GameData::GAP + 1), 
 			Vector2Zero(), 0, 5.0f, 0.1f, WHITE
 		);
 	
 		std::string name = std::format("-{}-", this->m_map.name);
-		Vector2 name_dim = MeasureTextEx(this->m_font, name.c_str(), 5.0f, 0.1f);
+		Vector2 name_dim = this->m_font.measure_text_ex(name.c_str(), 5.0f, 0.1f);
 
-		DrawTextPro(
-			this->m_font,
+		this->m_font.draw_text_pro(
 			name.c_str(),
 			Vector2(
 				floor(GameData::GAME_SIZE.x - name_dim.x), 
@@ -535,9 +524,8 @@ void Game::render(GameData& /*data*/)
 			Fade(BLACK, 0.7f)
 		);
 
-		Vector2 dim = MeasureTextEx(this->m_font, "PAUSED", 10.0f, 0.1f);
-		DrawTextPro(
-			this->m_font,
+		Vector2 dim = this->m_font.measure_text_ex("PAUSED", 10.0f, 0.1f);
+		this->m_font.draw_text_pro(
 			"PAUSED",
 			Vector2(
 				(GameData::GAME_SIZE.x - dim.x) / 2,

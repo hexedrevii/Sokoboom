@@ -1,5 +1,6 @@
 #pragma once
 
+#include "../resource.hpp"
 #include "entity.hpp"
 #include "player_direction.hpp"
 
@@ -26,7 +27,6 @@ public:
 
 	void process() override;
 	void render() override;
-	void leave() override;
 };
 
 } // namespace sokoboom
