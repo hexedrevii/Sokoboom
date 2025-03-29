@@ -30,13 +30,13 @@ Game::Game()
 
 void Game::on_player_moved(GameData& data, Vector2 position, Direction direction)
 {
-	Player* player = this->m_player;
-	if (!player)
+	if (!this->m_player)
 	{
 		std::cerr << "CRITICAL: Failed to get player.\n";
 		return;
 	}
 
+	Player& player = this->m_entities[this->m_player];
 	bool hit_corner = false;
 	bool hit_box = false;
 
@@ -47,8 +47,8 @@ void Game::on_player_moved(GameData& data, Vector2 position, Direction direction
 		// Reached gate.
 		if (player_grid.x == 9 && (player_grid.y == 8 || player_grid.y == 7))
 		{
-			player->locked = true;
-			data.total_moves += player->tyler_the_creator;
+			player.locked = true;
+			data.total_moves += player.tyler_the_creator;
 
 			data.state_handler.set(GameState::end);
 		}
@@ -65,26 +65,26 @@ void Game::on_player_moved(GameData& data, Vector2 position, Direction direction
 		switch (direction)
 		{
 		case Direction::LEFT:
-			player->position.x += GameData::TILE_SIZE;
-			player->tyler_the_creator--;
+			player.position.x += GameData::TILE_SIZE;
+			player.tyler_the_creator--;
 
 			break;
 
 		case Direction::RIGHT:
-			player->position.x -= GameData::TILE_SIZE;
-			player->tyler_the_creator--;
+			player.position.x -= GameData::TILE_SIZE;
+			player.tyler_the_creator--;
 
 			break;
 
 		case Direction::UP:
-			player->position.y += GameData::TILE_SIZE;
-			player->tyler_the_creator--;
+			player.position.y += GameData::TILE_SIZE;
+			player.tyler_the_creator--;
 
 			break;
 
 		case Direction::DOWN:
-			player->position.y -= GameData::TILE_SIZE;
-			player->tyler_the_creator--;
+			player.position.y -= GameData::TILE_SIZE;
+			player.tyler_the_creator--;
 
 			break;
 		}
@@ -94,14 +94,14 @@ void Game::on_player_moved(GameData& data, Vector2 position, Direction direction
 
 	if (!this->m_finished)
 	{
-		Box* box = this->m_box;
-		if (!box)
+		if (!this->m_box)
 		{
 			std::cerr << "CRITICAL: Failed to get box.\n";
 			return;
 		}
 
-		Vector2 box_grid = Vector2Scale(box->position, 1.0f / GameData::TILE_SIZE);
+		Box& box = this->m_entities[this->m_box];
+		Vector2 box_grid = Vector2Scale(box.position, 1.0f / GameData::TILE_SIZE);
 
 		// Box moves
 		if (player_grid == box_grid)
@@ -111,56 +111,56 @@ void Game::on_player_moved(GameData& data, Vector2 position, Direction direction
 			case Direction::LEFT:
 				if (this->m_map.map.get_at_position(utilities::trunc(box_grid.x) - 1, utilities::trunc(box_grid.y), SOLID_LAYER) == SOLID_WALL)
 				{
-					player->position.x += GameData::TILE_SIZE;
-					player->tyler_the_creator--;
+					player.position.x += GameData::TILE_SIZE;
+					player.tyler_the_creator--;
 
 					hit_box = true;
 					break;
 				}
 
-				box->position.x -= GameData::TILE_SIZE;
+				box.position.x -= GameData::TILE_SIZE;
 
 				break;
 
 			case Direction::RIGHT:
 				if (this->m_map.map.get_at_position(utilities::trunc(box_grid.x) + 1, utilities::trunc(box_grid.y), SOLID_LAYER) == SOLID_WALL)
 				{
-					player->position.x -= GameData::TILE_SIZE;
-					player->tyler_the_creator--;
+					player.position.x -= GameData::TILE_SIZE;
+					player.tyler_the_creator--;
 
 					hit_box = true;
 					break;
 				}
 
-				box->position.x += GameData::TILE_SIZE;
+				box.position.x += GameData::TILE_SIZE;
 
 				break;
 
 			case Direction::UP:
 				if (this->m_map.map.get_at_position(utilities::trunc(box_grid.x), utilities::trunc(box_grid.y) - 1, SOLID_LAYER) == SOLID_WALL)
 				{
-					player->position.y += GameData::TILE_SIZE;
-					player->tyler_the_creator--;
+					player.position.y += GameData::TILE_SIZE;
+					player.tyler_the_creator--;
 
 					hit_box = true;
 					break;
 				}
 
-				box->position.y -= GameData::TILE_SIZE;
+				box.position.y -= GameData::TILE_SIZE;
 
 				break;
 
 			case Direction::DOWN:
 				if (this->m_map.map.get_at_position(utilities::trunc(box_grid.x), utilities::trunc(box_grid.y) + 1, SOLID_LAYER) == SOLID_WALL)
 				{
-					player->position.y -= GameData::TILE_SIZE;
-					player->tyler_the_creator--;
+					player.position.y -= GameData::TILE_SIZE;
+					player.tyler_the_creator--;
 
 					hit_box = true;
 					break;
 				}
 
-				box->position.y += GameData::TILE_SIZE;
+				box.position.y += GameData::TILE_SIZE;
 
 				break;
 			}
@@ -169,16 +169,16 @@ void Game::on_player_moved(GameData& data, Vector2 position, Direction direction
 		if (this->m_undos.empty())
 		{
 			this->m_undos.push_back(
-				MoveData(player->position, box->position)
+				MoveData(player.position, box.position)
 			);
 		}
 		else
 		{
 			MoveData last = this->m_undos[this->m_undos.size() - 1];
-			if (player->position != last.player_position)
+			if (player.position != last.player_position)
 			{
 				this->m_undos.push_back(
-					MoveData(player->position, box->position)
+					MoveData(player.position, box.position)
 				);
 			}
 		}
@@ -199,22 +199,22 @@ void Game::undo()
 		std::size_t last_idx = this->m_undos.size() - 1;
 		MoveData last = this->m_undos[last_idx];
 
-		Box* box = this->m_box;
-		if (!box)
+		if (!this->m_box)
 		{
 			std::cerr << "CRITICAL: Failed to get box.\n";
 			return;
 		}
 
-		Player* player = this->m_player;
-		if (!player)
+		if (!this->m_player)
 		{
 			std::cerr << "CRITICAL: Failed to get goal.\n";
 			return;
 		}
 
-		player->position = last.player_position;
-		box->position = last.box_position;
+		Box& box = m_entities[this->m_box];
+		Player& player = m_entities[this->m_player];
+		player.position = last.player_position;
+		box.position = last.box_position;
 
 		if (this->m_undos.size() > 1)
 		{
@@ -242,24 +242,21 @@ void Game::awake(GameData& data)
 				switch (layer[row][col])
 				{
 					case BOX_ID: {
-						this->m_box = &this->m_entities.add<Box>(position);
-						
+						this->m_box = this->m_entities.add<Box>(position);
 						this->m_map.map.set_at_position(row, col, i, 0);
 					} break;
 
 					case GOAL_ID: {
-						this->m_goal = &this->m_entities.add<Goal>(position);
-
+						this->m_goal = this->m_entities.add<Goal>(position);
 						this->m_map.map.set_at_position(row, col, i, 0);
 					} break;
 
 					case PLAYER_ID: {
-						this->m_player = &this->m_entities.add<Player>(position);
-						this->m_player->on_player_moved =
+						this->m_player = this->m_entities.add<Player>(position);
+						this->m_entities[this->m_player].on_player_moved =
 							[this, &data] (Vector2 position, Direction direction) {
 								this->on_player_moved(data, position, direction);
 							};
-
 						this->m_map.map.set_at_position(row, col, i, 0);
 					} break;
 				}
@@ -267,22 +264,22 @@ void Game::awake(GameData& data)
 		}
 	}
 
-	Player* player = this->m_player;
-	if (!player)
+	if (!this->m_player)
 	{
 		std::cerr << "CRITICAL: Failed to get player.\n";
 		return;
 	}
 
-	Box* box = this->m_box;
-	if (!box)
+	if (!this->m_box)
 	{
 		std::cerr << "CRITICAL: Failed to get box.\n";
 		return;
 	}
 
+	Player& player = m_entities[this->m_player];
+	Box& box = m_entities[this->m_box];
 	this->m_undos.push_back(
-		MoveData(player->position, box->position)
+		MoveData(player.position, box.position)
 	);
 
 	// Pause UI
@@ -362,11 +359,12 @@ void Game::process(GameData& data)
 		if (!this->m_undoing)
 		{
 			// Remove the last stored movement if its the same position.
-			if (Player* player = this->m_player)
+			if (this->m_player)
 			{
+				Player& player = this->m_entities[this->m_player];
 				std::size_t last_idx = this->m_undos.size() - 1;
 				MoveData last = this->m_undos[last_idx];
-				if (this->m_undos.size() > 1 && player->position == last.player_position)
+				if (this->m_undos.size() > 1 && player.position == last.player_position)
 				{
 					this->m_undos.erase(this->m_undos.begin() + last_idx);
 				}
@@ -406,23 +404,23 @@ void Game::process(GameData& data)
 	{
 		this->m_ticks = 0;
 
-		Box* box = this->m_box;
-		if (!box)
+		if (!this->m_box)
 		{
 			std::cerr << "CRITICAL: Failed to get box.\n";
 			return;
 		}
 
-		Goal* goal = this->m_goal;
-		if (!goal)
+		if (!this->m_goal)
 		{
 			std::cerr << "CRITICAL: Failed to get goal.\n";
 			return;
 		}
 
+		Box& box = this->m_entities[this->m_box];
+		Goal& goal = this->m_entities[this->m_goal];
 		if (
-			Vector2Scale(box->position, 1.0f / GameData::TILE_SIZE) ==
-			Vector2Scale(goal->position, 1.0f / GameData::TILE_SIZE)
+			Vector2Scale(box.position, 1.0f / GameData::TILE_SIZE) ==
+			Vector2Scale(goal.position, 1.0f / GameData::TILE_SIZE)
 		)
 		{
 			if (!this->m_switched)
@@ -444,9 +442,9 @@ void Game::process(GameData& data)
 					return;
 				}
 
-				if (Player* player = this->m_player)
+				if (this->m_player)
 				{
-					data.total_moves += player->tyler_the_creator;
+					data.total_moves += this->m_entities[this->m_player].tyler_the_creator;
 				}
 
 				if (!data.mute_sfx) this->m_next();
@@ -468,14 +466,15 @@ void Game::render(GameData& /*data*/)
 	this->m_entities.render();
 	this->m_map.map.draw();
 
-	if (Player* player = this->m_player)
+	if (this->m_player)
 	{
+		Player& player = this->m_entities[this->m_player];
 		DrawRectangle(
 			0, utilities::trunc(GameData::GAME_SIZE.y) - GameData::GAP, utilities::trunc(GameData::GAME_SIZE.x), GameData::GAP, GRAY
 		);
 
 		this->m_font.draw_text_pro(
-			std::format("{:03} MOVES", player->tyler_the_creator).c_str(), 
+			std::format("{:03} MOVES", player.tyler_the_creator).c_str(), 
 			Vector2(1, GameData::GAME_SIZE.y - GameData::GAP + 1), 
 			Vector2Zero(), 0, 5.0f, 0.1f, WHITE
 		);

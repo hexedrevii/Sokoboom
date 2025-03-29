@@ -60,11 +60,11 @@ public:
 
 	protected:
 		/* Note: this is protected to ensure only Resource constructs these handles as valid. It is not default
-		  constructible to ensure all clients remember to initialize their resources.
+			constructible to ensure all clients remember to initialize their resources.
 		  
-		  Lacking default construction can be annoying, so maybe relax this in the future. To do that would require
-		  making an invalid Handle state*/
-		Handle(type value) : value(value) {}
+			Lacking default construction can be annoying, so maybe relax this in the future. To do that would require
+			making an invalid Handle state*/
+		explicit Handle(type value) : value(value) {}
 	};
 
 private:

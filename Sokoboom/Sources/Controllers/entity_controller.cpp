@@ -6,7 +6,7 @@ void EntityController::process()
 {
 	for (const std::unique_ptr<Entity>& entity : this->m_entities)
 	{
-		entity->process();
+		if (entity) entity->process();
 	}
 }
 
@@ -14,7 +14,7 @@ void EntityController::render()
 {
 	for (const std::unique_ptr<Entity>& entity : this->m_entities)
 	{
-		entity->render();
+		if (entity) entity->render();
 	}
 }
 

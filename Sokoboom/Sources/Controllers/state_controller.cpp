@@ -93,8 +93,7 @@ void StateController::process(GameData& data)
 		}
 	}
 
-	if (this->m_state == nullptr) return;
-	this->m_state->process(data);
+	if (this->m_state) this->m_state->process(data);
 }
 
 void StateController::render(GameData& data)

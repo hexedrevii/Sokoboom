@@ -34,12 +34,12 @@ private:
 
 	MapData m_map;
 
-	EntityController m_entities = EntityController();
+	EntityController m_entities;
 
-	Player* m_player;
+	EntityController::Handle<Player> m_player;
 	
-	Box* m_box;
-	Goal* m_goal;
+	EntityController::Handle<Box> m_box;
+	EntityController::Handle<Goal> m_goal;
 
 	std::vector<MoveData> m_undos;
 
