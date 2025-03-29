@@ -15,8 +15,8 @@ private:
 	Texture2D m_texture;
 
 public:
-	Box(int id, Vector2 position = Vector2(0, 0), Vector2 velocity = Vector2(0, 0))
-		: Entity(id, position, velocity)
+	Box(Vector2 position = Vector2(0, 0))
+		: Entity(position)
 		, m_texture(resource.texture2d("Content/Entities/box.png"))
 	{
 	}

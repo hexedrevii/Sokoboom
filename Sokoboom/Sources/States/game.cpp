@@ -240,7 +240,6 @@ void Game::awake(GameData& data)
 				{
 					case BOX_ID: {
 						std::unique_ptr<Box> box = std::make_unique<Box>(
-							0,
 							Vector2(
 								row * this->m_map.map.tile_size.x,
 								col * this->m_map.map.tile_size.y));
@@ -253,7 +252,6 @@ void Game::awake(GameData& data)
 
 					case GOAL_ID: {
 						std::unique_ptr<Goal> goal = std::make_unique<Goal>(
-							0,
 							Vector2(
 								row * this->m_map.map.tile_size.x,
 								col * this->m_map.map.tile_size.y));
@@ -266,7 +264,6 @@ void Game::awake(GameData& data)
 
 					case PLAYER_ID: {
 						std::unique_ptr<Player> player_t = std::make_unique<Player>(
-							0,
 							Vector2(
 								row * this->m_map.map.tile_size.x,
 								col * this->m_map.map.tile_size.y));

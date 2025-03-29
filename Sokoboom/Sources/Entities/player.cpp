@@ -5,8 +5,8 @@
 
 namespace sokoboom {
 
-Player::Player(int id, Vector2 position, Vector2 velocity)
-	: Entity(id, position, velocity)
+Player::Player(Vector2 position)
+	: Entity(position)
 	, m_sprite(resource.texture2d("Content/Entities/player.png"))
 {
 }

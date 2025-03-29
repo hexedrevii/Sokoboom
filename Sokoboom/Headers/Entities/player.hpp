@@ -23,7 +23,7 @@ public:
 
 	bool locked = false;
 
-	Player(int id, Vector2 position = Vector2(0, 0), Vector2 velocity = Vector2(0, 0));
+	Player(Vector2 position = Vector2(0, 0));
 
 	void process() override;
 	void render() override;
