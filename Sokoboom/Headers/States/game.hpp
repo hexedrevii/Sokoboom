@@ -1,19 +1,17 @@
 #pragma once
 
-#include "state.hpp"
-#include "../map.hpp"
-#include "../Entities/player_direction.hpp"
-#include "../Entities/player.hpp"
-#include "../Entities/goal.hpp"
-#include "../Entities/box.hpp"
-#include "../data.hpp"
 #include "../button.hpp"
+#include "../data.hpp"
+#include "../Entities/box.hpp"
+#include "../Entities/goal.hpp"
+#include "../Entities/player.hpp"
+#include "../Entities/player_direction.hpp"
+#include "../map.hpp"
+#include "state.hpp"
 
 #include <raylib.h>
 
 #include <vector>
-#include <iostream>
-#include <memory>
 
 namespace sokoboom {
 
@@ -38,10 +36,10 @@ private:
 
 	EntityController m_entities = EntityController();
 
-	std::weak_ptr<Player> m_player;
+	Player* m_player;
 	
-	std::weak_ptr<Box> m_box;
-	std::weak_ptr<Goal> m_goal;
+	Box* m_box;
+	Goal* m_goal;
 
 	std::vector<MoveData> m_undos;
 

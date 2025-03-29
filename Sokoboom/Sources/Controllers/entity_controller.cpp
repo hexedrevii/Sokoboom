@@ -2,14 +2,14 @@
 
 namespace sokoboom {
 
-void EntityController::add(std::shared_ptr<Entity> e)
+void EntityController::add(std::unique_ptr<Entity> e)
 {
-	this->m_entities.push_back(e);
+	this->m_entities.emplace_back(std::move(e));
 }
 
 void EntityController::process()
 {
-	for (const std::shared_ptr<Entity>& entity : this->m_entities)
+	for (const std::unique_ptr<Entity>& entity : this->m_entities)
 	{
 		entity->process();
 	}
@@ -17,7 +17,7 @@ void EntityController::process()
 
 void EntityController::render()
 {
-	for (const std::shared_ptr<Entity>& entity : this->m_entities)
+	for (const std::unique_ptr<Entity>& entity : this->m_entities)
 	{
 		entity->render();
 	}
@@ -25,7 +25,7 @@ void EntityController::render()
 
 void EntityController::leave()
 {
-	for (const std::shared_ptr<Entity>& entity : this->m_entities)
+	for (const std::unique_ptr<Entity>& entity : this->m_entities)
 	{
 		entity->leave();
 	}

@@ -9,7 +9,7 @@
 
 #include <cmath>
 #include <format>
-#include <stdexcept>
+#include <iostream>
 
 namespace sokoboom {
 
@@ -39,7 +39,7 @@ Game::~Game()
 
 void Game::on_player_moved(GameData& data, Vector2 position, Direction direction)
 {
-	std::shared_ptr<Player> player = this->m_player.lock();
+	Player* player = this->m_player;
 	if (!player)
 	{
 		std::cerr << "CRITICAL: Failed to get player.\n";
@@ -103,7 +103,7 @@ void Game::on_player_moved(GameData& data, Vector2 position, Direction direction
 
 	if (!this->m_finished)
 	{
-		std::shared_ptr<Box> box = this->m_box.lock();
+		Box* box = this->m_box;
 		if (!box)
 		{
 			std::cerr << "CRITICAL: Failed to get box.\n";
@@ -208,14 +208,14 @@ void Game::undo()
 		std::size_t last_idx = this->m_undos.size() - 1;
 		MoveData last = this->m_undos[last_idx];
 
-		std::shared_ptr<Box> box = this->m_box.lock();
+		Box* box = this->m_box;
 		if (!box)
 		{
 			std::cerr << "CRITICAL: Failed to get box.\n";
 			return;
 		}
 
-		std::shared_ptr<Player> player = this->m_player.lock();
+		Player* player = this->m_player;
 		if (!player)
 		{
 			std::cerr << "CRITICAL: Failed to get goal.\n";
@@ -248,33 +248,33 @@ void Game::awake(GameData& data)
 				switch (layer[row][col])
 				{
 					case BOX_ID: {
-						std::shared_ptr<Box> box = std::make_shared<Box>();
+						std::unique_ptr<Box> box = std::make_unique<Box>();
 						box->position = Vector2(
 							row * this->m_map.map.tile_size.x,
 							col * this->m_map.map.tile_size.y
 						);
 
-						this->m_box = box;
-						this->m_entities.add(box);
+						this->m_box = box.get();
+						this->m_entities.add(std::move(box));
 						
 						this->m_map.map.set_at_position(row, col, i, 0);
 					} break;
 
 					case GOAL_ID: {
-						std::shared_ptr<Goal> goal = std::make_shared<Goal>();
+						std::unique_ptr<Goal> goal = std::make_unique<Goal>();
 						goal->position = Vector2(
 							row * this->m_map.map.tile_size.x,
 							col * this->m_map.map.tile_size.y
 						);
 
-						this->m_goal = goal;
-						this->m_entities.add(goal);
+						this->m_goal = goal.get();
+						this->m_entities.add(std::move(goal));
 
 						this->m_map.map.set_at_position(row, col, i, 0);
 					} break;
 
 					case PLAYER_ID: {
-						std::shared_ptr<Player> player_t = std::make_shared<Player>();
+						std::unique_ptr<Player> player_t = std::make_unique<Player>();
 						player_t->position = Vector2(
 							row * this->m_map.map.tile_size.x,
 							col * this->m_map.map.tile_size.y
@@ -285,8 +285,8 @@ void Game::awake(GameData& data)
 								this->on_player_moved(data, position, direction);
 							};
 					
-						this->m_entities.add(player_t);
-						this->m_player = player_t;
+						this->m_player = player_t.get();
+						this->m_entities.add(std::move(player_t));
 
 						this->m_map.map.set_at_position(row, col, i, 0);
 					} break;
@@ -295,14 +295,14 @@ void Game::awake(GameData& data)
 		}
 	}
 
-	std::shared_ptr<Player> player = this->m_player.lock();
+	Player* player = this->m_player;
 	if (!player)
 	{
 		std::cerr << "CRITICAL: Failed to get player.\n";
 		return;
 	}
 
-	std::shared_ptr<Box> box = this->m_box.lock();
+	Box* box = this->m_box;
 	if (!box)
 	{
 		std::cerr << "CRITICAL: Failed to get box.\n";
@@ -390,7 +390,7 @@ void Game::process(GameData& data)
 		if (!this->m_undoing)
 		{
 			// Remove the last stored movement if its the same position.
-			if (std::shared_ptr<Player> player = this->m_player.lock())
+			if (Player* player = this->m_player)
 			{
 				std::size_t last_idx = this->m_undos.size() - 1;
 				MoveData last = this->m_undos[last_idx];
@@ -434,14 +434,14 @@ void Game::process(GameData& data)
 	{
 		this->m_ticks = 0;
 
-		std::shared_ptr<Box> box = this->m_box.lock();
+		Box* box = this->m_box;
 		if (!box)
 		{
 			std::cerr << "CRITICAL: Failed to get box.\n";
 			return;
 		}
 
-		std::shared_ptr<Goal> goal = this->m_goal.lock();
+		Goal* goal = this->m_goal;
 		if (!goal)
 		{
 			std::cerr << "CRITICAL: Failed to get goal.\n";
@@ -472,7 +472,7 @@ void Game::process(GameData& data)
 					return;
 				}
 
-				if (std::shared_ptr<Player> player = this->m_player.lock())
+				if (Player* player = this->m_player)
 				{
 					data.total_moves += player->tyler_the_creator;
 				}
@@ -496,7 +496,7 @@ void Game::render(GameData& /*data*/)
 	this->m_entities.render();
 	this->m_map.map.draw();
 
-	if (std::shared_ptr<Player> player = this->m_player.lock())
+	if (Player* player = this->m_player)
 	{
 		DrawRectangle(
 			0, utilities::trunc(GameData::GAME_SIZE.y) - GameData::GAP, utilities::trunc(GameData::GAME_SIZE.x), GameData::GAP, GRAY
