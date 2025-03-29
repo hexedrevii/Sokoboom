@@ -28,7 +28,6 @@ private:
 	bool m_mute_sfx = false;
 public:
 	Settings();
-	~Settings();
 
 	void awake(GameData& data) override;
 	void process(GameData& data) override;

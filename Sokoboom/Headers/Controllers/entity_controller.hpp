@@ -59,10 +59,6 @@ public:
 		return this->create<Ent>(position);
 	}
 
-	Handle<Player> addPlayer(
-		std::function<void(Vector2, Direction)> on_player_moved,
-		Vector2 position = Vector2(0, 0));
-
 	template<typename T>
 	void remove()
 	{

@@ -40,7 +40,8 @@ private:
 
 	std::vector<MoveData> m_undos;
 
-	void on_player_moved(GameData& data, Vector2 position, Direction direction);
+	void process_player(GameData& data, Player& player);
+	void on_player_moved(GameData& data, Player& player, Direction direction);
 
 	bool m_switched = false;
 

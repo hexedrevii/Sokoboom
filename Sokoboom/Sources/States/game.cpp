@@ -26,15 +26,46 @@ Game::Game()
 {
 }
 
-void Game::on_player_moved(GameData& data, Vector2 position, Direction direction)
+void Game::process_player(GameData& data, Player& player)
 {
-	if (!this->m_player)
+	if (player.locked) return;
+
+	if (IsKeyPressed(KEY_A))
 	{
-		std::cerr << "CRITICAL: Failed to get player.\n";
-		return;
+		player.position.x -= GameData::TILE_SIZE;
+		player.tyler_the_creator++;
+
+		this->on_player_moved(data, player, Direction::left);
 	}
 
-	Player& player = this->m_entities[this->m_player];
+	if (IsKeyPressed(KEY_D))
+	{
+		player.position.x += GameData::TILE_SIZE;
+		player.tyler_the_creator++;
+
+		this->on_player_moved(data, player, Direction::right);
+	}
+
+	if (IsKeyPressed(KEY_W))
+	{
+		player.position.y -= GameData::TILE_SIZE;
+		player.tyler_the_creator++;
+	
+		this->on_player_moved(data, player, Direction::up);
+	}
+
+	if (IsKeyPressed(KEY_S))
+	{
+		player.position.y += GameData::TILE_SIZE;
+		player.tyler_the_creator++;
+	
+		this->on_player_moved(data, player, Direction::down);
+	}
+}
+
+void Game::on_player_moved(GameData& data, Player& player, Direction direction)
+{
+	Vector2 position = player.position;
 	bool hit_corner = false;
 	bool hit_box = false;
 
@@ -250,12 +281,7 @@ void Game::awake(GameData& data)
 					} break;
 
 					case PLAYER_ID: {
-						this->m_player = this->m_entities.addPlayer(
-							[this, &data] (Vector2 position, Direction direction) {
-								this->on_player_moved(data, position, direction);
-							},
-							position);
-							
+						this->m_player = this->m_entities.add<Player>(position);
 						this->m_map.map.set_at_position(row, col, i, 0);
 					} break;
 				}
@@ -341,6 +367,14 @@ void Game::process(GameData& data)
 	}
 
 	this->m_entities.process();
+	if (!this->m_player)
+	{
+		std::cerr << "CRITICAL: Failed to get player.\n";
+	}
+	else
+	{
+		this->process_player(data, this->m_entities[this->m_player]);
+	}
 
 	if (IsKeyPressed(KEY_R))
 	{
