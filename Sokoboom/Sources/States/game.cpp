@@ -239,11 +239,11 @@ void Game::awake(GameData& data)
 				switch (layer[row][col])
 				{
 					case BOX_ID: {
-						std::unique_ptr<Box> box = std::make_unique<Box>();
-						box->position = Vector2(
-							row * this->m_map.map.tile_size.x,
-							col * this->m_map.map.tile_size.y
-						);
+						std::unique_ptr<Box> box = std::make_unique<Box>(
+							0,
+							Vector2(
+								row * this->m_map.map.tile_size.x,
+								col * this->m_map.map.tile_size.y));
 
 						this->m_box = box.get();
 						this->m_entities.add(std::move(box));
@@ -252,11 +252,11 @@ void Game::awake(GameData& data)
 					} break;
 
 					case GOAL_ID: {
-						std::unique_ptr<Goal> goal = std::make_unique<Goal>();
-						goal->position = Vector2(
-							row * this->m_map.map.tile_size.x,
-							col * this->m_map.map.tile_size.y
-						);
+						std::unique_ptr<Goal> goal = std::make_unique<Goal>(
+							0,
+							Vector2(
+								row * this->m_map.map.tile_size.x,
+								col * this->m_map.map.tile_size.y));
 
 						this->m_goal = goal.get();
 						this->m_entities.add(std::move(goal));
@@ -265,13 +265,13 @@ void Game::awake(GameData& data)
 					} break;
 
 					case PLAYER_ID: {
-						std::unique_ptr<Player> player_t = std::make_unique<Player>();
-						player_t->position = Vector2(
-							row * this->m_map.map.tile_size.x,
-							col * this->m_map.map.tile_size.y
-						);
+						std::unique_ptr<Player> player_t = std::make_unique<Player>(
+							0,
+							Vector2(
+								row * this->m_map.map.tile_size.x,
+								col * this->m_map.map.tile_size.y));
 
-						player_t->on_player_moved = 
+						player_t->on_player_moved =
 							[this, &data] (Vector2 position, Direction direction) {
 								this->on_player_moved(data, position, direction);
 							};
