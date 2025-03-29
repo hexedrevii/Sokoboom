@@ -6,13 +6,15 @@ namespace sokoboom {
 
 class Entity 
 {
-public:
-	Vector2 position = Vector2(0, 0);
-
+protected:
 	Entity(Vector2 position = Vector2(0, 0))
 		: position(position)
 	{
 	}
+
+public:
+	Vector2 position = Vector2(0, 0);
+
 
 	virtual void awake() {}
 

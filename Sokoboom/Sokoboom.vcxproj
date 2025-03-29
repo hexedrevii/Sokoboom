@@ -157,7 +157,6 @@
     <ClInclude Include="Headers\data.hpp" />
     <ClInclude Include="Headers\Entities\goal.hpp" />
     <ClInclude Include="Headers\Entities\player.hpp" />
-    <ClInclude Include="Headers\Entities\player_direction.hpp" />
     <ClInclude Include="Headers\map.hpp" />
     <ClInclude Include="Headers\resource.hpp" />
     <ClInclude Include="Headers\States\end.hpp" />

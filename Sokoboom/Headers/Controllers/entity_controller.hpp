@@ -1,18 +1,19 @@
 #pragma once
 
-#include "../Entities/entity.hpp"
+#include <raylib.h>
 
+#include <functional>
 #include <memory>
 #include <vector>
 
 namespace sokoboom {
 
+class Entity;
+class Player;
+enum class Direction;
+
 class EntityController
 {
-private:
-	std::vector<std::unique_ptr<Entity>> m_entities;
-	std::vector<std::size_t> m_free;
-
 public:
 	template <typename T>
 	struct Handle
@@ -32,20 +33,35 @@ public:
 		explicit Handle(type value) : value(value) {}
 	};
 
-	template <typename Ent>
-	Handle<Ent> add(Vector2 position = Vector2(0, 0))
+private:
+	std::vector<std::unique_ptr<Entity>> m_entities;
+	std::vector<std::size_t> m_free;
+
+	template <typename Ent, typename... Args>
+	Handle<Ent> create(Args&&... args)
 	{
 		if (!this->m_free.empty()) {
 			Handle<Ent> ret(this->m_free.back());
 			this->m_free.pop_back();
-			this->m_entities[ret.value] = std::make_unique<Ent>(position);
+			this->m_entities[ret.value].reset(new Ent(std::forward<Args>(args)...));
 			return ret;
 		}
 
 		Handle<Ent> ret(m_entities.size());
-		m_entities.emplace_back(std::make_unique<Ent>(position));
+		m_entities.emplace_back(new Ent(std::forward<Args>(args)...));
 		return ret;
 	}
+
+public:
+	template <typename Ent>
+	Handle<Ent> add(Vector2 position = Vector2(0, 0))
+	{
+		return this->create<Ent>(position);
+	}
+
+	Handle<Player> addPlayer(
+		std::function<void(Vector2, Direction)> on_player_moved,
+		Vector2 position = Vector2(0, 0));
 
 	template<typename T>
 	void remove()

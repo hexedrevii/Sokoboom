@@ -5,9 +5,10 @@
 
 namespace sokoboom {
 
-Player::Player(Vector2 position)
+Player::Player(std::function<void(Vector2, Direction)> on_player_move, Vector2 position)
 	: Entity(position)
 	, m_sprite(resource.texture2d("Content/Entities/player.png"))
+	, m_on_player_moved(std::move(on_player_move))
 {
 }
 
@@ -20,10 +21,7 @@ void Player::process()
 		this->position.x -= GameData::TILE_SIZE;
 		this->tyler_the_creator++;
 
-		if (this->on_player_moved != nullptr)
-		{
-			this->on_player_moved(this->position, Direction::LEFT);
-		}
+		this->on_move(Direction::left);
 	}
 
 	if (IsKeyPressed(KEY_D))
@@ -31,10 +29,7 @@ void Player::process()
 		this->position.x += GameData::TILE_SIZE;
 		this->tyler_the_creator++;
 
-		if (this->on_player_moved != nullptr)
-		{
-			this->on_player_moved(this->position, Direction::RIGHT);
-		}
+		this->on_move(Direction::right);
 	}
 
 	if (IsKeyPressed(KEY_W))
@@ -42,10 +37,7 @@ void Player::process()
 		this->position.y -= GameData::TILE_SIZE;
 		this->tyler_the_creator++;
 	
-		if (this->on_player_moved != nullptr)
-		{
-			this->on_player_moved(this->position, Direction::UP);
-		}
+		this->on_move(Direction::up);
 	}
 
 	if (IsKeyPressed(KEY_S))
@@ -53,10 +45,7 @@ void Player::process()
 		this->position.y += GameData::TILE_SIZE;
 		this->tyler_the_creator++;
 	
-		if (this->on_player_moved != nullptr)
-		{
-			this->on_player_moved(this->position, Direction::DOWN);
-		}
+		this->on_move(Direction::down);
 	}
 }
 

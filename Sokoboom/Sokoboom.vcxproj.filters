@@ -104,9 +104,6 @@
     <ClInclude Include="Headers\Entities\player.hpp">
       <Filter>Header Files\Entities</Filter>
     </ClInclude>
-    <ClInclude Include="Headers\Entities\player_direction.hpp">
-      <Filter>Header Files\Entities</Filter>
-    </ClInclude>
     <ClInclude Include="Headers\States\settings.hpp">
       <Filter>Header Files\States</Filter>
     </ClInclude>

@@ -5,8 +5,6 @@
 #include "../Entities/box.hpp"
 #include "../Entities/goal.hpp"
 #include "../Entities/player.hpp"
-#include "../Entities/player_direction.hpp"
-#include "../map.hpp"
 #include "state.hpp"
 
 #include <raylib.h>
@@ -37,7 +35,6 @@ private:
 	EntityController m_entities;
 
 	EntityController::Handle<Player> m_player;
-	
 	EntityController::Handle<Box> m_box;
 	EntityController::Handle<Goal> m_goal;
 

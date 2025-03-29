@@ -1,6 +1,16 @@
 #include "../../Headers/Controllers/entity_controller.hpp"
 
+#include "../../Headers/Entities/entity.hpp"
+#include "../../Headers/Entities/player.hpp"
+
 namespace sokoboom {
+
+EntityController::Handle<Player> EntityController::addPlayer(
+	std::function<void(Vector2, Direction)> on_player_moved,
+	Vector2 position)
+{
+	return this->create<Player>(std::move(on_player_moved), position);
+}
 
 void EntityController::process()
 {

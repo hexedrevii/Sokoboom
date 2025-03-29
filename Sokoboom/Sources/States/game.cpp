@@ -1,8 +1,6 @@
 #include "../../Headers/States/game.hpp"
 
 #include "../../Headers/data.hpp"
-#include "../../Headers/States/end.hpp"
-#include "../../Headers/States/menu.hpp"
 #include "../../Headers/utilities.hpp"
 
 #include <raymath.h>
@@ -64,25 +62,25 @@ void Game::on_player_moved(GameData& data, Vector2 position, Direction direction
 	{
 		switch (direction)
 		{
-		case Direction::LEFT:
+		case Direction::left:
 			player.position.x += GameData::TILE_SIZE;
 			player.tyler_the_creator--;
 
 			break;
 
-		case Direction::RIGHT:
+		case Direction::right:
 			player.position.x -= GameData::TILE_SIZE;
 			player.tyler_the_creator--;
 
 			break;
 
-		case Direction::UP:
+		case Direction::up:
 			player.position.y += GameData::TILE_SIZE;
 			player.tyler_the_creator--;
 
 			break;
 
-		case Direction::DOWN:
+		case Direction::down:
 			player.position.y -= GameData::TILE_SIZE;
 			player.tyler_the_creator--;
 
@@ -108,7 +106,7 @@ void Game::on_player_moved(GameData& data, Vector2 position, Direction direction
 		{
 			switch (direction)
 			{
-			case Direction::LEFT:
+			case Direction::left:
 				if (this->m_map.map.get_at_position(utilities::trunc(box_grid.x) - 1, utilities::trunc(box_grid.y), SOLID_LAYER) == SOLID_WALL)
 				{
 					player.position.x += GameData::TILE_SIZE;
@@ -122,7 +120,7 @@ void Game::on_player_moved(GameData& data, Vector2 position, Direction direction
 
 				break;
 
-			case Direction::RIGHT:
+			case Direction::right:
 				if (this->m_map.map.get_at_position(utilities::trunc(box_grid.x) + 1, utilities::trunc(box_grid.y), SOLID_LAYER) == SOLID_WALL)
 				{
 					player.position.x -= GameData::TILE_SIZE;
@@ -136,7 +134,7 @@ void Game::on_player_moved(GameData& data, Vector2 position, Direction direction
 
 				break;
 
-			case Direction::UP:
+			case Direction::up:
 				if (this->m_map.map.get_at_position(utilities::trunc(box_grid.x), utilities::trunc(box_grid.y) - 1, SOLID_LAYER) == SOLID_WALL)
 				{
 					player.position.y += GameData::TILE_SIZE;
@@ -150,7 +148,7 @@ void Game::on_player_moved(GameData& data, Vector2 position, Direction direction
 
 				break;
 
-			case Direction::DOWN:
+			case Direction::down:
 				if (this->m_map.map.get_at_position(utilities::trunc(box_grid.x), utilities::trunc(box_grid.y) + 1, SOLID_LAYER) == SOLID_WALL)
 				{
 					player.position.y -= GameData::TILE_SIZE;
@@ -252,11 +250,12 @@ void Game::awake(GameData& data)
 					} break;
 
 					case PLAYER_ID: {
-						this->m_player = this->m_entities.add<Player>(position);
-						this->m_entities[this->m_player].on_player_moved =
+						this->m_player = this->m_entities.addPlayer(
 							[this, &data] (Vector2 position, Direction direction) {
 								this->on_player_moved(data, position, direction);
-							};
+							},
+							position);
+							
 						this->m_map.map.set_at_position(row, col, i, 0);
 					} break;
 				}
