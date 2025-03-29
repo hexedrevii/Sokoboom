@@ -236,45 +236,29 @@ void Game::awake(GameData& data)
 			{
 				if (layer[row][col] == 0) continue;
 
+				const Vector2 position(
+					row * this->m_map.map.tile_size.x,
+					col * this->m_map.map.tile_size.y);
 				switch (layer[row][col])
 				{
 					case BOX_ID: {
-						std::unique_ptr<Box> box = std::make_unique<Box>(
-							Vector2(
-								row * this->m_map.map.tile_size.x,
-								col * this->m_map.map.tile_size.y));
-
-						this->m_box = box.get();
-						this->m_entities.add(std::move(box));
+						this->m_box = &this->m_entities.add<Box>(position);
 						
 						this->m_map.map.set_at_position(row, col, i, 0);
 					} break;
 
 					case GOAL_ID: {
-						std::unique_ptr<Goal> goal = std::make_unique<Goal>(
-							Vector2(
-								row * this->m_map.map.tile_size.x,
-								col * this->m_map.map.tile_size.y));
-
-						this->m_goal = goal.get();
-						this->m_entities.add(std::move(goal));
+						this->m_goal = &this->m_entities.add<Goal>(position);
 
 						this->m_map.map.set_at_position(row, col, i, 0);
 					} break;
 
 					case PLAYER_ID: {
-						std::unique_ptr<Player> player_t = std::make_unique<Player>(
-							Vector2(
-								row * this->m_map.map.tile_size.x,
-								col * this->m_map.map.tile_size.y));
-
-						player_t->on_player_moved =
+						this->m_player = &this->m_entities.add<Player>(position);
+						this->m_player->on_player_moved =
 							[this, &data] (Vector2 position, Direction direction) {
 								this->on_player_moved(data, position, direction);
 							};
-					
-						this->m_player = player_t.get();
-						this->m_entities.add(std::move(player_t));
 
 						this->m_map.map.set_at_position(row, col, i, 0);
 					} break;

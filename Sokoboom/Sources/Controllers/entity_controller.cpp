@@ -2,11 +2,6 @@
 
 namespace sokoboom {
 
-void EntityController::add(std::unique_ptr<Entity> e)
-{
-	this->m_entities.emplace_back(std::move(e));
-}
-
 void EntityController::process()
 {
 	for (const std::unique_ptr<Entity>& entity : this->m_entities)

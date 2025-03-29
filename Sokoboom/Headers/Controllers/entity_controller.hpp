@@ -13,6 +13,13 @@ private:
 	std::vector<std::unique_ptr<Entity>> m_entities;
 
 public:
+	template <typename Ent>
+	Ent& add(Vector2 position = Vector2(0, 0))
+	{
+		m_entities.emplace_back(std::make_unique<Ent>(position));
+		return static_cast<Ent&>(*m_entities.back());
+	}
+
 	template<typename T>
 	void remove()
 	{
@@ -28,8 +35,6 @@ public:
 			}
 		}
 	}
-
-	void add(std::unique_ptr<Entity> e);
 
 	void process();
 	void render();
