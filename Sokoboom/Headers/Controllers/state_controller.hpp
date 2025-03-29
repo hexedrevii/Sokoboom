@@ -43,9 +43,4 @@ public:
 	void render(GameData& data);
 };
 
-inline Color StateController::colour() const
-{
-	return Fade(BLACK, this->m_opactity);
-}
-
 } // namespace sokoboom

@@ -15,20 +15,16 @@ private:
 	Texture2D m_texture;
 
 public:
-	Box();
+	Box()
+		: Entity(0)
+		, m_texture(resource.texture2d("Content/Entities/box.png"))
+	{
+	}
 
-	void render() override;
+	void render() override
+	{
+		this->m_texture.draw(this->position, WHITE);
+	}
 };
-
-inline Box::Box()
-	: Entity(0)
-	, m_texture(resource.texture2d("Content/Entities/box.png"))
-{
-}
-
-inline void Box::render()
-{
-	this->m_texture.draw(this->position, WHITE);
-}
 
 } // namespace sokoboom

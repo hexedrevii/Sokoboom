@@ -58,37 +58,33 @@ public:
 		);
 	}
 
-	void render();
-	void process(Vector2 mouse);
-	void leave();
-};
-
-inline void Button::process(Vector2 mouse)
-{
-	if (CheckCollisionPointRec(mouse, this->m_bounds))
+	void process(Vector2 mouse)
 	{
-		this->colour = YELLOW;
-		if (IsMouseButtonReleased(MOUSE_BUTTON_LEFT))
+		if (CheckCollisionPointRec(mouse, this->m_bounds))
 		{
-			if (this->on_click != nullptr)
+			this->colour = YELLOW;
+			if (IsMouseButtonReleased(MOUSE_BUTTON_LEFT))
 			{
-				this->on_click(this);
+				if (this->on_click != nullptr)
+				{
+					this->on_click(this);
+				}
 			}
 		}
+		else
+		{
+			this->colour = WHITE;
+		}
 	}
-	else
-	{
-		this->colour = WHITE;
-	}
-}
 
-inline void Button::render()
-{
-	DrawTextPro(
-		resource[this->m_font], this->m_text.c_str(),
-		this->m_position, Vector2Zero(),
-		0, this->m_size, 0.1f, this->colour
-	);
-}
+	void render()
+	{
+		DrawTextPro(
+			resource[this->m_font], this->m_text.c_str(),
+			this->m_position, Vector2Zero(),
+			0, this->m_size, 0.1f, this->colour
+		);
+	}
+};
 
 } // namespace sokoboom

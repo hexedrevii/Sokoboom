@@ -52,6 +52,11 @@ static constexpr State& allocState(State* current, GameState state)
 	utilities::unreachable();
 }
 
+Color StateController::colour() const
+{
+	return Fade(BLACK, this->m_opactity);
+}
+
 void StateController::set(GameState state)
 {
 	this->switching = true;

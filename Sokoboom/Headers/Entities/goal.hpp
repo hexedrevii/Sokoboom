@@ -14,20 +14,16 @@ class Goal : public Entity
 private:
 	Texture2D m_texture;
 public:
-	Goal();
+	Goal()
+		: Entity(0)
+		, m_texture(resource.texture2d("Content/Entities/goal.png"))
+	{
+	}
 
-	void render() override;
+	void render() override
+	{
+		this->m_texture.draw(this->position, WHITE);
+	}
 };
-
-inline Goal::Goal()
-	: Entity(0)
-	, m_texture(resource.texture2d("Content/Entities/goal.png"))
-{
-}
-
-inline void Goal::render()
-{
-	this->m_texture.draw(this->position, WHITE);
-}
 
 } // namespace sokoboom

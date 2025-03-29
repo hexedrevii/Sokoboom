@@ -14,28 +14,25 @@ private:
 
 public:
 	template<typename T>
-	void remove();
+	void remove()
+	{
+		for (const std::unique_ptr<Entity>& entity : this->m_entities)
+		{
+			if (T* out = dynamic_cast<T*>(entity.get()))
+			{
+				this->m_entities.erase(
+					std::find(this->m_entities.begin(), this->m_entities.end(), entity)
+				);
+
+				return;
+			}
+		}
+	}
 
 	void add(std::unique_ptr<Entity> e);
 
 	void process();
 	void render();
 };
-
-template<typename T>
-inline void EntityController::remove()
-{
-	for (const std::unique_ptr<Entity>& entity : this->m_entities)
-	{
-		if (T* out = dynamic_cast<T*>(entity.get()))
-		{
-			this->m_entities.erase(
-				std::find(this->m_entities.begin(), this->m_entities.end(), entity)
-			);
-
-			return;
-		}
-	}
-}
 
 } // namespace sokoboom
