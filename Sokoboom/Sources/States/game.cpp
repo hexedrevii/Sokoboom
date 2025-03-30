@@ -21,56 +21,31 @@ void Game::process_player(GameData& data)
 
 void Game::move_player(GameData& data, Direction direction)
 {
-	bool hit_corner = false;
-	bool hit_box = false;
-
 	const auto heading = toVector(direction);
-	this->m_player.position += heading;
-	this->m_player.tyler_the_creator += 1;
+	const auto player_dst = this->m_player.position + heading;
+	const auto    box_dst = this->m_box   .position + heading;
 
 	// Player hits wall
-	if (this->m_map.map.get_at_position(this->m_player.position, Map::Layer::solid) == Map::CellKind::wall)
+	const bool hit_wall = this->m_map.map.get_at_position(player_dst, Map::Layer::solid) == Map::CellKind::wall;
+
+	// Box moves
+	const bool hit_box = this->m_box_count && player_dst == this->m_box.position;
+	const bool hit_box_wall = hit_box
+		&& this->m_map.map.get_at_position(box_dst, Map::Layer::solid) == Map::CellKind::wall;
+
+	const bool player_moved = !hit_wall && !hit_box_wall;
+	if (player_moved)
 	{
-		switch (direction)
+		auto const box_pos = hit_box ? box_dst : this->m_box.position;
+		this->m_player.position = player_dst;
+		this->m_box   .position = box_pos;
+
+		if (!this->m_finished)
 		{
-		case Direction::left : this->m_player.position.x += 1; break;
-		case Direction::right: this->m_player.position.x -= 1; break;
-		case Direction::up   : this->m_player.position.y += 1; break;
-		case Direction::down : this->m_player.position.y -= 1; break;
-		}
-		this->m_player.tyler_the_creator--;
-
-		hit_corner = true;
-	}
-
-	if (!this->m_finished)
-	{
-		// Box moves
-		if (this->m_player.position == this->m_box.position)
-		{
-			const auto box_dst = this->m_box.position + heading;
-
-			if (this->m_map.map.get_at_position(box_dst, Map::Layer::solid) == Map::CellKind::wall)
-			{
-				this->m_player.position -= heading;
-				this->m_player.tyler_the_creator--;
-
-				hit_box = true;
-			}
-			else
-			{
-				this->m_box.position += heading;
-			}
+			this->m_undos.emplace_back(player_dst, box_pos);
+			this->m_player.tyler_the_creator += 1;
 		}
 
-		if (this->m_player.position != this->m_undos.back().player_position)
-		{
-			this->m_undos.emplace_back(this->m_player.position, this->m_box.position);
-		}
-	}
-
-	if (!hit_box && !hit_corner)
-	{
 		if (!data.mute_sfx && !data.mute_move) this->m_move();
 	}
 
@@ -300,8 +275,8 @@ void Game::render(GameData& /*data*/)
 	DrawRectangle(0, trunc(GameData::GAME_SIZE.y) - GameData::GAP, trunc(GameData::GAME_SIZE.x), GameData::GAP, GRAY);
 
 	this->m_font.draw_text_pro(
-		std::format("{:03} MOVES", this->m_player.tyler_the_creator).c_str(), 
-		Vector2(1, GameData::GAME_SIZE.y - GameData::GAP + 1), 
+		std::format("{:03} MOVES", this->m_player.tyler_the_creator).c_str(),
+		Vector2(1, GameData::GAME_SIZE.y - GameData::GAP + 1),
 		Vector2Zero(), 0, 5.0f, 0.1f, WHITE
 	);
 	
@@ -310,10 +285,7 @@ void Game::render(GameData& /*data*/)
 
 	this->m_font.draw_text_pro(
 		name.c_str(),
-		Vector2(
-			floor(GameData::GAME_SIZE.x - name_dim.x), 
-			floor(GameData::GAME_SIZE.y - GameData::GAP + 1)
-		),
+		Vector2(floor(GameData::GAME_SIZE.x - name_dim.x), floor(GameData::GAME_SIZE.y - GameData::GAP + 1)),
 		Vector2Zero(), 0, 5.0f, 0.1f, WHITE
 	);
 

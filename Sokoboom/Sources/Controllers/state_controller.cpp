@@ -5,8 +5,6 @@
 #include "../../Headers/States/menu.hpp"
 #include "../../Headers/States/settings.hpp"
 
-#include <optional>
-
 namespace sokoboom {
 
 template <typename T>
