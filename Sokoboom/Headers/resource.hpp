@@ -1,12 +1,27 @@
 #pragma once
 #include <raylib.h>
 
-#include <memory>
+#include <cassert>
 #include <string>
 #include <unordered_map>
 #include <vector>
 
 namespace sokoboom {
+
+#define SOKOBOOM_X_RESOURCE_TEXTURES(X)\
+	X(wall  , "Content/Props/wall.png"     )\
+	X(goal  , "Content/Entities/goal.png"  )\
+	X(box   , "Content/Entities/box.png"   )\
+	X(player, "Content/Entities/player.png")
+
+#define SOKOBOOM_X_RESOURCE_FONTS(X)\
+	X(pico8, "Content/pico-8.ttf")
+
+#define SOKOBOOM_X_RESOURCE_SOUNDS(X)\
+	X(move   , "Content/Audio/move.wav"     )\
+	X(next   , "Content/Audio/next.wav"     )\
+	X(explode, "Content/Audio/explosion.wav")\
+	X(click  , "Content/Audio/click.wav"    )
 
 template <typename T, typename Deleter>
 class Owner : private Deleter
@@ -64,7 +79,7 @@ public:
 		  
 			Lacking default construction can be annoying, so maybe relax this in the future. To do that would require
 			making an invalid Handle state*/
-		explicit Handle(type value) : value(value) {}
+		explicit constexpr Handle(type value) noexcept : value(value) {}
 	};
 
 private:
@@ -112,6 +127,55 @@ public:
 	void release(Handle<::Texture2D>) { /*nop*/ }
 	void release(Handle<::Font     >) { /*nop*/ }
 	void release(Handle<::Sound    >) { /*nop*/ }
+
+public:
+	enum class Texture
+	{
+#define X(name, path) name,
+		SOKOBOOM_X_RESOURCE_TEXTURES(X)
+#undef X
+	};
+
+	enum class Font
+	{
+#define X(name, path) name,
+		SOKOBOOM_X_RESOURCE_FONTS(X)
+#undef X
+	};
+
+	enum class Sound
+	{
+#define X(name, path) name,
+		SOKOBOOM_X_RESOURCE_SOUNDS(X)
+#undef X
+	};
+
+	void load_static_resources()
+	{
+		assert(m_textures.empty());
+		assert(m_fonts   .empty());
+		assert(m_sounds  .empty());
+
+#define X(name, path) this->texture2d(path);
+		SOKOBOOM_X_RESOURCE_TEXTURES(X)
+#undef X
+
+#define X(name, path) this->font(path);
+		SOKOBOOM_X_RESOURCE_FONTS(X)
+#undef X
+
+#define X(name, path) this->sound(path);
+		SOKOBOOM_X_RESOURCE_SOUNDS(X)
+#undef X
+	}
+
+	::Texture2D& operator[](Texture x) { return m_textures[std::size_t(x)].get(); }
+	::Font     & operator[](Font    x) { return m_fonts   [std::size_t(x)].get(); }
+	::Sound    & operator[](Sound   x) { return m_sounds  [std::size_t(x)].get(); }
+
+	constexpr Handle<::Texture2D> getHandle(Texture x) const noexcept { return Handle<::Texture2D>(std::size_t(x)); }
+	constexpr Handle<::Font     > getHandle(Font    x) const noexcept { return Handle<::Font     >(std::size_t(x)); }
+	constexpr Handle<::Sound    > getHandle(Sound   x) const noexcept { return Handle<::Sound    >(std::size_t(x)); }
 };
 
 extern Resource resource;

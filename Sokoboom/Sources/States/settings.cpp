@@ -1,6 +1,8 @@
 #include "../../Headers/States/settings.hpp"
 
-#include "../../Headers/States/menu.hpp"
+#include "../../Headers/data.hpp"
+
+#include <json.hpp>
 
 #include <filesystem>
 #include <fstream>
@@ -13,11 +15,11 @@ void Settings::awake(GameData& data)
 	this->m_mute_move = data.mute_move;
 
 	this->m_buttons.emplace_back(
-		this->m_font.get(),
+		resource.getHandle(font),
 		"< BACK", 10.0f,
 		Vector2(1, GameData::GAME_SIZE.y - 11),
 		[this, &data](Button& /*self*/) {
-			if (!this->m_mute_sfx) this->m_click();
+			data.play_click();
 
 			if (std::ofstream f{GetApplicationDirectory() / std::filesystem::path("Content/settings.json")})
 			{
@@ -38,11 +40,11 @@ void Settings::awake(GameData& data)
 	{
 		const auto sfx_text = this->m_mute_sfx ? "UNMUTE SFX" : "MUTE SFX";
 		this->m_buttons.emplace_back(
-			this->m_font.get(),
+			resource.getHandle(font),
 			sfx_text, 5.0f,
 			Vector2(1, 30),
-			[this](Button& self) {
-				if (!this->m_mute_sfx) this->m_click();
+			[this, &data](Button& self) {
+				data.play_click();
 
 				this->m_mute_sfx = !this->m_mute_sfx;
 				self.set_text(this->m_mute_sfx ? "UNMUTE SFX" : "MUTE SFX");
@@ -53,11 +55,11 @@ void Settings::awake(GameData& data)
 	{
 		const auto move_text = this->m_mute_move ? "UNMUTE MOVE" : "MUTE MOVE";
 		this->m_buttons.emplace_back(
-			this->m_font.get(),
+			resource.getHandle(font),
 			move_text, 5.0f,
 			Vector2(1, 37),
-			[this](Button& self) {
-				if (!this->m_mute_sfx) this->m_click();
+			[this, &data](Button& self) {
+				data.play_click();
 
 				this->m_mute_move = !this->m_mute_move;
 				self.set_text(this->m_mute_move ? "UNMUTE MOVE" : "MUTE MOVE");
@@ -81,13 +83,12 @@ void Settings::render(GameData& /*data*/)
 	// Background
 	DrawRectangleV(Vector2Zero(), GameData::GAME_SIZE, Fade(BLACK, 0.8f));
 
-	Vector2 dim = this->m_font.measure_text_ex("SETTINGS", 10.0f, 0.1f);
-	this->m_font.draw_text_pro(
+	auto& fnt = resource[font];
+	Vector2 dim = MeasureTextEx(fnt, "SETTINGS", 10.0f, 0.1f);
+	DrawTextPro(
+		fnt,
 		"SETTINGS",
-		Vector2(
-			(GameData::GAME_SIZE.x - dim.x) / 2,
-			7
-		),
+		Vector2((GameData::GAME_SIZE.x - dim.x) / 2, 7),
 		Vector2Zero(),
 		0, 10.0f, 0.1f, WHITE
 	);

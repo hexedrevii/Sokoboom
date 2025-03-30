@@ -1,7 +1,5 @@
 #pragma once
 
-#include "../Controllers/entity.hpp"
-
 namespace sokoboom {
 
 struct GameData;

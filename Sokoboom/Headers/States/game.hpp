@@ -1,14 +1,15 @@
 #pragma once
 
 #include "../button.hpp"
+#include "../Controllers/entity.hpp"
 #include "../data.hpp"
 #include "state.hpp"
-
-#include <raylib.h>
 
 #include <vector>
 
 namespace sokoboom {
+
+struct GameData;
 
 struct MoveData
 {
@@ -19,34 +20,19 @@ struct MoveData
 class Game : public State
 {
 private:
+	static constexpr Resource::Font font = Resource::Font::pico8;
+
 	int m_ticks = 0;
 
-	Font m_font = resource.font("Content/pico-8.ttf");
-
-	Sound m_move = resource.sound("Content/Audio/move.wav");
-	Sound m_next = resource.sound("Content/Audio/next.wav");
-	Sound m_explode = resource.sound("Content/Audio/explosion.wav");
-
-	Texture2D m_wall = resource.texture2d("Content/Props/wall.png");
 	MapData m_map;
 
-	struct Object : Textured, Position
-	{
-		Object(Resource::Handle<::Texture2D> tex, Map::Position pos = {})
-			: Textured(tex)
-			, Position(pos)
-		{
-		}
-	};
-
-	Object m_goal{resource.texture2d("Content/Entities/goal.png")};
-	Object m_box{resource.texture2d("Content/Entities/box.png")};
+	Position m_goal;
+	Position m_box;
 	std::size_t m_box_count = 0;
 	
-	struct Player : Object, Tyler, Lockable
+	struct Player : Position, Tyler, Lockable
 	{
-		using Object::Object;
-	} m_player {resource.texture2d("Content/Entities/player.png")};
+	} m_player;
 
 	std::vector<MoveData> m_undos; // size() >= 1
 

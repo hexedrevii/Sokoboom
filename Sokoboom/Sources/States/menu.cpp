@@ -13,20 +13,21 @@ namespace sokoboom {
 
 Menu::Menu()
 {
-	SetTextureFilter(resource[this->m_font.get()].texture, TEXTURE_FILTER_POINT); // todo: modified shared resource
+	SetTextureFilter(resource[font].texture, TEXTURE_FILTER_POINT); // todo: modified shared resource
 }
 
 // Build UI here since `this` will be incomplete in Menu::Menu
 void Menu::awake(GameData& data)
 {
+	auto& fnt = resource[font];
 	{
-		const Vector2 play_dim = this->m_font.measure_text_ex("play", 10.0f, 0.1f);
+		const Vector2 play_dim = MeasureTextEx(fnt, "play", 10.0f, 0.1f);
 		this->m_buttons.emplace_back(
-			this->m_font.get(),
+			resource.getHandle(font),
 			"play", 10.0f,
 			Vector2((GameData::GAME_SIZE.x - play_dim.x) / 2, 50),
 			[this, &data](Button& /*self*/) {
-				if (!data.mute_sfx) this->m_click();
+				data.play_click();
 
 				data.state_handler.set(GameState::game);
 			}
@@ -34,13 +35,13 @@ void Menu::awake(GameData& data)
 	}
 
 	{
-		const Vector2 options_dim = this->m_font.measure_text_ex("options", 10.0f, 0.1f);
+		const Vector2 options_dim = MeasureTextEx(fnt, "options", 10.0f, 0.1f);
 		this->m_buttons.emplace_back(
-			this->m_font.get(),
+			resource.getHandle(font),
 			"options", 10.0f,
 			Vector2((GameData::GAME_SIZE.x - options_dim.x) / 2, 60),
 			[this, &data](Button& /*self*/) {
-				if (!data.mute_sfx) this->m_click();
+				data.play_click();
 
 				data.state_handler.set(GameState::settings);
 			}
@@ -48,13 +49,13 @@ void Menu::awake(GameData& data)
 	}
 
 	{
-		const Vector2 exit_dim = this->m_font.measure_text_ex("exit", 10.0f, 0.1f);
+		const Vector2 exit_dim = MeasureTextEx(fnt, "exit", 10.0f, 0.1f);
 		this->m_buttons.emplace_back(
-			this->m_font.get(),
+			resource.getHandle(font),
 			"exit", 10.0f,
 			Vector2((GameData::GAME_SIZE.x - exit_dim.x) / 2, 70),
 			[this, &data](Button& /*self*/) {
-				if (!data.mute_sfx) this->m_click();
+				data.play_click();
 
 				data.exit = true;
 			}
@@ -74,8 +75,10 @@ void Menu::render(GameData& /*data*/)
 {
 	ClearBackground(SKYBLUE);
 
-	Vector2 dim = this->m_font.measure_text_ex("SOKOBOOM", 10.0f, 0.1f);
-	this->m_font.draw_text_pro(
+	auto& fnt = resource[font];
+	Vector2 dim = MeasureTextEx(fnt, "SOKOBOOM", 10.0f, 0.1f);
+	DrawTextPro(
+		fnt,
 		"SOKOBOOM",
 		Vector2((GameData::GAME_SIZE.x - dim.x) / 2, 15),
 		Vector2Zero(),

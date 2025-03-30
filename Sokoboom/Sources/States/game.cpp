@@ -46,7 +46,7 @@ void Game::move_player(GameData& data, Direction direction)
 			this->m_player.tyler_the_creator += 1;
 		}
 
-		if (!data.mute_sfx && !data.mute_move) this->m_move();
+		data.play_move();
 	}
 
 	if (this->m_finished)
@@ -119,9 +119,9 @@ void Game::awake(GameData& data)
 
 	// Pause UI
 	{
-		const Vector2 resume_dim = this->m_font.measure_text_ex("resume", 10.0f, 0.1f);
+		const Vector2 resume_dim = MeasureTextEx(resource[font], "resume", 10.0f, 0.1f);
 		this->m_buttons.emplace_back(
-			this->m_font.get(),
+			resource.getHandle(font),
 			"resume", 10.0f,
 			Vector2((GameData::GAME_SIZE.x - resume_dim.x) / 2, 40),
 			[this](Button& /*self*/) {
@@ -131,9 +131,9 @@ void Game::awake(GameData& data)
 	}
 
 	{
-		const Vector2 menu_dim = this->m_font.measure_text_ex("menu", 10.0f, 0.1f);
+		const Vector2 menu_dim = MeasureTextEx(resource[font], "menu", 10.0f, 0.1f);
 		this->m_buttons.emplace_back(
-			this->m_font.get(),
+			resource.getHandle(font),
 			"menu", 10.0f,
 			Vector2((GameData::GAME_SIZE.x - menu_dim.x) / 2, 50),
 			[this, &data](Button& /*self*/) {
@@ -165,10 +165,7 @@ void Game::process(GameData& data)
 		return;
 	}
 
-	if (!this->m_finished)
-	{
-		this->m_ticks++;
-	}
+	if (!this->m_finished) this->m_ticks++;
 
 #ifndef NDEBUG
 	if (IsKeyPressed(KEY_T))
@@ -246,14 +243,14 @@ void Game::process(GameData& data)
 				this->m_map.map.set_at_position(9, 8, Map::Layer::solid, Map::CellKind::none);
 				this->m_map.map.set_at_position(9, 7, Map::Layer::solid, Map::CellKind::none);
 
-				if (!data.mute_sfx) this->m_explode();
+				data.play_explode();
 
 				return;
 			}
 
 			data.total_moves += this->m_player.tyler_the_creator;
 
-			if (!data.mute_sfx) this->m_next();
+			data.play_next();
 
 			data.active_map_index++;
 			data.state_handler.set(GameState::game);
@@ -267,23 +264,25 @@ void Game::render(GameData& /*data*/)
 {
 	ClearBackground(DARKBLUE);
 
-	this->m_goal  .texture.draw(Vector2(this->m_goal  .position) * GameData::TILE_SIZE, WHITE);
-	if (this->m_box_count) this->m_box   .texture.draw(Vector2(this->m_box   .position) * GameData::TILE_SIZE, WHITE);
-	this->m_player.texture.draw(Vector2(this->m_player.position) * GameData::TILE_SIZE, WHITE);
-	this->m_map.map.draw(this->m_wall.get());
+	DrawTextureV(resource[Resource::Texture::goal], Vector2(this->m_goal.position) * GameData::TILE_SIZE, WHITE);
+	if (this->m_box_count) DrawTextureV(resource[Resource::Texture::box], Vector2(this->m_box.position) * GameData::TILE_SIZE, WHITE);
+	DrawTextureV(resource[Resource::Texture::player], Vector2(this->m_player.position) * GameData::TILE_SIZE, WHITE);
+	this->m_map.map.draw(resource.getHandle(Resource::Texture::wall));
 
 	DrawRectangle(0, trunc(GameData::GAME_SIZE.y) - GameData::GAP, trunc(GameData::GAME_SIZE.x), GameData::GAP, GRAY);
 
-	this->m_font.draw_text_pro(
+	DrawTextPro(
+		resource[font],
 		std::format("{:03} MOVES", this->m_player.tyler_the_creator).c_str(),
 		Vector2(1, GameData::GAME_SIZE.y - GameData::GAP + 1),
 		Vector2Zero(), 0, 5.0f, 0.1f, WHITE
 	);
 	
 	std::string name = std::format("-{}-", this->m_map.name);
-	Vector2 name_dim = this->m_font.measure_text_ex(name.c_str(), 5.0f, 0.1f);
+	Vector2 name_dim = MeasureTextEx(resource[font], name.c_str(), 5.0f, 0.1f);
 
-	this->m_font.draw_text_pro(
+	DrawTextPro(
+		resource[font],
 		name.c_str(),
 		Vector2(floor(GameData::GAME_SIZE.x - name_dim.x), floor(GameData::GAME_SIZE.y - GameData::GAP + 1)),
 		Vector2Zero(), 0, 5.0f, 0.1f, WHITE
@@ -296,8 +295,9 @@ void Game::render(GameData& /*data*/)
 			Fade(BLACK, 0.7f)
 		);
 
-		Vector2 dim = this->m_font.measure_text_ex("PAUSED", 10.0f, 0.1f);
-		this->m_font.draw_text_pro(
+		Vector2 dim = MeasureTextEx(resource[font], "PAUSED", 10.0f, 0.1f);
+		DrawTextPro(
+			resource[font],
 			"PAUSED",
 			Vector2((GameData::GAME_SIZE.x - dim.x) / 2, 5),
 			Vector2Zero(),

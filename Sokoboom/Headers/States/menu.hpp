@@ -4,8 +4,6 @@
 #include "../resource.hpp"
 #include "state.hpp"
 
-#include <raylib.h>
-
 #include <vector>
 
 namespace sokoboom {
@@ -15,8 +13,7 @@ struct GameData;
 class Menu : public State
 {
 private:
-	Font m_font = resource.font("Content/pico-8.ttf");
-	Sound m_click = resource.sound("Content/Audio/click.wav");
+	static constexpr Resource::Font font = Resource::Font::pico8;
 
 	std::vector<Button> m_buttons;
 

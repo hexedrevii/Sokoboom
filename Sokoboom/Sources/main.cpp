@@ -57,6 +57,7 @@ void main()
 
 	InitAudioDevice();
 
+	resource.load_static_resources();
 	GameData data = load_settings("Content/settings.json");
 	load_maps(data); // todo: generalized map loading
 

@@ -1,28 +1,21 @@
 #pragma once
 
 #include "../button.hpp"
-#include "../data.hpp"
 #include "../resource.hpp"
 #include "state.hpp"
 
-#include <json.hpp>
-
-#include <raylib.h>
-#include <raymath.h>
-
-#include <filesystem>
-#include <memory>
 #include <vector>
 
 namespace sokoboom {
 
+struct GameData;
+
 class Settings : public State
 {
 private:
+	static constexpr Resource::Font font = Resource::Font::pico8;
+	
 	std::vector<Button> m_buttons;
-
-	Sound m_click = resource.sound("Content/Audio/click.wav");
-	Font m_font = resource.font("Content/pico-8.ttf");
 
 	// todo: pair with GameData. There's no "commit", so these seem redundant.
 	bool m_mute_move = false;

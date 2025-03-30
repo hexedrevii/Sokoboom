@@ -41,8 +41,6 @@ struct Textured
 struct Position
 {
 	Map::Position position;
-
-	explicit Position(Map::Position position) : position(position) {}
 };
 
 struct Tyler

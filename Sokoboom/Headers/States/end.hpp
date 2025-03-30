@@ -1,23 +1,19 @@
 #pragma once
 
 #include "../button.hpp"
-#include "../data.hpp"
-#include "../utilities.hpp"
+#include "../resource.hpp"
 #include "state.hpp"
 
-#include <raylib.h>
-#include <raymath.h>
-
-#include <filesystem>
-#include <memory>
+#include <vector>
 
 namespace sokoboom {
+
+struct GameData;
 
 class End : public State
 {
 private:
-	Font m_font = resource.font("Content/pico-8.ttf");
-	Sound m_click = resource.sound("Content/Audio/click.wav");
+	static constexpr Resource::Font font = Resource::Font::pico8;
 
 	std::vector<Button> m_buttons;
 
