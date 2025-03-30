@@ -16,9 +16,10 @@ struct MapData
 struct GameData
 {
 	static constexpr int GAP = 7;
-	static constexpr int TILE_SIZE = 8;
+	static constexpr int TILE_SIZE = 8; // todo: conflicts with Map::tile_size
 	static constexpr int MAP_SIZE = 10;
 
+	// todo: conflicts with Map's variable map size
 	static constexpr Vector2 GAME_SIZE = Vector2(TILE_SIZE * MAP_SIZE, TILE_SIZE * MAP_SIZE + GAP);
 
 	bool mute_move = false;

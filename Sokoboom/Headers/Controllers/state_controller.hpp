@@ -22,7 +22,8 @@ enum class GameState
 class StateController
 {
 private:
-	struct Deleter {
+	struct Deleter
+	{
 		void operator()(State* s) { s->~State(); }
 	};
 	using StatePtr = std::unique_ptr<State, Deleter>;
@@ -33,10 +34,9 @@ private:
 
 	float m_speed = 5;
 	float m_opactity = 0;
-public:
-	bool switching = false;
+	bool m_switching = false;
 
-	Color colour() const;
+public:
 	void set(GameState state);
 
 	void process(GameData& data);

@@ -19,13 +19,25 @@ private:
 	Vector2 m_position;
 	Rectangle m_bounds;
 
-	float m_size;
+	float m_size = 0;
+
+	static void nop(Button&) {}
+	std::function<void(Button&)> on_click = nop;
+
 public:
 	Color colour = WHITE;
-	std::function<void(Button*)> on_click;
 
-	Button(Resource::Handle<::Font> font, std::string text, float size, Vector2 pos) : 
-		m_font(font), m_text(text), m_size(size), m_position(pos)
+	Button(
+		Resource::Handle<::Font> font,
+		std::string text,
+		float size,
+		Vector2 pos,
+		std::function<void(Button&)> on_click)
+		: m_font(font)
+		, m_text(std::move(text))
+		, m_position(pos)
+		, m_size(size)
+		, on_click(on_click ? on_click : nop)
 	{
 		Vector2 dim = MeasureTextEx(
 			resource[this->m_font], this->m_text.c_str(),
@@ -45,7 +57,7 @@ public:
 
 	void set_text(std::string new_text)
 	{
-		this->m_text = new_text;
+		this->m_text = std::move(new_text);
 
 		Vector2 dim = MeasureTextEx(
 			resource[this->m_font], this->m_text.c_str(),
@@ -65,10 +77,7 @@ public:
 			this->colour = YELLOW;
 			if (IsMouseButtonReleased(MOUSE_BUTTON_LEFT))
 			{
-				if (this->on_click != nullptr)
-				{
-					this->on_click(this);
-				}
+				this->on_click(*this);
 			}
 		}
 		else

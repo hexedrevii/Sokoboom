@@ -2,14 +2,14 @@
 
 namespace sokoboom::utilities
 {
-	inline int trunc(float x)
+	constexpr int trunc(float x) noexcept
 	{
 		return int(x);
 	}
 
 	// todo: replace with std::unreachable()
 	[[noreturn]]
-	inline void unreachable()
+	constexpr void unreachable() noexcept
 	{
 #ifdef _MSC_VER
 		__assume(false);

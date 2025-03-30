@@ -1,61 +1,46 @@
 #include "../Headers/map.hpp"
 #include "../Headers/utilities.hpp"
 
+#include <json.hpp>
+
 #include <fstream>
-#include <stdexcept>
 
 namespace sokoboom {
 
-Map::Map()
-	: m_wall(resource.texture2d("Content/Props/wall.png"))
+Map::Map(std::filesystem::path path)
 {
+	load(std::move(path));
 }
 
-Map::Map(const std::filesystem::path& path)
-	: m_wall(resource.texture2d("Content/Props/wall.png"))
+void Map::load(std::filesystem::path path)
 {
-	load(path);
+	const auto data = [&path] {
+		std::ifstream file(GetApplicationDirectory() / std::move(path));
+		return nlohmann::json::parse(file);
+	}();
+
+	this->layers = data["layers"];
+	this->tile_size = Vector2(data["tile_x"], data["tile_y"]);
 }
 
-void Map::load(const std::filesystem::path& path)
+void Map::draw(Resource::Handle<::Texture2D> wall)
 {
-	std::filesystem::path full = GetApplicationDirectory() / path;
-	std::ifstream file(full);
-	this->m_data = nlohmann::json::parse(file);
-	file.close();
-
-	this->layers = this->m_data["layers"];
-	this->tile_size = Vector2(this->m_data["tile_x"], this->m_data["tile_y"]);
-}
-
-void Map::draw()
-{
-	for (const std::vector<std::vector<int>>& layer : this->layers)
+	for (const auto& layer : this->layers)
 	{
-		for (size_t row = 0; row < layer.size(); row++)
+		for (std::size_t row = 0, rowSize = layer.size(); row < rowSize; ++row)
 		{
-			for (size_t col = 0; col < layer[row].size(); col++)
+			for (std::size_t col = 0, colSize = layer[row].size(); col < colSize; ++col)
 			{
-				if (layer[row][col] == 0) continue;
+				if (layer[row][col] == CellKind::none) continue;
 
 				DrawTexture(
-					resource[this->m_wall],
+					resource[wall],
 					utilities::trunc(row * this->tile_size.x), utilities::trunc(col * this->tile_size.y),
 					WHITE
 				);
 			}
 		}
 	}
-}
-
-int Map::get_at_position(int x, int y, int layer)
-{
-	return this->layers[layer][x][y];
-}
-
-void Map::set_at_position(int x, int y, int layer, int id)
-{
-	this->layers[layer][x][y] = id;
 }
 
 } // namespace sokoboom

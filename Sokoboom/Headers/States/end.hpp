@@ -16,13 +16,12 @@ namespace sokoboom {
 class End : public State
 {
 private:
-	Font m_font;
-	Sound m_click;
+	Font m_font = resource.font("Content/pico-8.ttf");
+	Sound m_click = resource.sound("Content/Audio/click.wav");
 
 	std::vector<Button> m_buttons;
-public:
-	End();
 
+public:
 	void awake(GameData& data) override;
 	void process(GameData& data) override;
 	void render(GameData& data) override;

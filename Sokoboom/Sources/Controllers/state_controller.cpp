@@ -15,7 +15,7 @@ union Uninit
 	char _;
 	T data;
 
-	Uninit() {}
+	Uninit() : _{} {}
 	~Uninit() {}
 
 	void ctor() { new (this) T(); }
@@ -30,7 +30,7 @@ struct GameStates
 	Uninit<Menu    > menu    ;
 	Uninit<Settings> settings;
 	Uninit<Game    > game1   ;
-	Uninit<Game    > game2   ;
+	Uninit<Game    > game2   ; // todo: get rid of this extra game state (change transition logic)
 	Uninit<End     > end     ;
 } g_gameStates;
 
@@ -52,21 +52,16 @@ static constexpr State& allocState(State* current, GameState state)
 	utilities::unreachable();
 }
 
-Color StateController::colour() const
-{
-	return Fade(BLACK, this->m_opactity);
-}
-
 void StateController::set(GameState state)
 {
-	this->switching = true;
+	this->m_switching = true;
 	this->m_temporary.reset(&allocState(this->m_state.get(), state));
 	assert(this->m_temporary != this->m_state);
 }
 
 void StateController::process(GameData& data)
 {
-	if (this->switching)
+	if (this->m_switching)
 	{
 		if (!this->m_reverse)
 		{
@@ -88,7 +83,7 @@ void StateController::process(GameData& data)
 				this->m_reverse = false;
 				this->m_opactity = 0;
 
-				this->switching = false;
+				this->m_switching = false;
 			}
 		}
 	}
@@ -98,8 +93,12 @@ void StateController::process(GameData& data)
 
 void StateController::render(GameData& data)
 {
-	if (this->m_state == nullptr) return;
-	this->m_state->render(data);
+	if (this->m_state) this->m_state->render(data);
+
+	if ( m_switching )
+	{
+		DrawRectangleV(::Vector2Zero(), GameData::GAME_SIZE, ::Fade(BLACK, this->m_opactity));
+	}
 }
 
 } // namespace sokoboom

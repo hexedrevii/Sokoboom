@@ -12,8 +12,8 @@ namespace sokoboom {
 
 struct MoveData
 {
-	Vector2 player_position;
-	Vector2 box_position;
+	TilePosition player_position;
+	TilePosition box_position;
 };
 
 class Game : public State
@@ -21,17 +21,18 @@ class Game : public State
 private:
 	int m_ticks = 0;
 
-	Font m_font;
+	Font m_font = resource.font("Content/pico-8.ttf");
 
-	Sound m_move;
-	Sound m_next;
-	Sound m_explode;
+	Sound m_move = resource.sound("Content/Audio/move.wav");
+	Sound m_next = resource.sound("Content/Audio/next.wav");
+	Sound m_explode = resource.sound("Content/Audio/explosion.wav");
 
+	Texture2D m_wall = resource.texture2d("Content/Props/wall.png");
 	MapData m_map;
 
 	EntityController m_entities;
 
-	std::vector<MoveData> m_undos;
+	std::vector<MoveData> m_undos; // size() >= 1
 
 	void process_player(GameData& data, Tyler& tyler, PlayerVarying& player);
 	void on_player_moved(GameData& data, Tyler& tyler, PlayerVarying& player, Direction direction);
@@ -47,9 +48,8 @@ private:
 
 	bool m_paused = false;
 	std::vector<Button> m_buttons;
-public:
-	Game();
 
+public:
 	void awake(GameData& data) override;
 	void process(GameData& data) override;
 	void render(GameData& data) override;

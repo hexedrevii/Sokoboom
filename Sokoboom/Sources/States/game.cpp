@@ -10,26 +10,11 @@
 
 namespace sokoboom {
 
-static constexpr int BOX_ID = 2;
-static constexpr int GOAL_ID = 3;
-static constexpr int PLAYER_ID = 4;
-
-static constexpr int SOLID_LAYER = 0;
-static constexpr int SOLID_WALL = 1;
-
-Game::Game()
-	: m_font(resource.font("Content/pico-8.ttf"))
-	, m_move(resource.sound("Content/Audio/move.wav"))
-	, m_next(resource.sound("Content/Audio/next.wav"))
-	, m_explode(resource.sound("Content/Audio/explosion.wav"))
-{
-}
-
 void Game::process_player(GameData& data, Tyler& tyler, PlayerVarying& player)
 {
 	if (IsKeyPressed(KEY_A))
 	{
-		player.position.x -= GameData::TILE_SIZE;
+		player.position.x -= 1;
 		tyler.tyler_the_creator++;
 
 		this->on_player_moved(data, tyler, player, Direction::left);
@@ -37,7 +22,7 @@ void Game::process_player(GameData& data, Tyler& tyler, PlayerVarying& player)
 
 	if (IsKeyPressed(KEY_D))
 	{
-		player.position.x += GameData::TILE_SIZE;
+		player.position.x += 1;
 		tyler.tyler_the_creator++;
 
 		this->on_player_moved(data, tyler, player, Direction::right);
@@ -45,7 +30,7 @@ void Game::process_player(GameData& data, Tyler& tyler, PlayerVarying& player)
 
 	if (IsKeyPressed(KEY_W))
 	{
-		player.position.y -= GameData::TILE_SIZE;
+		player.position.y -= 1;
 		tyler.tyler_the_creator++;
 	
 		this->on_player_moved(data, tyler, player, Direction::up);
@@ -53,7 +38,7 @@ void Game::process_player(GameData& data, Tyler& tyler, PlayerVarying& player)
 
 	if (IsKeyPressed(KEY_S))
 	{
-		player.position.y += GameData::TILE_SIZE;
+		player.position.y += 1;
 		tyler.tyler_the_creator++;
 	
 		this->on_player_moved(data, tyler, player, Direction::down);
@@ -62,16 +47,14 @@ void Game::process_player(GameData& data, Tyler& tyler, PlayerVarying& player)
 
 void Game::on_player_moved(GameData& data, Tyler& tyler, PlayerVarying& player, Direction direction)
 {
-	Vector2 position = player.position;
 	bool hit_corner = false;
 	bool hit_box = false;
-
-	Vector2 player_grid = Vector2Scale(position, 1.0f / GameData::TILE_SIZE);
 
 	if (this->m_finished)
 	{
 		// Reached gate.
-		if (player_grid.x == 9 && (player_grid.y == 8 || player_grid.y == 7))
+		// todo: generalize
+		if (player.position.x == 9 && (player.position.y == 8 || player.position.y == 7))
 		{
 			player.locked = true;
 			data.total_moves += tyler.tyler_the_creator;
@@ -83,33 +66,33 @@ void Game::on_player_moved(GameData& data, Tyler& tyler, PlayerVarying& player, 
 	// Player hits wall
 	if (
 		this->m_map.map.get_at_position(
-			utilities::trunc(player_grid.x), utilities::trunc(player_grid.y),
-			SOLID_LAYER
-		) == SOLID_WALL
+			player.position.x, player.position.y,
+			Map::Layer::solid
+		) == Map::CellKind::wall
 	)
 	{
 		switch (direction)
 		{
 		case Direction::left:
-			player.position.x += GameData::TILE_SIZE;
+			player.position.x += 1;
 			tyler.tyler_the_creator--;
 
 			break;
 
 		case Direction::right:
-			player.position.x -= GameData::TILE_SIZE;
+			player.position.x -= 1;
 			tyler.tyler_the_creator--;
 
 			break;
 
 		case Direction::up:
-			player.position.y += GameData::TILE_SIZE;
+			player.position.y += 1;
 			tyler.tyler_the_creator--;
 
 			break;
 
 		case Direction::down:
-			player.position.y -= GameData::TILE_SIZE;
+			player.position.y -= 1;
 			tyler.tyler_the_creator--;
 
 			break;
@@ -120,87 +103,74 @@ void Game::on_player_moved(GameData& data, Tyler& tyler, PlayerVarying& player, 
 
 	if (!this->m_finished)
 	{
+		// todo: box logic only works for 1 box
 		this->m_entities.boxes.each([&](Textured&, Position& box) {
-			Vector2 box_grid = Vector2Scale(box.position, 1.0f / GameData::TILE_SIZE);
-
 			// Box moves
-			if (player_grid == box_grid)
+			if (player.position == box.position)
 			{
 				switch (direction)
 				{
 				case Direction::left:
-					if (this->m_map.map.get_at_position(utilities::trunc(box_grid.x) - 1, utilities::trunc(box_grid.y), SOLID_LAYER) == SOLID_WALL)
+					if (this->m_map.map.get_at_position(box.position.x - 1, box.position.y, Map::Layer::solid) == Map::CellKind::wall)
 					{
-						player.position.x += GameData::TILE_SIZE;
+						player.position.x += 1;
 						tyler.tyler_the_creator--;
 
 						hit_box = true;
 						break;
 					}
 
-					box.position.x -= GameData::TILE_SIZE;
+					box.position.x -= 1;
 
 					break;
 
 				case Direction::right:
-					if (this->m_map.map.get_at_position(utilities::trunc(box_grid.x) + 1, utilities::trunc(box_grid.y), SOLID_LAYER) == SOLID_WALL)
+					if (this->m_map.map.get_at_position(box.position.x + 1, box.position.y, Map::Layer::solid) == Map::CellKind::wall)
 					{
-						player.position.x -= GameData::TILE_SIZE;
+						player.position.x -= 1;
 						tyler.tyler_the_creator--;
 
 						hit_box = true;
 						break;
 					}
 
-					box.position.x += GameData::TILE_SIZE;
+					box.position.x += 1;
 
 					break;
 
 				case Direction::up:
-					if (this->m_map.map.get_at_position(utilities::trunc(box_grid.x), utilities::trunc(box_grid.y) - 1, SOLID_LAYER) == SOLID_WALL)
+					if (this->m_map.map.get_at_position(box.position.x, box.position.y - 1, Map::Layer::solid) == Map::CellKind::wall)
 					{
-						player.position.y += GameData::TILE_SIZE;
+						player.position.y += 1;
 						tyler.tyler_the_creator--;
 
 						hit_box = true;
 						break;
 					}
 
-					box.position.y -= GameData::TILE_SIZE;
+					box.position.y -= 1;
 
 					break;
 
 				case Direction::down:
-					if (this->m_map.map.get_at_position(utilities::trunc(box_grid.x), utilities::trunc(box_grid.y) + 1, SOLID_LAYER) == SOLID_WALL)
+					if (this->m_map.map.get_at_position(box.position.x, box.position.y + 1, Map::Layer::solid) == Map::CellKind::wall)
 					{
-						player.position.y -= GameData::TILE_SIZE;
+						player.position.y -= 1;
 						tyler.tyler_the_creator--;
 
 						hit_box = true;
 						break;
 					}
 
-					box.position.y += GameData::TILE_SIZE;
+					box.position.y += 1;
 
 					break;
 				}
 			}
 
-			if (this->m_undos.empty())
+			if (player.position != this->m_undos.back().player_position)
 			{
-				this->m_undos.push_back(
-					MoveData(player.position, box.position)
-				);
-			}
-			else
-			{
-				MoveData last = this->m_undos[this->m_undos.size() - 1];
-				if (player.position != last.player_position)
-				{
-					this->m_undos.push_back(
-						MoveData(player.position, box.position)
-					);
-				}
+				this->m_undos.emplace_back(player.position, box.position);
 			}
 		});
 	}
@@ -215,98 +185,82 @@ void Game::undo()
 {
 	if (this->m_finished) return;
 
-	if (!this->m_undos.empty())
-	{
-		std::size_t last_idx = this->m_undos.size() - 1;
-		MoveData last = this->m_undos[last_idx];
+	MoveData last = this->m_undos.back();
 
-		// todo: these don't make any sense. Just obeying strict rewrites until this is resolved later
-		this->m_entities.players.each([x = last.player_position](PlayerShared&, PlayerVarying& player) { player.position = x; });
-		this->m_entities.boxes  .each([x = last.box_position   ](Textured    &, Position     & box   ) { box   .position = x; });
+	// todo: undo only works for 1 player 1 box
+	this->m_entities.players.each([x = last.player_position](PlayerShared&, PlayerVarying& player) { player.position = x; });
+	this->m_entities.boxes  .each([x = last.box_position   ](Textured    &, Position     & box   ) { box   .position = x; });
 
-		if (this->m_undos.size() > 1)
-		{
-			this->m_undos.erase(this->m_undos.begin() + last_idx);
-		}
-	}
+	if (this->m_undos.size() > 1) this->m_undos.pop_back();
 }
 
 void Game::awake(GameData& data)
 {
 	this->m_map = data.maps[data.active_map_index];
-	for (int i = 0; i < this->m_map.map.layers.size(); i++)
+	for (std::size_t layerIdx = 0, layerSize = this->m_map.map.layers.size(); layerIdx < layerSize; ++layerIdx)
 	{
-		std::vector<std::vector<int>> layer = this->m_map.map.layers[i];
+		auto& layer = this->m_map.map.layers[layerIdx];
 
-		for (int row = 0; row < layer.size(); row++)
+		for (std::size_t row = 0, rowSize = layer.size(); row < rowSize; ++row)
 		{
-			for (int col = 0; col < layer[row].size(); col++)
+			for (std::size_t col = 0, colSize = layer[row].size(); col < colSize; ++col)
 			{
-				if (layer[row][col] == 0) continue;
+				if (layer[row][col] == Map::CellKind::none) continue;
 
-				const Vector2 position(
-					row * this->m_map.map.tile_size.x,
-					col * this->m_map.map.tile_size.y);
+				const TilePosition position(row, col);
 				switch (layer[row][col])
 				{
-					case BOX_ID: {
+					case Map::CellKind::box: {
 						this->m_entities.boxes.add(position);
-						this->m_map.map.set_at_position(row, col, i, 0);
+						this->m_map.map.set_at_position(position, layerIdx, Map::CellKind::none);
 					} break;
 
-					case GOAL_ID: {
+					case Map::CellKind::goal: {
 						this->m_entities.goals.add(position);
-						this->m_map.map.set_at_position(row, col, i, 0);
+						this->m_map.map.set_at_position(position, layerIdx, Map::CellKind::none);
 					} break;
 
-					case PLAYER_ID: {
+					case Map::CellKind::player: {
 						this->m_entities.players.add(position);
-						this->m_map.map.set_at_position(row, col, i, 0);
+						this->m_map.map.set_at_position(position, layerIdx, Map::CellKind::none);
 					} break;
 				}
 			}
 		}
 	}
 
+	// todo: undo only works for 1 player 1 box
 	this->m_undos.emplace_back();
 	this->m_entities.players.each([&m = this->m_undos.back()](PlayerShared&, PlayerVarying& player) { m.player_position = player.position; });
 	this->m_entities.boxes  .each([&m = this->m_undos.back()](Textured    &, Position     & box   ) { m.box_position    = box   .position; });
 
 	// Pause UI
-	Vector2 resume_dim = this->m_font.measure_text_ex("resume", 10.0f, 0.1f);
-	Button resume = Button(
-		this->m_font.get(),
-		"resume", 10.0f,
-		Vector2(
-			(GameData::GAME_SIZE.x - resume_dim.x) / 2,
-			40
-		)
-	);
+	{
+		const Vector2 resume_dim = this->m_font.measure_text_ex("resume", 10.0f, 0.1f);
+		this->m_buttons.emplace_back(
+			this->m_font.get(),
+			"resume", 10.0f,
+			Vector2((GameData::GAME_SIZE.x - resume_dim.x) / 2, 40),
+			[this](Button& /*self*/) {
+				this->m_paused = false;
+			}
+		);
+	}
 
-	resume.on_click = [this](Button* /*self*/) {
-		this->m_paused = false;
-	};
+	{
+		const Vector2 menu_dim = this->m_font.measure_text_ex("menu", 10.0f, 0.1f);
+		this->m_buttons.emplace_back(
+			this->m_font.get(),
+			"menu", 10.0f,
+			Vector2((GameData::GAME_SIZE.x - menu_dim.x) / 2, 50),
+			[this, &data](Button& /*self*/) {
+				data.active_map_index = 0;
+				data.total_moves = 0;
 
-	this->m_buttons.push_back(resume);
-
-	Vector2 menu_dim = this->m_font.measure_text_ex("menu", 10.0f, 0.1f);
-	Button menu = Button(
-		this->m_font.get(),
-		"menu", 10.0f,
-		Vector2(
-			(GameData::GAME_SIZE.x - menu_dim.x) / 2,
-			50
-		)
-	);
-
-	menu.on_click = [this, &data](Button* /*self*/) {
-		data.active_map_index = 0;
-		data.total_moves = 0;
-
-		data.state_handler.set(GameState::menu);
-	};
-
-	this->m_buttons.push_back(menu);
+				data.state_handler.set(GameState::menu);
+			}
+		);
+	}
 }
 
 void Game::process(GameData& data)
@@ -331,6 +285,7 @@ void Game::process(GameData& data)
 		this->m_ticks++;
 	}
 
+	// todo: there's only 1 player
 	this->m_entities.players.each(
 		[this, &data](PlayerShared& shared, PlayerVarying& player) {
 			if (!player.locked) this->process_player(data, shared, player);
@@ -353,11 +308,9 @@ void Game::process(GameData& data)
 		{
 			// Remove the last stored movement if its the same position.
 			this->m_entities.players.each([&undos = this->m_undos](PlayerShared&, PlayerVarying& player) {
-				std::size_t last_idx = undos.size() - 1;
-				MoveData last = undos[last_idx];
-				if (undos.size() > 1 && player.position == last.player_position)
+				if (undos.size() > 1 && player.position == undos.back().player_position)
 				{
-					undos.erase(undos.begin() + last_idx);
+					undos.pop_back();
 				}
 			});
 
@@ -386,21 +339,17 @@ void Game::process(GameData& data)
 		}
 	}
 
+	// todo: this whole ticks counter thing doens't make any sense
 	if (this->m_ticks == 30 && !this->m_finished)
 	{
 		this->m_ticks = 0;
 
 		if (!this->m_switched)
 		{
+			// todo: very awkward because this logic doesn't make sense for general number of objects
 			this->m_entities.visitTylerBoxGoal(
 				[this, &data](Tyler& tyler, Position& box, Position& goal) {
-					if (
-						Vector2Scale(box.position, 1.0f / GameData::TILE_SIZE)
-						!=
-						Vector2Scale(goal.position, 1.0f / GameData::TILE_SIZE))
-					{
-						return;
-					}
+					if (box.position != goal.position) return;
 
 					// The end
 					if (data.active_map_index == 11)
@@ -411,8 +360,8 @@ void Game::process(GameData& data)
 						this->m_finished = true;
 
 						// Gate
-						this->m_map.map.set_at_position(9, 8, 0, 0);
-						this->m_map.map.set_at_position(9, 7, 0, 0);
+						this->m_map.map.set_at_position(9, 8, Map::Layer::solid, Map::CellKind::none);
+						this->m_map.map.set_at_position(9, 7, Map::Layer::solid, Map::CellKind::none);
 
 						if (!data.mute_sfx) this->m_explode();
 
@@ -435,10 +384,10 @@ void Game::render(GameData& /*data*/)
 {
 	ClearBackground(DARKBLUE);
 
-	this->m_entities.goals  .each([](Textured& tex, Position& p) { tex.texture.draw(p.position, WHITE); });
-	this->m_entities.boxes  .each([](Textured& tex, Position& p) { tex.texture.draw(p.position, WHITE); });
-	this->m_entities.players.each([](Textured& tex, Position& p) { tex.texture.draw(p.position, WHITE); });
-	this->m_map.map.draw();
+	this->m_entities.goals  .each([](Textured& tex, Position& p) { tex.texture.draw(Vector2(p.position) * GameData::TILE_SIZE, WHITE); });
+	this->m_entities.boxes  .each([](Textured& tex, Position& p) { tex.texture.draw(Vector2(p.position) * GameData::TILE_SIZE, WHITE); });
+	this->m_entities.players.each([](Textured& tex, Position& p) { tex.texture.draw(Vector2(p.position) * GameData::TILE_SIZE, WHITE); });
+	this->m_map.map.draw(this->m_wall.get());
 
 	this->m_entities.players.each([this](PlayerShared& shared, PlayerVarying& /*player*/) {
 		DrawRectangle(
@@ -474,10 +423,7 @@ void Game::render(GameData& /*data*/)
 		Vector2 dim = this->m_font.measure_text_ex("PAUSED", 10.0f, 0.1f);
 		this->m_font.draw_text_pro(
 			"PAUSED",
-			Vector2(
-				(GameData::GAME_SIZE.x - dim.x) / 2,
-				5
-			),
+			Vector2((GameData::GAME_SIZE.x - dim.x) / 2, 5),
 			Vector2Zero(),
 			0, 10.0f, 0.1f, WHITE
 		);

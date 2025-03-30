@@ -1,5 +1,6 @@
 #pragma once
 
+#include "../map.hpp"
 #include "../resource.hpp"
 
 #include <raylib.h>
@@ -23,7 +24,7 @@ struct Group
 	std::vector<Varying> varying;
 
 	template <typename... Args>
-	Group(Args&&... args)
+	explicit Group(Args&&... args)
 		: shared(std::forward<Args>(args)...)
 	{
 	}
@@ -51,9 +52,9 @@ struct Textured
 
 struct Position
 {
-	Vector2 position;
+	TilePosition position;
 
-	Position(Vector2 position) : position(position) {}
+	explicit Position(TilePosition position) : position(position) {}
 };
 
 struct Tyler
@@ -76,9 +77,10 @@ struct PlayerShared : Textured, Tyler
 
 struct PlayerVarying : Lockable, Position
 {
-	PlayerVarying(Vector2 position) : Position(position) {}
+	PlayerVarying(TilePosition position) : Position(position) {}
 };
 
+// todo: this whole things essentially makes no sense, since there's only 1 element in each group
 struct EntityController
 {
 	Group<Textured, Position> goals;
@@ -92,6 +94,7 @@ struct EntityController
 	{
 	}
 
+	// todo: awkward. Rewrite
 	template <typename Fn>
 	void visitTylerBoxGoal(Fn&& fn)
 	{

@@ -6,34 +6,22 @@
 
 namespace sokoboom {
 
-End::End()
-	: m_font(resource.font("Content/pico-8.ttf"))
-	, m_click(resource.sound("Content/Audio/click.wav"))
-{
-}
-
 void End::awake(GameData& data)
 {
-	Vector2 menu_dim = this->m_font.measure_text_ex("menu", 10.0f, 0.1f);
-	Button menu = Button(
+	const Vector2 menu_dim = this->m_font.measure_text_ex("menu", 10.0f, 0.1f);
+	this->m_buttons.emplace_back(
 		this->m_font.get(),
 		"menu", 10.0f,
-		Vector2(
-			(GameData::GAME_SIZE.x - menu_dim.x) / 2,
-			70
-		)
+		Vector2((GameData::GAME_SIZE.x - menu_dim.x) / 2, 70),
+		[this, &data](Button& /*self*/) {
+			if (!data.mute_sfx) this->m_click();
+
+			data.active_map_index = 0;
+			data.total_moves = 0;
+
+			data.state_handler.set(GameState::menu);
+		}
 	);
-
-	menu.on_click = [this, &data](Button* /*self*/) {
-		if (!data.mute_sfx) this->m_click();
-
-		data.active_map_index = 0;
-		data.total_moves = 0;
-
-		data.state_handler.set(GameState::menu);
-	};
-
-	this->m_buttons.push_back(menu);
 }
 
 void End::process(GameData& data)

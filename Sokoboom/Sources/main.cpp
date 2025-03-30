@@ -6,13 +6,48 @@
 #include <raylib.h>
 #include <raymath.h>
 
+#include <json.hpp>
+
+#include <cmath>
 #include <fstream>
 #include <iostream>
-#include <cmath>
 
 namespace sokoboom {
 
+// todo: global for now. Can always inject Resource& into every State that requires resources
 Resource resource;
+
+GameData load_settings(const char* path)
+{
+	GameData ret;
+	if (std::ifstream f{GetApplicationDirectory() / std::filesystem::path(path)})
+	{
+		nlohmann::json json = nlohmann::json::parse(f);
+
+		ret.mute_sfx = json["mute_sfx"];
+		ret.mute_move = json["mute_move"];
+	}
+
+	return ret;
+}
+
+void load_maps(GameData& data)
+{
+	data.maps.push_back(MapData("INTRO", Map("Content/Maps/intro.p8m")));
+
+	data.maps.push_back(MapData("1" , Map("Content/Maps/one.p8m")));
+	data.maps.push_back(MapData("2" , Map("Content/Maps/two.p8m")));
+	data.maps.push_back(MapData("3" , Map("Content/Maps/three.p8m")));
+	data.maps.push_back(MapData("4" , Map("Content/Maps/four.p8m")));
+	data.maps.push_back(MapData("5" , Map("Content/Maps/five.p8m")));
+	data.maps.push_back(MapData("6" , Map("Content/Maps/six.p8m")));
+	data.maps.push_back(MapData("7" , Map("Content/Maps/seven.p8m")));
+	data.maps.push_back(MapData("8" , Map("Content/Maps/eight.p8m")));
+	data.maps.push_back(MapData("9" , Map("Content/Maps/nine.p8m")));
+	data.maps.push_back(MapData("10", Map("Content/Maps/ten.p8m")));
+
+	data.maps.push_back(MapData("END", Map("Content/Maps/the_end.p8m")));
+}
 
 void main()
 {
@@ -22,36 +57,8 @@ void main()
 
 	InitAudioDevice();
 
-	GameData data;
-
-	// Load settings
-	std::filesystem::path path = GetApplicationDirectory() / std::filesystem::path("Content/settings.json");
-	std::ifstream f(path);
-	if (f.is_open())
-	{
-		nlohmann::json json = nlohmann::json::parse(f);
-
-		data.mute_sfx = json["mute_sfx"];
-		data.mute_move = json["mute_move"];
-
-		f.close();
-	}
-
-	// Create maps
-	data.maps.push_back(MapData("INTRO", Map(std::filesystem::path("Content/Maps/intro.p8m"))));
-
-	data.maps.push_back(MapData("1", Map(std::filesystem::path("Content/Maps/one.p8m"))));
-	data.maps.push_back(MapData("2", Map(std::filesystem::path("Content/Maps/two.p8m"))));
-	data.maps.push_back(MapData("3", Map(std::filesystem::path("Content/Maps/three.p8m"))));
-	data.maps.push_back(MapData("4", Map(std::filesystem::path("Content/Maps/four.p8m"))));
-	data.maps.push_back(MapData("5", Map(std::filesystem::path("Content/Maps/five.p8m"))));
-	data.maps.push_back(MapData("6", Map(std::filesystem::path("Content/Maps/six.p8m"))));
-	data.maps.push_back(MapData("7", Map(std::filesystem::path("Content/Maps/seven.p8m"))));
-	data.maps.push_back(MapData("8", Map(std::filesystem::path("Content/Maps/eight.p8m"))));
-	data.maps.push_back(MapData("9", Map(std::filesystem::path("Content/Maps/nine.p8m"))));
-	data.maps.push_back(MapData("10", Map(std::filesystem::path("Content/Maps/ten.p8m"))));
-
-	data.maps.push_back(MapData("END", Map(std::filesystem::path("Content/Maps/the_end.p8m"))));
+	GameData data = load_settings("Content/settings.json");
+	load_maps(data); // todo: generalized map loading
 
 	data.state_handler.set(GameState::menu);
 
@@ -69,38 +76,28 @@ void main()
 		if (WindowShouldClose())
 		{
 			data.exit = true;
-			continue;
+			break;
 		}
 
 		// Screen scale
-		float scale = fmin(
+		const float scale = fmin(
 			GetScreenWidth() / GameData::GAME_SIZE.x,
 			GetScreenHeight() / GameData::GAME_SIZE.y
 		);
 
-		Vector2 mouse = GetMousePosition();
-		Vector2 unclamped = Vector2(
+		const Vector2 mouse = GetMousePosition();
+		const Vector2 unclamped = Vector2(
 			(mouse.x - (GetScreenWidth() - (GameData::GAME_SIZE.x * scale)) * 0.5f) / scale,
 			(mouse.y - (GetScreenHeight() - (GameData::GAME_SIZE.y * scale)) * 0.5f) / scale
 		);
 
-		data.virtual_mouse = Vector2(
-			Vector2Clamp(
-				unclamped,
-				Vector2Zero(), GameData::GAME_SIZE
-			)
-		);
+		data.virtual_mouse = Vector2Clamp(unclamped, Vector2Zero(), GameData::GAME_SIZE);
 
 		data.state_handler.process(data);
 
 		BeginTextureMode(renderer);
 		{
 			data.state_handler.render(data);
-
-			if (data.state_handler.switching)
-			{
-				DrawRectangleV(Vector2Zero(), GameData::GAME_SIZE, data.state_handler.colour());
-			}
 		}
 		EndTextureMode();
 
@@ -111,7 +108,7 @@ void main()
 			// Fucked up screen scaling calculations
 			DrawTexturePro(
 				renderer.texture,
-				Rectangle(0, 0, (float)renderer.texture.width, (float)-renderer.texture.height),
+				Rectangle(0, 0, float(renderer.texture.width), float(-renderer.texture.height)),
 				Rectangle(
 					(GetScreenWidth() - (GameData::GAME_SIZE.x * scale)) * 0.5f,
 					(GetScreenHeight() - (GameData::GAME_SIZE.y * scale)) * 0.5f,

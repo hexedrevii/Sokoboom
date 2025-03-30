@@ -15,10 +15,11 @@ struct GameData;
 class Menu : public State
 {
 private:
-	Font m_font;
-	Sound m_click;
+	Font m_font = resource.font("Content/pico-8.ttf");
+	Sound m_click = resource.sound("Content/Audio/click.wav");
 
 	std::vector<Button> m_buttons;
+
 public:
 	Menu();
 
