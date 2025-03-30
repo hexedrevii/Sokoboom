@@ -7,15 +7,15 @@
 
 namespace sokoboom {
 
-Map::Map(std::filesystem::path path)
+Map::Map(const char* path)
 {
-	load(std::move(path));
+	load(path);
 }
 
-void Map::load(std::filesystem::path path)
+void Map::load(const char* path)
 {
 	const auto data = [&path] {
-		std::ifstream file(GetApplicationDirectory() / std::move(path));
+		std::ifstream file(GetApplicationDirectory() / std::filesystem::path(path));
 		return nlohmann::json::parse(file);
 	}();
 
@@ -35,7 +35,7 @@ void Map::draw(Resource::Handle<::Texture2D> wall)
 
 				DrawTexture(
 					resource[wall],
-					utilities::trunc(row * this->tile_size.x), utilities::trunc(col * this->tile_size.y),
+					trunc(row * this->tile_size.x), trunc(col * this->tile_size.y),
 					WHITE
 				);
 			}

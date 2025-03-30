@@ -71,7 +71,7 @@
     <ClInclude Include="Headers\States\end.hpp">
       <Filter>Header Files\States</Filter>
     </ClInclude>
-    <ClInclude Include="Headers\Controllers\entity_controller.hpp">
+    <ClInclude Include="Headers\Controllers\entity.hpp">
       <Filter>Header Files\Controllers</Filter>
     </ClInclude>
     <ClInclude Include="Headers\States\game.hpp">

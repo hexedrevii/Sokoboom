@@ -12,8 +12,8 @@ namespace sokoboom {
 
 struct MoveData
 {
-	TilePosition player_position;
-	TilePosition box_position;
+	Map::Position player_position;
+	Map::Position box_position;
 };
 
 class Game : public State
@@ -30,12 +30,28 @@ private:
 	Texture2D m_wall = resource.texture2d("Content/Props/wall.png");
 	MapData m_map;
 
-	EntityController m_entities;
+	struct Object : Textured, Position
+	{
+		Object(Resource::Handle<::Texture2D> tex, Map::Position pos = {})
+			: Textured(tex)
+			, Position(pos)
+		{
+		}
+	};
+
+	Object m_goal{resource.texture2d("Content/Entities/goal.png")};
+	Object m_box{resource.texture2d("Content/Entities/box.png")};
+	std::size_t m_box_count = 0;
+	
+	struct Player : Object, Tyler, Lockable
+	{
+		using Object::Object;
+	} m_player {resource.texture2d("Content/Entities/player.png")};
 
 	std::vector<MoveData> m_undos; // size() >= 1
 
-	void process_player(GameData& data, Tyler& tyler, PlayerVarying& player);
-	void on_player_moved(GameData& data, Tyler& tyler, PlayerVarying& player, Direction direction);
+	void process_player(GameData& data);
+	void move_player(GameData& data, Direction direction);
 
 	bool m_switched = false;
 

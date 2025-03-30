@@ -148,7 +148,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Headers\button.hpp" />
-    <ClInclude Include="Headers\Controllers\entity_controller.hpp" />
+    <ClInclude Include="Headers\Controllers\entity.hpp" />
     <ClInclude Include="Headers\Controllers\state_controller.hpp" />
     <ClInclude Include="Headers\data.hpp" />
     <ClInclude Include="Headers\map.hpp" />

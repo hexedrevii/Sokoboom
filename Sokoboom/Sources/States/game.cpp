@@ -5,179 +5,86 @@
 
 #include <raymath.h>
 
+#include <cassert>
 #include <cmath>
 #include <format>
 
 namespace sokoboom {
 
-void Game::process_player(GameData& data, Tyler& tyler, PlayerVarying& player)
+void Game::process_player(GameData& data)
 {
-	if (IsKeyPressed(KEY_A))
-	{
-		player.position.x -= 1;
-		tyler.tyler_the_creator++;
-
-		this->on_player_moved(data, tyler, player, Direction::left);
-	}
-
-	if (IsKeyPressed(KEY_D))
-	{
-		player.position.x += 1;
-		tyler.tyler_the_creator++;
-
-		this->on_player_moved(data, tyler, player, Direction::right);
-	}
-
-	if (IsKeyPressed(KEY_W))
-	{
-		player.position.y -= 1;
-		tyler.tyler_the_creator++;
-	
-		this->on_player_moved(data, tyler, player, Direction::up);
-	}
-
-	if (IsKeyPressed(KEY_S))
-	{
-		player.position.y += 1;
-		tyler.tyler_the_creator++;
-	
-		this->on_player_moved(data, tyler, player, Direction::down);
-	}
+	if (IsKeyPressed(KEY_A)) this->move_player(data, Direction::left );
+	if (IsKeyPressed(KEY_D)) this->move_player(data, Direction::right);
+	if (IsKeyPressed(KEY_W)) this->move_player(data, Direction::up   );
+	if (IsKeyPressed(KEY_S)) this->move_player(data, Direction::down );
 }
 
-void Game::on_player_moved(GameData& data, Tyler& tyler, PlayerVarying& player, Direction direction)
+void Game::move_player(GameData& data, Direction direction)
 {
 	bool hit_corner = false;
 	bool hit_box = false;
 
-	if (this->m_finished)
-	{
-		// Reached gate.
-		// todo: generalize
-		if (player.position.x == 9 && (player.position.y == 8 || player.position.y == 7))
-		{
-			player.locked = true;
-			data.total_moves += tyler.tyler_the_creator;
-
-			data.state_handler.set(GameState::end);
-		}
-	}
+	const auto heading = toVector(direction);
+	this->m_player.position += heading;
+	this->m_player.tyler_the_creator += 1;
 
 	// Player hits wall
-	if (
-		this->m_map.map.get_at_position(
-			player.position.x, player.position.y,
-			Map::Layer::solid
-		) == Map::CellKind::wall
-	)
+	if (this->m_map.map.get_at_position(this->m_player.position, Map::Layer::solid) == Map::CellKind::wall)
 	{
 		switch (direction)
 		{
-		case Direction::left:
-			player.position.x += 1;
-			tyler.tyler_the_creator--;
-
-			break;
-
-		case Direction::right:
-			player.position.x -= 1;
-			tyler.tyler_the_creator--;
-
-			break;
-
-		case Direction::up:
-			player.position.y += 1;
-			tyler.tyler_the_creator--;
-
-			break;
-
-		case Direction::down:
-			player.position.y -= 1;
-			tyler.tyler_the_creator--;
-
-			break;
+		case Direction::left : this->m_player.position.x += 1; break;
+		case Direction::right: this->m_player.position.x -= 1; break;
+		case Direction::up   : this->m_player.position.y += 1; break;
+		case Direction::down : this->m_player.position.y -= 1; break;
 		}
+		this->m_player.tyler_the_creator--;
 
 		hit_corner = true;
 	}
 
 	if (!this->m_finished)
 	{
-		// todo: box logic only works for 1 box
-		this->m_entities.boxes.each([&](Textured&, Position& box) {
-			// Box moves
-			if (player.position == box.position)
+		// Box moves
+		if (this->m_player.position == this->m_box.position)
+		{
+			const auto box_dst = this->m_box.position + heading;
+
+			if (this->m_map.map.get_at_position(box_dst, Map::Layer::solid) == Map::CellKind::wall)
 			{
-				switch (direction)
-				{
-				case Direction::left:
-					if (this->m_map.map.get_at_position(box.position.x - 1, box.position.y, Map::Layer::solid) == Map::CellKind::wall)
-					{
-						player.position.x += 1;
-						tyler.tyler_the_creator--;
+				this->m_player.position -= heading;
+				this->m_player.tyler_the_creator--;
 
-						hit_box = true;
-						break;
-					}
-
-					box.position.x -= 1;
-
-					break;
-
-				case Direction::right:
-					if (this->m_map.map.get_at_position(box.position.x + 1, box.position.y, Map::Layer::solid) == Map::CellKind::wall)
-					{
-						player.position.x -= 1;
-						tyler.tyler_the_creator--;
-
-						hit_box = true;
-						break;
-					}
-
-					box.position.x += 1;
-
-					break;
-
-				case Direction::up:
-					if (this->m_map.map.get_at_position(box.position.x, box.position.y - 1, Map::Layer::solid) == Map::CellKind::wall)
-					{
-						player.position.y += 1;
-						tyler.tyler_the_creator--;
-
-						hit_box = true;
-						break;
-					}
-
-					box.position.y -= 1;
-
-					break;
-
-				case Direction::down:
-					if (this->m_map.map.get_at_position(box.position.x, box.position.y + 1, Map::Layer::solid) == Map::CellKind::wall)
-					{
-						player.position.y -= 1;
-						tyler.tyler_the_creator--;
-
-						hit_box = true;
-						break;
-					}
-
-					box.position.y += 1;
-
-					break;
-				}
+				hit_box = true;
 			}
-
-			if (player.position != this->m_undos.back().player_position)
+			else
 			{
-				this->m_undos.emplace_back(player.position, box.position);
+				this->m_box.position += heading;
 			}
-		});
+		}
+
+		if (this->m_player.position != this->m_undos.back().player_position)
+		{
+			this->m_undos.emplace_back(this->m_player.position, this->m_box.position);
+		}
 	}
 
 	if (!hit_box && !hit_corner)
 	{
 		if (!data.mute_sfx && !data.mute_move) this->m_move();
+	}
+
+	if (this->m_finished)
+	{
+		// Reached gate.
+		// todo: generalize
+		if (this->m_player.position.x == 9 && (this->m_player.position.y == 8 || this->m_player.position.y == 7))
+		{
+			this->m_player.locked = true;
+			data.total_moves += this->m_player.tyler_the_creator;
+
+			data.state_handler.set(GameState::end);
+		}
 	}
 }
 
@@ -186,10 +93,8 @@ void Game::undo()
 	if (this->m_finished) return;
 
 	MoveData last = this->m_undos.back();
-
-	// todo: undo only works for 1 player 1 box
-	this->m_entities.players.each([x = last.player_position](PlayerShared&, PlayerVarying& player) { player.position = x; });
-	this->m_entities.boxes  .each([x = last.box_position   ](Textured    &, Position     & box   ) { box   .position = x; });
+	this->m_player.position = last.player_position;
+	this->m_box   .position = last.box_position   ;
 
 	if (this->m_undos.size() > 1) this->m_undos.pop_back();
 }
@@ -197,42 +102,45 @@ void Game::undo()
 void Game::awake(GameData& data)
 {
 	this->m_map = data.maps[data.active_map_index];
+
+	std::size_t goals = 0;
+	std::size_t boxes = 0;
+	std::size_t players = 0;
 	for (std::size_t layerIdx = 0, layerSize = this->m_map.map.layers.size(); layerIdx < layerSize; ++layerIdx)
 	{
 		auto& layer = this->m_map.map.layers[layerIdx];
+		auto& map = this->m_map.map;
 
-		for (std::size_t row = 0, rowSize = layer.size(); row < rowSize; ++row)
+		Map::Position pos;
+		const int rowSize = shrink(layer.size());
+		for (pos.x = 0; pos.x < rowSize; ++pos.x)
 		{
-			for (std::size_t col = 0, colSize = layer[row].size(); col < colSize; ++col)
+			const int colSize = shrink(layer[pos.x].size());
+			for (pos.y = 0; pos.y < colSize; ++pos.y)
 			{
-				if (layer[row][col] == Map::CellKind::none) continue;
-
-				const TilePosition position(row, col);
-				switch (layer[row][col])
+				switch (map.get_at_position(pos, layerIdx))
 				{
-					case Map::CellKind::box: {
-						this->m_entities.boxes.add(position);
-						this->m_map.map.set_at_position(position, layerIdx, Map::CellKind::none);
-					} break;
+					case Map::CellKind::none: [[fallthrough]];
+					case Map::CellKind::wall:
+						continue;
 
-					case Map::CellKind::goal: {
-						this->m_entities.goals.add(position);
-						this->m_map.map.set_at_position(position, layerIdx, Map::CellKind::none);
-					} break;
+					case Map::CellKind::box   : this->m_box   .position = pos; ++boxes  ; break;
+					case Map::CellKind::goal  : this->m_goal  .position = pos; ++goals  ; break;
+					case Map::CellKind::player: this->m_player.position = pos; ++players; break;
 
-					case Map::CellKind::player: {
-						this->m_entities.players.add(position);
-						this->m_map.map.set_at_position(position, layerIdx, Map::CellKind::none);
-					} break;
+					default: unreachable();
 				}
+				map.set_at_position(pos, layerIdx, Map::CellKind::none);
 			}
 		}
 	}
 
-	// todo: undo only works for 1 player 1 box
-	this->m_undos.emplace_back();
-	this->m_entities.players.each([&m = this->m_undos.back()](PlayerShared&, PlayerVarying& player) { m.player_position = player.position; });
-	this->m_entities.boxes  .each([&m = this->m_undos.back()](Textured    &, Position     & box   ) { m.box_position    = box   .position; });
+	assert(players == 1);
+	assert(goals == boxes);
+	assert(goals >= 1);
+
+	this->m_box_count = boxes;
+	this->m_undos.emplace_back(this->m_player.position, this->m_box.position);
 
 	// Pause UI
 	{
@@ -261,6 +169,8 @@ void Game::awake(GameData& data)
 			}
 		);
 	}
+
+	assert(m_undos.size() >= 1);
 }
 
 void Game::process(GameData& data)
@@ -285,11 +195,14 @@ void Game::process(GameData& data)
 		this->m_ticks++;
 	}
 
-	// todo: there's only 1 player
-	this->m_entities.players.each(
-		[this, &data](PlayerShared& shared, PlayerVarying& player) {
-			if (!player.locked) this->process_player(data, shared, player);
-		});
+#ifndef NDEBUG
+	if (IsKeyPressed(KEY_T))
+	{
+		this->m_box.position = this->m_goal.position;
+	}
+#endif
+
+	if (!this->m_player.locked) this->process_player(data);
 
 	if (IsKeyPressed(KEY_R))
 	{
@@ -307,12 +220,10 @@ void Game::process(GameData& data)
 		if (!this->m_undoing)
 		{
 			// Remove the last stored movement if its the same position.
-			this->m_entities.players.each([&undos = this->m_undos](PlayerShared&, PlayerVarying& player) {
-				if (undos.size() > 1 && player.position == undos.back().player_position)
-				{
-					undos.pop_back();
-				}
-			});
+			if (this->m_undos.size() > 1 && this->m_player.position == this->m_undos.back().player_position)
+			{
+				this->m_undos.pop_back();
+			}
 
 			this->undo();
 			this->m_undoing = true;
@@ -346,36 +257,33 @@ void Game::process(GameData& data)
 
 		if (!this->m_switched)
 		{
-			// todo: very awkward because this logic doesn't make sense for general number of objects
-			this->m_entities.visitTylerBoxGoal(
-				[this, &data](Tyler& tyler, Position& box, Position& goal) {
-					if (box.position != goal.position) return;
+			if (this->m_box.position != this->m_goal.position) return;
 
-					// The end
-					if (data.active_map_index == 11)
-					{
-						this->m_entities.boxes.varying.clear();
+			// The end
+			if (data.active_map_index == 11)
+			{
+				this->m_box_count = 0;
 
-						this->m_switched = true;
-						this->m_finished = true;
+				this->m_switched = true;
+				this->m_finished = true;
 
-						// Gate
-						this->m_map.map.set_at_position(9, 8, Map::Layer::solid, Map::CellKind::none);
-						this->m_map.map.set_at_position(9, 7, Map::Layer::solid, Map::CellKind::none);
+				// Gate
+				this->m_map.map.set_at_position(9, 8, Map::Layer::solid, Map::CellKind::none);
+				this->m_map.map.set_at_position(9, 7, Map::Layer::solid, Map::CellKind::none);
 
-						if (!data.mute_sfx) this->m_explode();
+				if (!data.mute_sfx) this->m_explode();
 
-						return;
-					}
+				return;
+			}
 
-					data.total_moves += tyler.tyler_the_creator;
+			data.total_moves += this->m_player.tyler_the_creator;
 
-					if (!data.mute_sfx) this->m_next();
-					data.active_map_index++;
-					data.state_handler.set(GameState::game);
+			if (!data.mute_sfx) this->m_next();
 
-					this->m_switched = true;
-				});
+			data.active_map_index++;
+			data.state_handler.set(GameState::game);
+
+			this->m_switched = true;
 		}
 	}
 }
@@ -384,34 +292,30 @@ void Game::render(GameData& /*data*/)
 {
 	ClearBackground(DARKBLUE);
 
-	this->m_entities.goals  .each([](Textured& tex, Position& p) { tex.texture.draw(Vector2(p.position) * GameData::TILE_SIZE, WHITE); });
-	this->m_entities.boxes  .each([](Textured& tex, Position& p) { tex.texture.draw(Vector2(p.position) * GameData::TILE_SIZE, WHITE); });
-	this->m_entities.players.each([](Textured& tex, Position& p) { tex.texture.draw(Vector2(p.position) * GameData::TILE_SIZE, WHITE); });
+	this->m_goal  .texture.draw(Vector2(this->m_goal  .position) * GameData::TILE_SIZE, WHITE);
+	if (this->m_box_count) this->m_box   .texture.draw(Vector2(this->m_box   .position) * GameData::TILE_SIZE, WHITE);
+	this->m_player.texture.draw(Vector2(this->m_player.position) * GameData::TILE_SIZE, WHITE);
 	this->m_map.map.draw(this->m_wall.get());
 
-	this->m_entities.players.each([this](PlayerShared& shared, PlayerVarying& /*player*/) {
-		DrawRectangle(
-			0, utilities::trunc(GameData::GAME_SIZE.y) - GameData::GAP, utilities::trunc(GameData::GAME_SIZE.x), GameData::GAP, GRAY
-		);
+	DrawRectangle(0, trunc(GameData::GAME_SIZE.y) - GameData::GAP, trunc(GameData::GAME_SIZE.x), GameData::GAP, GRAY);
 
-		this->m_font.draw_text_pro(
-			std::format("{:03} MOVES", shared.tyler_the_creator).c_str(), 
-			Vector2(1, GameData::GAME_SIZE.y - GameData::GAP + 1), 
-			Vector2Zero(), 0, 5.0f, 0.1f, WHITE
-		);
+	this->m_font.draw_text_pro(
+		std::format("{:03} MOVES", this->m_player.tyler_the_creator).c_str(), 
+		Vector2(1, GameData::GAME_SIZE.y - GameData::GAP + 1), 
+		Vector2Zero(), 0, 5.0f, 0.1f, WHITE
+	);
 	
-		std::string name = std::format("-{}-", this->m_map.name);
-		Vector2 name_dim = this->m_font.measure_text_ex(name.c_str(), 5.0f, 0.1f);
+	std::string name = std::format("-{}-", this->m_map.name);
+	Vector2 name_dim = this->m_font.measure_text_ex(name.c_str(), 5.0f, 0.1f);
 
-		this->m_font.draw_text_pro(
-			name.c_str(),
-			Vector2(
-				floor(GameData::GAME_SIZE.x - name_dim.x), 
-				floor(GameData::GAME_SIZE.y - GameData::GAP + 1)
-			),
-			Vector2Zero(), 0, 5.0f, 0.1f, WHITE
-		);
-	});
+	this->m_font.draw_text_pro(
+		name.c_str(),
+		Vector2(
+			floor(GameData::GAME_SIZE.x - name_dim.x), 
+			floor(GameData::GAME_SIZE.y - GameData::GAP + 1)
+		),
+		Vector2Zero(), 0, 5.0f, 0.1f, WHITE
+	);
 
 	if (this->m_paused)
 	{

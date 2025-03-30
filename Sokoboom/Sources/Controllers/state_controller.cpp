@@ -49,7 +49,7 @@ static constexpr State& allocState(State* current, GameState state)
 	}
 	}
 
-	utilities::unreachable();
+	unreachable();
 }
 
 void StateController::set(GameState state)
