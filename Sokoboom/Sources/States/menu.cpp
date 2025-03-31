@@ -19,7 +19,7 @@ Menu::Menu(GameData& data)
 	{
 		const Vector2 play_dim = MeasureTextEx(fnt, "play", 10.0f, 0.1f);
 		this->m_buttons.emplace_back(
-			resource.getHandle(font),
+			resource.handle(font),
 			"play", 10.0f,
 			Vector2((GameData::GAME_SIZE.x - play_dim.x) / 2, 50),
 			[this, &data](Button& /*self*/) {
@@ -33,7 +33,7 @@ Menu::Menu(GameData& data)
 	{
 		const Vector2 options_dim = MeasureTextEx(fnt, "options", 10.0f, 0.1f);
 		this->m_buttons.emplace_back(
-			resource.getHandle(font),
+			resource.handle(font),
 			"options", 10.0f,
 			Vector2((GameData::GAME_SIZE.x - options_dim.x) / 2, 60),
 			[this, &data](Button& /*self*/) {
@@ -47,7 +47,7 @@ Menu::Menu(GameData& data)
 	{
 		const Vector2 exit_dim = MeasureTextEx(fnt, "exit", 10.0f, 0.1f);
 		this->m_buttons.emplace_back(
-			resource.getHandle(font),
+			resource.handle(font),
 			"exit", 10.0f,
 			Vector2((GameData::GAME_SIZE.x - exit_dim.x) / 2, 70),
 			[this, &data](Button& /*self*/) {

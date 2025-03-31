@@ -1,6 +1,6 @@
 #pragma once
 
-#include "../States/state.hpp"
+#include "States/state.hpp"
 
 #include <raylib.h>
 

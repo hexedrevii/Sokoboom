@@ -15,7 +15,7 @@ Settings::Settings(GameData& data)
 	this->m_mute_move = data.mute_move;
 
 	this->m_buttons.emplace_back(
-		resource.getHandle(font),
+		resource.handle(font),
 		"< BACK", 10.0f,
 		Vector2(1, GameData::GAME_SIZE.y - 11),
 		[this, &data](Button& /*self*/) {
@@ -40,7 +40,7 @@ Settings::Settings(GameData& data)
 	{
 		const auto sfx_text = this->m_mute_sfx ? "UNMUTE SFX" : "MUTE SFX";
 		this->m_buttons.emplace_back(
-			resource.getHandle(font),
+			resource.handle(font),
 			sfx_text, 5.0f,
 			Vector2(1, 30),
 			[this, &data](Button& self) {
@@ -55,7 +55,7 @@ Settings::Settings(GameData& data)
 	{
 		const auto move_text = this->m_mute_move ? "UNMUTE MOVE" : "MUTE MOVE";
 		this->m_buttons.emplace_back(
-			resource.getHandle(font),
+			resource.handle(font),
 			move_text, 5.0f,
 			Vector2(1, 37),
 			[this, &data](Button& self) {

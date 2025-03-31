@@ -49,29 +49,8 @@ void load_maps(GameData& data)
 	data.maps.push_back(MapData("END", Map("Content/Maps/the_end.p8m")));
 }
 
-void main()
+void run(GameData& data, RenderTexture2D& renderer)
 {
-	SetConfigFlags(FLAG_WINDOW_RESIZABLE);
-	InitWindow(800, 600, "Sokoboom");
-	SetExitKey(KEY_NULL);
-
-	InitAudioDevice();
-
-	resource.load_static_resources();
-	GameData data = load_settings("Content/settings.json");
-	load_maps(data); // todo: generalized map loading
-
-	data.change_state(GameState::menu);
-
-	RenderTexture2D renderer = LoadRenderTexture(trunc(GameData::GAME_SIZE.x), trunc(GameData::GAME_SIZE.y));
-	SetTextureFilter(renderer.texture, TEXTURE_FILTER_POINT);
-
-	std::cout << "INFO: Tile size: " << GameData::TILE_SIZE << "\n";
-	std::cout << "INFO: Game resolution: " << GameData::GAME_SIZE.x << ", " << GameData::GAME_SIZE.y << "\n";
-
-	std::cout << "INFO: Muted SFX: " << data.mute_sfx << "\n";
-	std::cout << "INFO: Muted Move: " << data.mute_move << "\n";
-
 	while (!data.exit)
 	{
 		if (WindowShouldClose())
@@ -120,7 +99,34 @@ void main()
 		}
 		EndDrawing();
 	}
-	
+}
+
+void main()
+{
+	SetConfigFlags(FLAG_WINDOW_RESIZABLE);
+	InitWindow(800, 600, "Sokoboom");
+	SetExitKey(KEY_NULL);
+
+	InitAudioDevice();
+
+	RenderTexture2D renderer = LoadRenderTexture(trunc(GameData::GAME_SIZE.x), trunc(GameData::GAME_SIZE.y));
+	SetTextureFilter(renderer.texture, TEXTURE_FILTER_POINT);
+
+	std::cout << "INFO: Tile size: " << GameData::TILE_SIZE << "\n";
+	std::cout << "INFO: Game resolution: " << GameData::GAME_SIZE.x << ", " << GameData::GAME_SIZE.y << "\n";
+
+	resource.load();
+	{
+		GameData data = load_settings("Content/settings.json");
+		std::cout << "INFO: Muted SFX: " << data.mute_sfx << "\n";
+		std::cout << "INFO: Muted Move: " << data.mute_move << "\n";
+
+		load_maps(data); // todo: generalized map loading
+		data.change_state(GameState::menu);
+		run(data, renderer);
+	}
+	resource.unload();
+
 	CloseAudioDevice();
 	CloseWindow();
 }

@@ -37,7 +37,7 @@ public:
 
 	void load(const char* path);
 
-	void draw(Resource::Handle<::Texture2D> wall);
+	void draw(::Texture2D& wall);
 
 	CellKind get_at_position(Position x                  , Layer       layer) { return this->get_at_position(x.x, x.y, layer             ); }
 	CellKind get_at_position(Position x                  , std::size_t layer) { return this->get_at_position(x.x, x.y, layer             ); }

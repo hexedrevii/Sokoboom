@@ -1,7 +1,7 @@
 #pragma once
 
 #include "map.hpp"
-#include "Controllers/state_controller.hpp"
+#include "state_controller.hpp"
 
 #include <raylib.h>
 
@@ -33,10 +33,10 @@ struct GameData
 	StateController state_handler;
 	Vector2 virtual_mouse {};
 
-	void play_move   () { if (!this->mute_sfx && !this->mute_move) PlaySound(resource[Resource::Sound::move]); }
-	void play_next   () { if (!this->mute_sfx) PlaySound(resource[Resource::Sound::next   ]); }
-	void play_explode() { if (!this->mute_sfx) PlaySound(resource[Resource::Sound::explode]); }
-	void play_click  () { if (!this->mute_sfx) PlaySound(resource[Resource::Sound::click  ]); }
+	void play_move   () { if (!this->mute_sfx && !this->mute_move) PlaySound(resource[Resource::fixed::Sound::move]); }
+	void play_next   () { if (!this->mute_sfx) PlaySound(resource[Resource::fixed::Sound::next   ]); }
+	void play_explode() { if (!this->mute_sfx) PlaySound(resource[Resource::fixed::Sound::explode]); }
+	void play_click  () { if (!this->mute_sfx) PlaySound(resource[Resource::fixed::Sound::click  ]); }
 
 	void change_state(GameState state) { state_handler.set(*this, state); }
 };

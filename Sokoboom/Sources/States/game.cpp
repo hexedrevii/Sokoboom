@@ -121,7 +121,7 @@ Game::Game(GameData& data)
 	{
 		const Vector2 resume_dim = MeasureTextEx(resource[font], "resume", 10.0f, 0.1f);
 		this->m_buttons.emplace_back(
-			resource.getHandle(font),
+			resource.handle(font),
 			"resume", 10.0f,
 			Vector2((GameData::GAME_SIZE.x - resume_dim.x) / 2, 40),
 			[this](Button& /*self*/) {
@@ -133,7 +133,7 @@ Game::Game(GameData& data)
 	{
 		const Vector2 menu_dim = MeasureTextEx(resource[font], "menu", 10.0f, 0.1f);
 		this->m_buttons.emplace_back(
-			resource.getHandle(font),
+			resource.handle(font),
 			"menu", 10.0f,
 			Vector2((GameData::GAME_SIZE.x - menu_dim.x) / 2, 50),
 			[this, &data](Button& /*self*/) {
@@ -264,10 +264,10 @@ void Game::render(GameData& /*data*/)
 {
 	ClearBackground(DARKBLUE);
 
-	DrawTextureV(resource[Resource::Texture::goal], Vector2(this->m_goal.position) * GameData::TILE_SIZE, WHITE);
-	if (this->m_box_count) DrawTextureV(resource[Resource::Texture::box], Vector2(this->m_box.position) * GameData::TILE_SIZE, WHITE);
-	DrawTextureV(resource[Resource::Texture::player], Vector2(this->m_player.position) * GameData::TILE_SIZE, WHITE);
-	this->m_map.map.draw(resource.getHandle(Resource::Texture::wall));
+	DrawTextureV(resource[Resource::fixed::Texture::goal], Vector2(this->m_goal.position) * GameData::TILE_SIZE, WHITE);
+	if (this->m_box_count) DrawTextureV(resource[Resource::fixed::Texture::box], Vector2(this->m_box.position) * GameData::TILE_SIZE, WHITE);
+	DrawTextureV(resource[Resource::fixed::Texture::player], Vector2(this->m_player.position) * GameData::TILE_SIZE, WHITE);
+	this->m_map.map.draw(resource[Resource::fixed::Texture::wall]);
 
 	DrawRectangle(0, trunc(GameData::GAME_SIZE.y) - GameData::GAP, trunc(GameData::GAME_SIZE.x), GameData::GAP, GRAY);
 

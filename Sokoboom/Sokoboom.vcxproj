@@ -137,7 +137,6 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="Sources\Controllers\state_controller.cpp" />
     <ClCompile Include="Sources\main.cpp" />
     <ClCompile Include="Sources\map.cpp" />
     <ClCompile Include="Sources\resource.cpp" />
@@ -145,13 +144,14 @@
     <ClCompile Include="Sources\States\game.cpp" />
     <ClCompile Include="Sources\States\menu.cpp" />
     <ClCompile Include="Sources\States\settings.cpp" />
+    <ClCompile Include="Sources\state_controller.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="Headers\button.hpp" />
-    <ClInclude Include="Headers\Controllers\entity.hpp" />
-    <ClInclude Include="Headers\Controllers\state_controller.hpp" />
     <ClInclude Include="Headers\data.hpp" />
+    <ClInclude Include="Headers\entity.hpp" />
     <ClInclude Include="Headers\map.hpp" />
+    <ClInclude Include="Headers\state_controller.hpp" />
+    <ClInclude Include="Headers\ui.hpp" />
     <ClInclude Include="Headers\resource.hpp" />
     <ClInclude Include="Headers\States\end.hpp" />
     <ClInclude Include="Headers\States\game.hpp" />

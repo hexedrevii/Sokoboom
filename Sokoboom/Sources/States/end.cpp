@@ -10,7 +10,7 @@ End::End(GameData& data)
 {
 	const Vector2 menu_dim = MeasureTextEx(resource[font], "menu", 10.0f, 0.1f);
 	this->m_buttons.emplace_back(
-		resource.getHandle(font),
+		resource.handle(font),
 		"menu", 10.0f,
 		Vector2((GameData::GAME_SIZE.x - menu_dim.x) / 2, 70),
 		[this, &data](Button& /*self*/) {

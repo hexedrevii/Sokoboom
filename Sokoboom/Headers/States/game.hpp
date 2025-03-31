@@ -1,8 +1,8 @@
 #pragma once
 
-#include "../button.hpp"
-#include "../Controllers/entity.hpp"
 #include "../data.hpp"
+#include "../entity.hpp"
+#include "../ui.hpp"
 #include "state.hpp"
 
 #include <vector>
@@ -20,7 +20,7 @@ struct MoveData
 class Game : public State
 {
 private:
-	static constexpr Resource::Font font = Resource::Font::pico8;
+	static constexpr auto font = Resource::fixed::Font::pico8;
 
 	int m_ticks = 0;
 

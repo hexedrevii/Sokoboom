@@ -16,14 +16,8 @@
     <Filter Include="Source Files\States">
       <UniqueIdentifier>{78b31f7b-0a5c-43f1-a2a6-8f4ce13b1951}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Source Files\Controllers">
-      <UniqueIdentifier>{93912e45-9edf-44ea-8e01-6f992fdf54ab}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Header Files\States">
       <UniqueIdentifier>{e3fdd963-c547-47cb-99e1-0aba0fe16ad1}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Header Files\Controllers">
-      <UniqueIdentifier>{8e3f417f-a5a4-413b-a8ca-a34c62fb68aa}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -48,8 +42,8 @@
     <ClCompile Include="Sources\States\settings.cpp">
       <Filter>Source Files\States</Filter>
     </ClCompile>
-    <ClCompile Include="Sources\Controllers\state_controller.cpp">
-      <Filter>Source Files\Controllers</Filter>
+    <ClCompile Include="Sources\state_controller.cpp">
+      <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -65,14 +59,8 @@
     <ClInclude Include="Headers\resource.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Headers\button.hpp">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="Headers\States\end.hpp">
       <Filter>Header Files\States</Filter>
-    </ClInclude>
-    <ClInclude Include="Headers\Controllers\entity.hpp">
-      <Filter>Header Files\Controllers</Filter>
     </ClInclude>
     <ClInclude Include="Headers\States\game.hpp">
       <Filter>Header Files\States</Filter>
@@ -86,8 +74,14 @@
     <ClInclude Include="Headers\States\state.hpp">
       <Filter>Header Files\States</Filter>
     </ClInclude>
-    <ClInclude Include="Headers\Controllers\state_controller.hpp">
-      <Filter>Header Files\Controllers</Filter>
+    <ClInclude Include="Headers\ui.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Headers\entity.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Headers\state_controller.hpp">
+      <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

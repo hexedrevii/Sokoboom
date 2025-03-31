@@ -1,4 +1,4 @@
-#include "../../Headers/Controllers/state_controller.hpp"
+#include "../../Headers/state_controller.hpp"
 
 #include "../../Headers/States/end.hpp"
 #include "../../Headers/States/game.hpp"

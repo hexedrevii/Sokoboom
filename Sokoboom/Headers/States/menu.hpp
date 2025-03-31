@@ -1,7 +1,7 @@
 #pragma once
 
-#include "../button.hpp"
 #include "../resource.hpp"
+#include "../ui.hpp"
 #include "state.hpp"
 
 #include <vector>
@@ -13,7 +13,7 @@ struct GameData;
 class Menu : public State
 {
 private:
-	static constexpr Resource::Font font = Resource::Font::pico8;
+	static constexpr auto font = Resource::fixed::Font::pico8;
 
 	std::vector<Button> m_buttons;
 

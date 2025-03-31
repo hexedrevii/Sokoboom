@@ -30,7 +30,7 @@ private:
 	T m_data;
 
 public:
-	Owner(T data) : m_data(data) {}
+	/*implicit*/ Owner(T data) : m_data(data) {}
 
 	Owner(const Owner&) = delete;
 	void operator=(const Owner&) = delete;
@@ -42,25 +42,34 @@ public:
 	}
 	Owner& operator=(Owner&& rhs) noexcept
 	{
-		m_data = rhs.m_data;
+		this->m_data = rhs.m_data;
 		rhs.release();
 		return *this;
 	}
 
 	~Owner()
 	{
-		(*this)(m_data);
+		this->destroy();
 	}
 
-	T& get() { return m_data; }
+	T& get() { return this->m_data; }
 
 	T release()
 	{
 		auto ret = std::move(m_data);
-		m_data = T{}; // todo: sketchy
+		this->m_data = T{};
 		return ret;
 	}
+
+	void destroy() noexcept
+	{
+		(*this)(this->m_data);
+	}
 };
+
+struct Texture2D;
+struct Font;
+struct Sound;
 
 class Resource
 {
@@ -68,41 +77,67 @@ public:
 	template <typename T>
 	struct Handle
 	{
-		friend Resource;
+		friend class Resource;
 
-		using type = std::size_t;
-		type value;
+		using Type = std::size_t;
+		static constexpr Type invalid = std::numeric_limits<Type>::max();
+		Type value = invalid;
+
+		constexpr Handle() noexcept = default;
+
+		explicit constexpr operator bool() const noexcept { return this->value != invalid; }
 
 	protected:
-		/* Note: this is protected to ensure only Resource constructs these handles as valid. It is not default
-			constructible to ensure all clients remember to initialize their resources.
-		  
-			Lacking default construction can be annoying, so maybe relax this in the future. To do that would require
-			making an invalid Handle state*/
-		explicit constexpr Handle(type value) noexcept : value(value) {}
+		explicit constexpr Handle(Type value) noexcept : value(value) {}
+	};
+
+	struct fixed {
+		enum class Texture : Handle<::Texture2D>::Type
+		{
+		#define X(name, path) name,
+			SOKOBOOM_X_RESOURCE_TEXTURES(X)
+		#undef X
+		};
+
+		enum class Font : Handle<::Font>::Type
+		{
+		#define X(name, path) name,
+			SOKOBOOM_X_RESOURCE_FONTS(X)
+		#undef X
+		};
+
+		enum class Sound : Handle<::Sound>::Type
+		{
+		#define X(name, path) name,
+			SOKOBOOM_X_RESOURCE_SOUNDS(X)
+		#undef X
+		};
 	};
 
 private:
 	struct Texture2DDeleter
 	{
-		void operator()(::Texture2D& a) {
-			UnloadTexture(a);
+		void operator()(::Texture2D& a) noexcept
+		{
+			::UnloadTexture(a);
 		}
 	};
 	using TextureOwner = Owner<::Texture2D, Texture2DDeleter>;
 
 	struct FontDeleter
 	{
-		void operator()(Font& a) {
-			UnloadFont(a);
+		void operator()(::Font& a) noexcept
+		{
+			::UnloadFont(a);
 		}
 	};
 	using FontOwner = Owner<::Font, FontDeleter>;
 
 	struct SoundDeleter
 	{
-		void operator()(Sound& a) {
-			UnloadSound(a);
+		void operator()(::Sound& a) noexcept
+		{
+			::UnloadSound(a);
 		}
 	};
 	using SoundOwner = Owner<::Sound, SoundDeleter>;
@@ -111,71 +146,41 @@ private:
 	std::vector<FontOwner   > m_fonts   ;
 	std::vector<SoundOwner  > m_sounds  ;
 
+	std::vector<std::size_t> m_rc_textures;
+	std::vector<std::size_t> m_rc_fonts   ;
+	std::vector<std::size_t> m_rc_sounds  ;
+
 	std::unordered_map<std::string, Handle<::Texture2D>> m_index_textures;
 	std::unordered_map<std::string, Handle<::Font     >> m_index_fonts   ;
 	std::unordered_map<std::string, Handle<::Sound    >> m_index_sounds  ;
 
 public:
-	Handle<::Texture2D> texture2d(char const* path);
-	Handle<::Font     > font     (char const* path);
-	Handle<::Sound    > sound    (char const* path);
+#ifndef NDEBUG
+	~Resource();
+#endif
+
+	void load();
+	void unload();
+
+	Texture2D texture2d(char const* path);
+	Font      font     (char const* path);
+	Sound     sound    (char const* path);
 
 	::Texture2D& operator[](Handle<::Texture2D> handle) { return m_textures[handle.value].get(); }
 	::Font     & operator[](Handle<::Font     > handle) { return m_fonts   [handle.value].get(); }
 	::Sound    & operator[](Handle<::Sound    > handle) { return m_sounds  [handle.value].get(); }
 
-	void release(Handle<::Texture2D>) { /*nop*/ }
-	void release(Handle<::Font     >) { /*nop*/ }
-	void release(Handle<::Sound    >) { /*nop*/ }
+	void release(Handle<::Texture2D> handle);
+	void release(Handle<::Font     > handle);
+	void release(Handle<::Sound    > handle);
 
-public:
-	enum class Texture
-	{
-#define X(name, path) name,
-		SOKOBOOM_X_RESOURCE_TEXTURES(X)
-#undef X
-	};
+	::Texture2D& operator[](fixed::Texture x) { return m_textures[Handle<::Texture>::Type(x)].get(); }
+	::Font     & operator[](fixed::Font    x) { return m_fonts   [Handle<::Font   >::Type(x)].get(); }
+	::Sound    & operator[](fixed::Sound   x) { return m_sounds  [Handle<::Sound  >::Type(x)].get(); }
 
-	enum class Font
-	{
-#define X(name, path) name,
-		SOKOBOOM_X_RESOURCE_FONTS(X)
-#undef X
-	};
-
-	enum class Sound
-	{
-#define X(name, path) name,
-		SOKOBOOM_X_RESOURCE_SOUNDS(X)
-#undef X
-	};
-
-	void load_static_resources()
-	{
-		assert(m_textures.empty());
-		assert(m_fonts   .empty());
-		assert(m_sounds  .empty());
-
-#define X(name, path) this->texture2d(path);
-		SOKOBOOM_X_RESOURCE_TEXTURES(X)
-#undef X
-
-#define X(name, path) this->font(path);
-		SOKOBOOM_X_RESOURCE_FONTS(X)
-#undef X
-
-#define X(name, path) this->sound(path);
-		SOKOBOOM_X_RESOURCE_SOUNDS(X)
-#undef X
-	}
-
-	::Texture2D& operator[](Texture x) { return m_textures[std::size_t(x)].get(); }
-	::Font     & operator[](Font    x) { return m_fonts   [std::size_t(x)].get(); }
-	::Sound    & operator[](Sound   x) { return m_sounds  [std::size_t(x)].get(); }
-
-	constexpr Handle<::Texture2D> getHandle(Texture x) const noexcept { return Handle<::Texture2D>(std::size_t(x)); }
-	constexpr Handle<::Font     > getHandle(Font    x) const noexcept { return Handle<::Font     >(std::size_t(x)); }
-	constexpr Handle<::Sound    > getHandle(Sound   x) const noexcept { return Handle<::Sound    >(std::size_t(x)); }
+	constexpr Handle<::Texture2D> handle(fixed::Texture x) noexcept { Handle<::Texture2D> ret{Handle<::Texture>::Type(x)}; m_rc_textures[ret.value] += 1; return ret; }
+	constexpr Handle<::Font     > handle(fixed::Font    x) noexcept { Handle<::Font     > ret{Handle<::Font   >::Type(x)}; m_rc_fonts   [ret.value] += 1; return ret; }
+	constexpr Handle<::Sound    > handle(fixed::Sound   x) noexcept { Handle<::Sound    > ret{Handle<::Sound  >::Type(x)}; m_rc_sounds  [ret.value] += 1; return ret; }
 };
 
 extern Resource resource;
@@ -183,9 +188,13 @@ extern Resource resource;
 template <typename Handle>
 struct HandleReleaser
 {
-	void operator()(Handle t)
+	void operator()(Handle& t) noexcept
 	{
-		resource.release(t);
+		if (t)
+		{
+			resource.release(t);
+			t = Handle{};
+		}
 	}
 };
 

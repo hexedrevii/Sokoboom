@@ -6,81 +6,101 @@
 
 namespace sokoboom {
 
+#ifndef NDEBUG
+Resource::~Resource()
+{
+	assert(m_textures.empty());
+	assert(m_fonts   .empty());
+	assert(m_sounds  .empty());
+}
+#endif
+
+void Resource::load()
+{
+	assert(m_textures.empty());
+	assert(m_fonts   .empty());
+	assert(m_sounds  .empty());
+
+#define X(name, path) this->texture2d(path).release();
+	SOKOBOOM_X_RESOURCE_TEXTURES(X)
+#undef X
+
+#define X(name, path) this->font(path).release();
+	SOKOBOOM_X_RESOURCE_FONTS(X)
+#undef X
+
+#define X(name, path) this->sound(path).release();
+	SOKOBOOM_X_RESOURCE_SOUNDS(X)
+#undef X
+}
+
+void Resource::unload()
+{
+#define X(name, path) this->release(Handle<::Texture>{Handle<::Texture>::Type(fixed::Texture::name)});
+	SOKOBOOM_X_RESOURCE_TEXTURES(X)
+#undef X
+
+#define X(name, path) this->release(Handle<::Font>{Handle<::Texture>::Type(fixed::Font::name)});
+	SOKOBOOM_X_RESOURCE_FONTS(X)
+#undef X
+
+#define X(name, path) this->release(Handle<::Sound>{Handle<::Texture>::Type(fixed::Sound::name)});
+	SOKOBOOM_X_RESOURCE_SOUNDS(X)
+#undef X
+
+	for (auto rc : m_rc_textures) assert(rc == 0);
+	for (auto rc : m_rc_fonts   ) assert(rc == 0);
+	for (auto rc : m_rc_sounds  ) assert(rc == 0);
+
+	m_textures.clear(); m_rc_textures.clear(); m_index_textures.clear();
+	m_fonts   .clear(); m_rc_fonts   .clear(); m_index_fonts   .clear();
+	m_sounds  .clear(); m_rc_sounds  .clear(); m_index_sounds  .clear();
+}
+
 namespace {
-	::Texture2D load_texture2d_relative(const std::filesystem::path& path)
+	::Texture2D load_texture2d_relative(const char* path)
 	{
-		std::filesystem::path full = GetApplicationDirectory() / path;
-		std::string legacy = full.string();
-
-		if (!FileExists(legacy.c_str()))
-		{
-			return { 0 };
-		}
-
-		return LoadTexture(legacy.c_str());
+		const std::filesystem::path full = GetApplicationDirectory() / std::filesystem::path(path);
+		return ::LoadTexture(full.string().c_str());
 	}
 
-	::Font load_font_relative(const std::filesystem::path& path)
+	::Font load_font_relative(const char* path)
 	{
-		std::filesystem::path full = GetApplicationDirectory() / path;
-		std::string legacy = full.string();
-
-		if (!FileExists(legacy.c_str()))
-		{
-			return { 0 };
-		}
-
-		return LoadFontEx(legacy.c_str(), 100, 0, 0);
+		const std::filesystem::path full = GetApplicationDirectory() / std::filesystem::path(path);
+		return ::LoadFontEx(full.string().c_str(), 100, 0, 0);
 	}
 
-	::Sound load_sound_relative(const std::filesystem::path& path)
+	::Sound load_sound_relative(const char* path)
 	{
-		std::filesystem::path full = GetApplicationDirectory() / path;
-		std::string legacy = full.string();
-
-		if (!FileExists(legacy.c_str()))
-		{
-			return { 0 };
-		}
-
-		return LoadSound(legacy.c_str());
+		const std::filesystem::path full = GetApplicationDirectory() / std::filesystem::path(path);
+		return ::LoadSound(full.string().c_str());
 	}
 }
 
-Resource::Handle<::Texture2D> Resource::texture2d(char const* path)
-{
-	auto i = m_index_textures.find(path);
-	if (i != m_index_textures.end())
-		return i->second;
-
-	Handle<::Texture2D> ret { m_textures.size() };
-	m_textures.emplace_back(TextureOwner(load_texture2d_relative(path)));
-	m_index_textures.insert({path, ret});
+#define IMPL(NAME, TYPE, OWNER, LOAD)\
+	auto i = m_index_##NAME.find(path);\
+	if (i != m_index_##NAME.end())\
+	{\
+		m_rc_##NAME[i->second.value] += 1;\
+		return i->second;\
+	}\
+\
+	Handle<TYPE> ret { m_##NAME.size() };\
+	m_##NAME.emplace_back(OWNER(LOAD(path)));\
+	m_rc_##NAME.emplace_back(1);\
+	m_index_##NAME.insert({path, ret});\
 	return ret;
-}
 
-Resource::Handle<::Font> Resource::font(char const* path)
-{
-	auto i = m_index_fonts.find(path);
-	if (i != m_index_fonts.end())
-		return i->second;
+Texture2D Resource::texture2d(char const* path) { IMPL(textures, ::Texture2D, TextureOwner, load_texture2d_relative) }
+Font      Resource::font     (char const* path) { IMPL(fonts   , ::Font     , FontOwner   , load_font_relative     ) }
+Sound     Resource::sound    (char const* path) { IMPL(sounds  , ::Sound    , SoundOwner  , load_sound_relative    ) }
+#undef IMPL
 
-	Handle<::Font> ret { m_fonts.size() };
-	m_fonts.emplace_back(FontOwner(load_font_relative(path)));
-	m_index_fonts.insert({path, ret});
-	return ret;
-}
-
-Resource::Handle<::Sound> Resource::sound(char const* path)
-{
-	auto i = m_index_sounds.find(path);
-	if (i != m_index_sounds.end())
-		return i->second;
-
-	Handle<::Sound> ret { m_sounds.size() };
-	m_sounds.emplace_back(SoundOwner(load_sound_relative(path)));
-	m_index_sounds.insert({path, ret});
-	return ret;
-}
+// todo: properly release resource
+// It doesn't make much sense to release the resources when there's so few. Just correctly track the reference counts
+// and know that rc == 0 means to free the resource.
+void Resource::release(Handle<::Texture2D> handle) { auto& rc = m_rc_textures[handle.value]; assert(rc > 0); rc -= 1; /*if (rc == 0) m_textures[handle.value].destroy();*/ }
+void Resource::release(Handle<::Font     > handle) { auto& rc = m_rc_fonts   [handle.value]; assert(rc > 0); rc -= 1; /*if (rc == 0) m_fonts   [handle.value].destroy();*/ }
+void Resource::release(Handle<::Sound    > handle) { auto& rc = m_rc_sounds  [handle.value]; assert(rc > 0); rc -= 1; /*if (rc == 0) m_sounds  [handle.value].destroy();*/ }
 
 } // namespace sokoboom

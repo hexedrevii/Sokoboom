@@ -26,7 +26,7 @@ void Map::load(const char* path)
 	this->tile_size = Vector2(data["tile_x"], data["tile_y"]);
 }
 
-void Map::draw(Resource::Handle<::Texture2D> wall)
+void Map::draw(::Texture2D& wall)
 {
 	for (const auto& layer : this->layers)
 	{
@@ -37,7 +37,7 @@ void Map::draw(Resource::Handle<::Texture2D> wall)
 				if (layer[row][col] == CellKind::none) continue;
 
 				DrawTextureV(
-					resource[wall],
+					wall,
 					Vector2(float(row), float(col)) * GameData::TILE_SIZE,
 					WHITE
 				);

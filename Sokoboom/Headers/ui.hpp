@@ -1,19 +1,20 @@
 #pragma once
 
-#include "../Headers/resource.hpp"
+#include "data.hpp"
+#include "resource.hpp"
 
 #include <raylib.h>
 #include <raymath.h>
 
-#include <string>
 #include <functional>
+#include <vector>
 
 namespace sokoboom {
 
 class Button
 {
 private:
-	Resource::Handle<::Font> m_font;
+	Font m_font;
 	std::string m_text;
 
 	Rectangle m_bounds;
@@ -38,7 +39,7 @@ public:
 		, on_click(on_click ? on_click : nop)
 	{
 		const Vector2 dim = MeasureTextEx(
-			resource[this->m_font], this->m_text.c_str(),
+			resource[this->m_font.get()], this->m_text.c_str(),
 			this->m_size, 0.1f
 		);
 
@@ -48,17 +49,12 @@ public:
 		);
 	}
 
-	~Button()
-	{
-		resource.release(this->m_font);
-	}
-
 	void set_text(std::string new_text)
 	{
 		this->m_text = std::move(new_text);
 
 		const Vector2 dim = MeasureTextEx(
-			resource[this->m_font], this->m_text.c_str(),
+			resource[this->m_font.get()], this->m_text.c_str(),
 			this->m_size, 0.1f
 		);
 
@@ -85,7 +81,7 @@ public:
 	void render()
 	{
 		DrawTextPro(
-			resource[this->m_font], this->m_text.c_str(),
+			resource[this->m_font.get()], this->m_text.c_str(),
 			Vector2(this->m_bounds.x, this->m_bounds.y), Vector2Zero(),
 			0, this->m_size, 0.1f, this->colour
 		);
