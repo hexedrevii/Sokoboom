@@ -58,7 +58,7 @@ void Game::move_player(GameData& data, Direction direction)
 			this->m_player.locked = true;
 			data.total_moves += this->m_player.tyler_the_creator;
 
-			data.state_handler.set(GameState::end);
+			data.change_state(GameState::end);
 		}
 	}
 }
@@ -74,7 +74,7 @@ void Game::undo()
 	if (this->m_undos.size() > 1) this->m_undos.pop_back();
 }
 
-void Game::awake(GameData& data)
+Game::Game(GameData& data)
 {
 	this->m_map = data.maps[data.active_map_index];
 
@@ -140,7 +140,7 @@ void Game::awake(GameData& data)
 				data.active_map_index = 0;
 				data.total_moves = 0;
 
-				data.state_handler.set(GameState::menu);
+				data.change_state(GameState::menu);
 			}
 		);
 	}
@@ -180,7 +180,7 @@ void Game::process(GameData& data)
 	{
 		if (!this->m_switched)
 		{
-			data.state_handler.set(GameState::game);
+			data.change_state(GameState::game);
 
 			this->m_switched = true;
 		}
@@ -253,7 +253,7 @@ void Game::process(GameData& data)
 			data.play_next();
 
 			data.active_map_index++;
-			data.state_handler.set(GameState::game);
+			data.change_state(GameState::game);
 
 			this->m_switched = true;
 		}

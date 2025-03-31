@@ -16,33 +16,34 @@ union Uninit
 	Uninit() : _{} {}
 	~Uninit() {}
 
-	void ctor() { new (this) T(); }
+	template <typename... Args>
+	void ctor(Args&&... args) { new (this) T(std::forward<Args>(args)...); }
 	void dtor() { this->data.~T(); }
 
-	constexpr T* addr() noexcept { return &this->data; }
+	constexpr T* operator&() noexcept { return &this->data; }
 	constexpr operator T&() noexcept { return this->data; }
 };
 
-struct GameStates
+static struct GameStates
 {
 	Uninit<Menu    > menu    ;
 	Uninit<Settings> settings;
 	Uninit<Game    > game1   ;
 	Uninit<Game    > game2   ; // todo: get rid of this extra game state (change transition logic)
 	Uninit<End     > end     ;
-} g_gameStates;
+} g_states;
 
-static constexpr State& allocState(State* current, GameState state)
+static constexpr State& createState(GameData& data, State* current, GameState state)
 {
 	switch (state) {
-	case GameState::menu    : g_gameStates.menu    .ctor(); return g_gameStates.menu    ;
-	case GameState::settings: g_gameStates.settings.ctor(); return g_gameStates.settings;
-	case GameState::end     : g_gameStates.end     .ctor(); return g_gameStates.end     ;
+	case GameState::menu    : g_states.menu    .ctor(data); return g_states.menu    ;
+	case GameState::settings: g_states.settings.ctor(data); return g_states.settings;
+	case GameState::end     : g_states.end     .ctor(data); return g_states.end     ;
 	case GameState::game    : {
-		auto& ret = current != g_gameStates.game1.addr()
-			? g_gameStates.game1
-			: g_gameStates.game2;
-		ret.ctor();
+		auto& ret = current != &g_states.game1
+			? g_states.game1
+			: g_states.game2;
+		ret.ctor(data);
 		return ret;
 	}
 	}
@@ -50,10 +51,10 @@ static constexpr State& allocState(State* current, GameState state)
 	unreachable();
 }
 
-void StateController::set(GameState state)
+void StateController::set(GameData& data, GameState state)
 {
 	this->m_switching = true;
-	this->m_temporary.reset(&allocState(this->m_state.get(), state));
+	this->m_temporary.reset(&createState(data, this->m_state.get(), state));
 	assert(this->m_temporary != this->m_state);
 }
 
@@ -70,7 +71,6 @@ void StateController::process(GameData& data)
 				this->m_opactity = 1;
 
 				this->m_state = std::move(this->m_temporary);
-				this->m_state->awake(data);
 			}
 		}
 		else

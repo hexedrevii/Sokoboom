@@ -37,6 +37,8 @@ struct GameData
 	void play_next   () { if (!this->mute_sfx) PlaySound(resource[Resource::Sound::next   ]); }
 	void play_explode() { if (!this->mute_sfx) PlaySound(resource[Resource::Sound::explode]); }
 	void play_click  () { if (!this->mute_sfx) PlaySound(resource[Resource::Sound::click  ]); }
+
+	void change_state(GameState state) { state_handler.set(*this, state); }
 };
 
 } // namespace sokoboom

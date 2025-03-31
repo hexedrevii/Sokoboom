@@ -61,7 +61,7 @@ void main()
 	GameData data = load_settings("Content/settings.json");
 	load_maps(data); // todo: generalized map loading
 
-	data.state_handler.set(GameState::menu);
+	data.change_state(GameState::menu);
 
 	RenderTexture2D renderer = LoadRenderTexture(trunc(GameData::GAME_SIZE.x), trunc(GameData::GAME_SIZE.y));
 	SetTextureFilter(renderer.texture, TEXTURE_FILTER_POINT);

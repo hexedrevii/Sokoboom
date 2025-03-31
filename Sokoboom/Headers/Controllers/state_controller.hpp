@@ -37,7 +37,7 @@ private:
 	bool m_switching = false;
 
 public:
-	void set(GameState state);
+	void set(GameData& data, GameState state);
 
 	void process(GameData& data);
 	void render(GameData& data);

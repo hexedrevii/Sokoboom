@@ -16,7 +16,6 @@ private:
 	Resource::Handle<::Font> m_font;
 	std::string m_text;
 
-	Vector2 m_position;
 	Rectangle m_bounds;
 
 	float m_size = 0;
@@ -35,17 +34,16 @@ public:
 		std::function<void(Button&)> on_click)
 		: m_font(font)
 		, m_text(std::move(text))
-		, m_position(pos)
 		, m_size(size)
 		, on_click(on_click ? on_click : nop)
 	{
-		Vector2 dim = MeasureTextEx(
+		const Vector2 dim = MeasureTextEx(
 			resource[this->m_font], this->m_text.c_str(),
 			this->m_size, 0.1f
 		);
 
 		this->m_bounds = Rectangle(
-			this->m_position.x, this->m_position.y,
+			pos.x, pos.y,
 			dim.x, dim.y
 		);
 	}
@@ -59,15 +57,13 @@ public:
 	{
 		this->m_text = std::move(new_text);
 
-		Vector2 dim = MeasureTextEx(
+		const Vector2 dim = MeasureTextEx(
 			resource[this->m_font], this->m_text.c_str(),
 			this->m_size, 0.1f
 		);
 
-		this->m_bounds = Rectangle(
-			this->m_position.x, this->m_position.y,
-			dim.x, dim.y
-		);
+		this->m_bounds.width  = dim.x;
+		this->m_bounds.height = dim.y;
 	}
 
 	void process(Vector2 mouse)
@@ -90,7 +86,7 @@ public:
 	{
 		DrawTextPro(
 			resource[this->m_font], this->m_text.c_str(),
-			this->m_position, Vector2Zero(),
+			Vector2(this->m_bounds.x, this->m_bounds.y), Vector2Zero(),
 			0, this->m_size, 0.1f, this->colour
 		);
 	}

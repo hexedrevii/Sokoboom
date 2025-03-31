@@ -6,7 +6,7 @@
 
 namespace sokoboom {
 
-void End::awake(GameData& data)
+End::End(GameData& data)
 {
 	const Vector2 menu_dim = MeasureTextEx(resource[font], "menu", 10.0f, 0.1f);
 	this->m_buttons.emplace_back(
@@ -19,7 +19,7 @@ void End::awake(GameData& data)
 			data.active_map_index = 0;
 			data.total_moves = 0;
 
-			data.state_handler.set(GameState::menu);
+			data.change_state(GameState::menu);
 		}
 	);
 }

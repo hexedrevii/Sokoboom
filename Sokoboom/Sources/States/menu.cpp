@@ -11,14 +11,10 @@
 
 namespace sokoboom {
 
-Menu::Menu()
+Menu::Menu(GameData& data)
 {
 	SetTextureFilter(resource[font].texture, TEXTURE_FILTER_POINT); // todo: modified shared resource
-}
 
-// Build UI here since `this` will be incomplete in Menu::Menu
-void Menu::awake(GameData& data)
-{
 	auto& fnt = resource[font];
 	{
 		const Vector2 play_dim = MeasureTextEx(fnt, "play", 10.0f, 0.1f);
@@ -29,7 +25,7 @@ void Menu::awake(GameData& data)
 			[this, &data](Button& /*self*/) {
 				data.play_click();
 
-				data.state_handler.set(GameState::game);
+				data.change_state(GameState::game);
 			}
 		);
 	}
@@ -43,7 +39,7 @@ void Menu::awake(GameData& data)
 			[this, &data](Button& /*self*/) {
 				data.play_click();
 
-				data.state_handler.set(GameState::settings);
+				data.change_state(GameState::settings);
 			}
 		);
 	}

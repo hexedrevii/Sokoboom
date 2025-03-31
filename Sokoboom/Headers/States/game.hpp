@@ -52,7 +52,8 @@ private:
 	std::vector<Button> m_buttons;
 
 public:
-	void awake(GameData& data) override;
+	explicit Game(GameData& data);
+
 	void process(GameData& data) override;
 	void render(GameData& data) override;
 };

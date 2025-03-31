@@ -1,7 +1,10 @@
 #include "../Headers/map.hpp"
-#include "../Headers/utilities.hpp"
+
+#include "../Headers/data.hpp"
 
 #include <json.hpp>
+
+#include <raymath.h>
 
 #include <fstream>
 
@@ -33,9 +36,9 @@ void Map::draw(Resource::Handle<::Texture2D> wall)
 			{
 				if (layer[row][col] == CellKind::none) continue;
 
-				DrawTexture(
+				DrawTextureV(
 					resource[wall],
-					trunc(row * this->tile_size.x), trunc(col * this->tile_size.y),
+					Vector2(float(row), float(col)) * GameData::TILE_SIZE,
 					WHITE
 				);
 			}

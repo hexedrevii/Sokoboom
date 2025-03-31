@@ -9,7 +9,7 @@
 
 namespace sokoboom {
 
-void Settings::awake(GameData& data)
+Settings::Settings(GameData& data)
 {
 	this->m_mute_sfx = data.mute_sfx;
 	this->m_mute_move = data.mute_move;
@@ -33,7 +33,7 @@ void Settings::awake(GameData& data)
 				f << json.dump(4);
 			}
 
-			data.state_handler.set(GameState::menu);
+			data.change_state(GameState::menu);
 		}
 	);
 
