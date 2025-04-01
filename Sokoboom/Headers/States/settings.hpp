@@ -21,6 +21,16 @@ private:
 	static constexpr Color fade_color = BLACK;
 	static constexpr float fade_alpha = 0.8f;
 
+	// todo: this only works because these fields precede the m_buttons, so they construct first.
+	// The m_buttons depend on the values of these when initializing the button text. This could
+	// be resolved in awake(), but awake currently uses to ctor as all other States do so far by
+	// convention. This is arguably a bad solution because the dependency isn't very clear and 
+	// means moving the order of these fields can introduce a bug. On the other hand initializing
+	// the state in awake() duplicates all the initialization code and requires giving names to 
+	// the buttons. Play around and see what seems like the best solution.
+	bool m_mute_move = false;
+	bool m_mute_sfx = false;
+
 	std::array<Label, 1> m_labels {{
 		{ "SETTINGS", {ui::center, 7} }
 	}};
@@ -33,15 +43,7 @@ private:
 
 			data.mute_sfx = settings.m_mute_sfx;
 			data.mute_move = settings.m_mute_move;
-
-			if (std::ofstream f{GetApplicationDirectory() / std::filesystem::path("Content/settings.json")})
-			{
-				nlohmann::json json;
-				json["mute_sfx"] = settings.m_mute_sfx;
-				json["mute_move"] = settings.m_mute_move;
-
-				f << json.dump(4);
-			}
+			data.save_settings();
 
 			data.transition_state(GameState::menu);
 		}
@@ -66,15 +68,16 @@ private:
 	}
 	}};
 
-	// todo: pair with GameData. There's no "commit", so these seem redundant.
-	bool m_mute_move = false;
-	bool m_mute_sfx = false;
-
 public:
 	explicit Settings(GameData& data)
 		: m_mute_sfx(data.mute_sfx)
 		, m_mute_move(data.mute_move)
 	{
+	}
+
+	void awake(GameData& data) override
+	{
+		reset(*this, data);
 	}
 
 	void process(GameData& data) override

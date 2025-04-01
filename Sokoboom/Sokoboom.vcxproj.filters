@@ -30,19 +30,13 @@
     <ClCompile Include="Sources\resource.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Sources\States\end.cpp">
-      <Filter>Source Files\States</Filter>
-    </ClCompile>
     <ClCompile Include="Sources\States\game.cpp">
       <Filter>Source Files\States</Filter>
     </ClCompile>
-    <ClCompile Include="Sources\States\menu.cpp">
-      <Filter>Source Files\States</Filter>
+    <ClCompile Include="Sources\state.cpp">
+      <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Sources\States\settings.cpp">
-      <Filter>Source Files\States</Filter>
-    </ClCompile>
-    <ClCompile Include="Sources\state_controller.cpp">
+    <ClCompile Include="Sources\data.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -71,16 +65,16 @@
     <ClInclude Include="Headers\States\settings.hpp">
       <Filter>Header Files\States</Filter>
     </ClInclude>
-    <ClInclude Include="Headers\States\state.hpp">
-      <Filter>Header Files\States</Filter>
-    </ClInclude>
     <ClInclude Include="Headers\ui.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Headers\entity.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Headers\state_controller.hpp">
+    <ClInclude Include="Headers\state.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Headers\States\pause.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

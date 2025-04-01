@@ -137,6 +137,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="Sources\data.cpp" />
     <ClCompile Include="Sources\main.cpp" />
     <ClCompile Include="Sources\map.cpp" />
     <ClCompile Include="Sources\resource.cpp" />

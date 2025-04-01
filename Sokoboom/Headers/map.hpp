@@ -29,11 +29,11 @@ public:
 		solid = 0,
 	};
 
-	Map() = default;
-	Map(std::string_view path);
-
 	std::vector<std::vector<std::vector<CellKind>>> layers;
 	Vector2 tile_size {}; // todo: conflicts with GameData::TILE_SIZE
+
+	Map() = default;
+	explicit Map(std::string_view path);
 
 	void load(std::string_view path);
 

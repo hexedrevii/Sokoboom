@@ -5,6 +5,8 @@
 
 #include <raylib.h>
 
+#include <string_view>
+
 namespace sokoboom {
 
 struct MapData
@@ -15,6 +17,7 @@ struct MapData
 
 struct GameData
 {
+	static constexpr std::string_view default_settings_path = "Content/settings.json";
 	static constexpr int GAP = 7;
 	static constexpr int TILE_SIZE = 8; // todo: conflicts with Map::tile_size
 	static constexpr int MAP_SIZE = 10;
@@ -32,6 +35,11 @@ struct GameData
 
 	StateController state_handler;
 	Vector2 virtual_mouse {};
+
+	void load_settings(std::string_view path = default_settings_path);
+	void save_settings(std::string_view path = default_settings_path);
+
+	void load_maps();
 
 	void play_move   () { if (!this->mute_sfx && !this->mute_move) PlaySound(resource[Resource::fixed::Sound::move]); }
 	void play_next   () { if (!this->mute_sfx) PlaySound(resource[Resource::fixed::Sound::next   ]); }
