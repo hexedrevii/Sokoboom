@@ -22,6 +22,7 @@ union Uninit
 
 	constexpr T* operator&() noexcept { return &this->data; }
 	constexpr operator T&() noexcept { return this->data; }
+	constexpr T* operator->() noexcept { return &this->data; }
 };
 
 static struct GameStates
@@ -36,7 +37,7 @@ static struct GameStates
 static constexpr State& createState(GameData& data, State* current, GameState state)
 {
 	switch (state) {
-	case GameState::menu    : g_states.menu    .ctor(data); return g_states.menu    ;
+	case GameState::menu    : g_states.menu    .ctor(    ); return g_states.menu    ;
 	case GameState::settings: g_states.settings.ctor(data); return g_states.settings;
 	case GameState::end     : g_states.end     .ctor(data); return g_states.end     ;
 	case GameState::game    : {
@@ -95,7 +96,7 @@ void StateController::render(GameData& data)
 
 	if ( m_switching )
 	{
-		DrawRectangleV(::Vector2Zero(), GameData::GAME_SIZE, ::Fade(BLACK, this->m_opactity));
+		DrawRectangleV({}, GameData::GAME_SIZE, Fade(BLACK, this->m_opactity));
 	}
 }
 

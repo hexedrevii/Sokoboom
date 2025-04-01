@@ -117,34 +117,6 @@ Game::Game(GameData& data)
 	this->m_box_count = boxes;
 	this->m_undos.emplace_back(this->m_player.position, this->m_box.position);
 
-	// Pause UI
-	{
-		const Vector2 resume_dim = MeasureTextEx(resource[font], "resume", 10.0f, 0.1f);
-		this->m_buttons.emplace_back(
-			resource.handle(font),
-			"resume", 10.0f,
-			Vector2((GameData::GAME_SIZE.x - resume_dim.x) / 2, 40),
-			[this](Button& /*self*/) {
-				this->m_paused = false;
-			}
-		);
-	}
-
-	{
-		const Vector2 menu_dim = MeasureTextEx(resource[font], "menu", 10.0f, 0.1f);
-		this->m_buttons.emplace_back(
-			resource.handle(font),
-			"menu", 10.0f,
-			Vector2((GameData::GAME_SIZE.x - menu_dim.x) / 2, 50),
-			[this, &data](Button& /*self*/) {
-				data.active_map_index = 0;
-				data.total_moves = 0;
-
-				data.change_state(GameState::menu);
-			}
-		);
-	}
-
 	assert(m_undos.size() >= 1);
 }
 
@@ -157,9 +129,9 @@ void Game::process(GameData& data)
 
 	if (this->m_paused)
 	{
-		for (Button& btn : this->m_buttons)
+		for (auto& btn : this->m_buttons)
 		{
-			btn.process(data.virtual_mouse);
+			btn.process(data, *this);
 		}
 
 		return;
@@ -304,7 +276,7 @@ void Game::render(GameData& /*data*/)
 			0, 10.0f, 0.1f, WHITE
 		);
 
-		for (Button& btn : this->m_buttons)
+		for (auto& btn : this->m_buttons)
 		{
 			btn.render();
 		}

@@ -5,6 +5,7 @@
 #include "../ui.hpp"
 #include "state.hpp"
 
+#include <array>
 #include <vector>
 
 namespace sokoboom {
@@ -49,7 +50,24 @@ private:
 	bool m_finished = false;
 
 	bool m_paused = false;
-	std::vector<Button> m_buttons;
+	std::array<Button<Game>, 2> m_buttons {{
+	{
+		"resume", Vector2(ui::center, 40),
+		10.0f,
+		[](GameData& /*data*/, Game& game, Button<Game>& /*self*/) {
+			game.m_paused = false;
+		}
+	},
+	{
+		"menu", {ui::center, 50}, 10.0f,
+		[](GameData& data, Game& /*game*/, Button<Game>& /*self*/) {
+			data.active_map_index = 0;
+			data.total_moves = 0;
+
+			data.change_state(GameState::menu);
+		}
+	}
+	}};
 
 public:
 	explicit Game(GameData& data);

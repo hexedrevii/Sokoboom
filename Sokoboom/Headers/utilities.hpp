@@ -1,5 +1,6 @@
 #pragma once
 
+#include <bit>
 #include <cassert>
 #include <cstddef>
 
@@ -15,6 +16,29 @@ constexpr int shrink(std::size_t x) noexcept
 	int ret = int(x);
 	assert(std::size_t(ret) == x);
 	return ret;
+}
+
+template <typename Payload>
+constexpr float nan_embed(Payload payload) noexcept
+{
+	return std::bit_cast<float>(0x7ff0'0000u | static_cast<std::uint32_t>(payload));
+}
+
+template <typename Payload>
+struct NanExtract
+{
+	bool is_nan;
+	Payload payload;
+};
+
+template <typename Payload>
+constexpr NanExtract<Payload> nan_extract(float x) noexcept
+{
+	const auto n = std::bit_cast<std::uint32_t>(x);
+	return {
+		(n & 0x7ff0'0000) == 0x7ff0'0000,
+		Payload(n & 0xffff)
+	};
 }
 
 // todo: replace with std::unreachable()

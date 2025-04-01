@@ -140,10 +140,7 @@
     <ClCompile Include="Sources\main.cpp" />
     <ClCompile Include="Sources\map.cpp" />
     <ClCompile Include="Sources\resource.cpp" />
-    <ClCompile Include="Sources\States\end.cpp" />
     <ClCompile Include="Sources\States\game.cpp" />
-    <ClCompile Include="Sources\States\menu.cpp" />
-    <ClCompile Include="Sources\States\settings.cpp" />
     <ClCompile Include="Sources\state_controller.cpp" />
   </ItemGroup>
   <ItemGroup>
