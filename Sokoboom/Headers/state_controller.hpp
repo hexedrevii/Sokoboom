@@ -2,8 +2,6 @@
 
 #include "States/state.hpp"
 
-#include <raylib.h>
-
 #include <memory>
 
 namespace sokoboom {

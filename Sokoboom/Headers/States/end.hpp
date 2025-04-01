@@ -1,10 +1,10 @@
 #pragma once
 
-#include "../resource.hpp"
 #include "../ui.hpp"
 #include "state.hpp"
 
 #include <array>
+#include <format>
 
 namespace sokoboom {
 

@@ -17,7 +17,7 @@ namespace sokoboom {
 // todo: global for now. Can always inject Resource& into every State that requires resources
 Resource resource;
 
-GameData load_settings(const char* path)
+GameData load_settings(std::string_view path)
 {
 	GameData ret;
 	if (std::ifstream f{GetApplicationDirectory() / std::filesystem::path(path)})

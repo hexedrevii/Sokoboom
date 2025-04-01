@@ -3,10 +3,6 @@
 #include "../map.hpp"
 #include "../resource.hpp"
 
-#include <raylib.h>
-
-#include <vector>
-
 namespace sokoboom {
 
 #define SOKOBOOM_X_DIRECTIONS(X)\
@@ -32,11 +28,6 @@ constexpr int2 toVector(Direction dir) noexcept
 {
 	return DirectionVector[std::size_t(dir)];
 }
-
-struct Textured
-{
-	Texture2D texture;
-};
 
 struct Position
 {

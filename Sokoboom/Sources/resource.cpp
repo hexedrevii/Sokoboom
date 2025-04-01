@@ -58,19 +58,19 @@ void Resource::unload()
 }
 
 namespace {
-	::Texture2D load_texture2d_relative(const char* path)
+	::Texture2D load_texture2d_relative(std::string_view path)
 	{
 		const std::filesystem::path full = GetApplicationDirectory() / std::filesystem::path(path);
 		return ::LoadTexture(full.string().c_str());
 	}
 
-	::Font load_font_relative(const char* path)
+	::Font load_font_relative(std::string_view path)
 	{
 		const std::filesystem::path full = GetApplicationDirectory() / std::filesystem::path(path);
 		return ::LoadFontEx(full.string().c_str(), 100, 0, 0);
 	}
 
-	::Sound load_sound_relative(const char* path)
+	::Sound load_sound_relative(std::string_view path)
 	{
 		const std::filesystem::path full = GetApplicationDirectory() / std::filesystem::path(path);
 		return ::LoadSound(full.string().c_str());
@@ -88,12 +88,12 @@ namespace {
 	Handle<TYPE> ret { m_##NAME.size() };\
 	m_##NAME.emplace_back(OWNER(LOAD(path)));\
 	m_rc_##NAME.emplace_back(1);\
-	m_index_##NAME.insert({path, ret});\
+	m_index_##NAME.insert({std::string(path), ret});\
 	return ret;
 
-Texture2D Resource::texture2d(char const* path) { IMPL(textures, ::Texture2D, TextureOwner, load_texture2d_relative) }
-Font      Resource::font     (char const* path) { IMPL(fonts   , ::Font     , FontOwner   , load_font_relative     ) }
-Sound     Resource::sound    (char const* path) { IMPL(sounds  , ::Sound    , SoundOwner  , load_sound_relative    ) }
+Texture2D Resource::texture2d(std::string_view path) { IMPL(textures, ::Texture2D, TextureOwner, load_texture2d_relative) }
+Font      Resource::font     (std::string_view path) { IMPL(fonts   , ::Font     , FontOwner   , load_font_relative     ) }
+Sound     Resource::sound    (std::string_view path) { IMPL(sounds  , ::Sound    , SoundOwner  , load_sound_relative    ) }
 #undef IMPL
 
 // todo: properly release resource

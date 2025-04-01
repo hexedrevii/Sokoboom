@@ -5,7 +5,7 @@
 
 #include <raylib.h>
 
-#include <filesystem>
+#include <string_view>
 #include <vector>
 
 namespace sokoboom {
@@ -30,12 +30,12 @@ public:
 	};
 
 	Map() = default;
-	Map(const char* path);
+	Map(std::string_view path);
 
 	std::vector<std::vector<std::vector<CellKind>>> layers;
 	Vector2 tile_size {}; // todo: conflicts with GameData::TILE_SIZE
 
-	void load(const char* path);
+	void load(std::string_view path);
 
 	void draw(::Texture2D& wall);
 

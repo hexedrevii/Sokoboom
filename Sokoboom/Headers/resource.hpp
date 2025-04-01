@@ -3,6 +3,7 @@
 
 #include <cassert>
 #include <string>
+#include <string_view>
 #include <unordered_map>
 #include <vector>
 
@@ -150,9 +151,17 @@ private:
 	std::vector<std::size_t> m_rc_fonts   ;
 	std::vector<std::size_t> m_rc_sounds  ;
 
-	std::unordered_map<std::string, Handle<::Texture2D>> m_index_textures;
-	std::unordered_map<std::string, Handle<::Font     >> m_index_fonts   ;
-	std::unordered_map<std::string, Handle<::Sound    >> m_index_sounds  ;
+	struct StringHash
+	{
+		using is_transparent = void;
+		std::size_t operator()(const char*        s) const { return std::hash<std::string_view>{}(s); }
+		std::size_t operator()(std::string_view   s) const { return std::hash<std::string_view>{}(s); }
+		std::size_t operator()(const std::string& s) const { return std::hash<std::string     >{}(s); }
+	};
+
+	std::unordered_map<std::string, Handle<::Texture2D>, StringHash, std::equal_to<>> m_index_textures;
+	std::unordered_map<std::string, Handle<::Font     >, StringHash, std::equal_to<>> m_index_fonts   ;
+	std::unordered_map<std::string, Handle<::Sound    >, StringHash, std::equal_to<>> m_index_sounds  ;
 
 public:
 #ifndef NDEBUG
@@ -162,9 +171,9 @@ public:
 	void load();
 	void unload();
 
-	Texture2D texture2d(char const* path);
-	Font      font     (char const* path);
-	Sound     sound    (char const* path);
+	Texture2D texture2d(std::string_view path);
+	Font      font     (std::string_view path);
+	Sound     sound    (std::string_view path);
 
 	::Texture2D& operator[](Handle<::Texture2D> handle) { return m_textures[handle.value].get(); }
 	::Font     & operator[](Handle<::Font     > handle) { return m_fonts   [handle.value].get(); }

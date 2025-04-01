@@ -1,6 +1,5 @@
 #pragma once
 
-#include "../resource.hpp"
 #include "../ui.hpp"
 #include "state.hpp"
 

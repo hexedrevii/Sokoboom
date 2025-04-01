@@ -10,12 +10,12 @@
 
 namespace sokoboom {
 
-Map::Map(const char* path)
+Map::Map(std::string_view path)
 {
 	load(path);
 }
 
-void Map::load(const char* path)
+void Map::load(std::string_view path)
 {
 	const auto data = [&path] {
 		std::ifstream file(GetApplicationDirectory() / std::filesystem::path(path));
