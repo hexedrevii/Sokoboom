@@ -1,8 +1,11 @@
 #pragma once
 
+#include <raylib.h>
+
 #include <bit>
 #include <cassert>
 #include <cstddef>
+#include <utility>
 
 namespace sokoboom {
 
@@ -51,6 +54,32 @@ constexpr void unreachable() noexcept
 #	error "unreachable not implemented"
 #endif
 }
+
+template <typename T, typename... Args>
+void reset(T& t, Args&&... args)
+{
+	t.~T();
+	new (&t) T(std::forward<Args>(args)...);
+}
+
+template <typename T>
+union Uninit
+{
+	char _;
+	T data;
+
+	Uninit() : _{} {}
+	~Uninit() {}
+
+	template <typename... Args>
+	void ctor(Args&&... args) { new (this) T(std::forward<Args>(args)...); }
+	void dtor() noexcept { this->data.~T(); }
+
+	constexpr T* operator& () noexcept { return &this->data; }
+	constexpr T* operator->() noexcept { return &this->data; }
+
+	constexpr operator T&() noexcept { return this->data; }
+};
 
 template <typename T>
 struct V2

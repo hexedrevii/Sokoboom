@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup Label="ProjectConfigurations">
     <ProjectConfiguration Include="Debug|Win32">
@@ -141,20 +141,20 @@
     <ClCompile Include="Sources\map.cpp" />
     <ClCompile Include="Sources\resource.cpp" />
     <ClCompile Include="Sources\States\game.cpp" />
-    <ClCompile Include="Sources\state_controller.cpp" />
+    <ClCompile Include="Sources\state.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Headers\data.hpp" />
     <ClInclude Include="Headers\entity.hpp" />
     <ClInclude Include="Headers\map.hpp" />
-    <ClInclude Include="Headers\state_controller.hpp" />
+    <ClInclude Include="Headers\state.hpp" />
+    <ClInclude Include="Headers\States\pause.hpp" />
     <ClInclude Include="Headers\ui.hpp" />
     <ClInclude Include="Headers\resource.hpp" />
     <ClInclude Include="Headers\States\end.hpp" />
     <ClInclude Include="Headers\States\game.hpp" />
     <ClInclude Include="Headers\States\menu.hpp" />
     <ClInclude Include="Headers\States\settings.hpp" />
-    <ClInclude Include="Headers\States\state.hpp" />
     <ClInclude Include="Headers\utilities.hpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

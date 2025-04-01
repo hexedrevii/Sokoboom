@@ -1,7 +1,7 @@
 #pragma once
 
 #include "map.hpp"
-#include "state_controller.hpp"
+#include "state.hpp"
 
 #include <raylib.h>
 
@@ -38,7 +38,7 @@ struct GameData
 	void play_explode() { if (!this->mute_sfx) PlaySound(resource[Resource::fixed::Sound::explode]); }
 	void play_click  () { if (!this->mute_sfx) PlaySound(resource[Resource::fixed::Sound::click  ]); }
 
-	void change_state(GameState state) { state_handler.set(*this, state); }
+	void transition_state(GameState state) { state_handler.transition(state); }
 };
 
 } // namespace sokoboom

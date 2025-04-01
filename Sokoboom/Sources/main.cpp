@@ -17,18 +17,15 @@ namespace sokoboom {
 // todo: global for now. Can always inject Resource& into every State that requires resources
 Resource resource;
 
-GameData load_settings(std::string_view path)
+void load_settings(GameData& data, std::string_view path)
 {
-	GameData ret;
 	if (std::ifstream f{GetApplicationDirectory() / std::filesystem::path(path)})
 	{
 		nlohmann::json json = nlohmann::json::parse(f);
 
-		ret.mute_sfx = json["mute_sfx"];
-		ret.mute_move = json["mute_move"];
+		data.mute_sfx = json["mute_sfx"];
+		data.mute_move = json["mute_move"];
 	}
-
-	return ret;
 }
 
 void load_maps(GameData& data)
@@ -117,13 +114,16 @@ void main()
 
 	resource.load();
 	{
-		GameData data = load_settings("Content/settings.json");
+		GameData data;
+		StateController::init(data);
 		std::cout << "INFO: Muted SFX: " << data.mute_sfx << "\n";
 		std::cout << "INFO: Muted Move: " << data.mute_move << "\n";
 
+		load_settings(data, "Content/settings.json");
 		load_maps(data); // todo: generalized map loading
-		data.change_state(GameState::menu);
+
 		run(data, renderer);
+		StateController::deinit();
 	}
 	resource.unload();
 

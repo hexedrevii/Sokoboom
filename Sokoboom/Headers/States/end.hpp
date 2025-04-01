@@ -1,7 +1,7 @@
 #pragma once
 
+#include "../state.hpp"
 #include "../ui.hpp"
-#include "state.hpp"
 
 #include <array>
 #include <format>
@@ -26,7 +26,7 @@ private:
 				data.active_map_index = 0;
 				data.total_moves = 0;
 
-				data.change_state(GameState::menu);
+				data.transition_state(GameState::menu);
 			}
 		}
 	}};
@@ -40,6 +40,11 @@ public:
 			{ std::format("{} total moves!", data.total_moves).c_str(), {1, 47}, 5.0f },
 		}}
 	{
+	}
+
+	void awake(GameData& data) override
+	{
+		reset(*this, data);
 	}
 
 	void process(GameData& data) override

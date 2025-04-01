@@ -58,7 +58,7 @@ void Game::move_player(GameData& data, Direction direction)
 			this->m_player.locked = true;
 			data.total_moves += this->m_player.tyler_the_creator;
 
-			data.change_state(GameState::end);
+			data.transition_state(GameState::end);
 		}
 	}
 }
@@ -74,8 +74,9 @@ void Game::undo()
 	if (this->m_undos.size() > 1) this->m_undos.pop_back();
 }
 
-Game::Game(GameData& data)
+void Game::awake(GameData& data)
 {
+	reset(*this);
 	this->m_map = data.maps[data.active_map_index];
 
 	std::size_t goals = 0;
@@ -124,16 +125,7 @@ void Game::process(GameData& data)
 {
 	if (IsKeyPressed(KEY_ESCAPE))
 	{
-		this->m_paused = !this->m_paused;
-	}
-
-	if (this->m_paused)
-	{
-		for (auto& btn : this->m_buttons)
-		{
-			btn.process(data, *this);
-		}
-
+		data.state_handler.replace(m_pause);
 		return;
 	}
 
@@ -152,7 +144,7 @@ void Game::process(GameData& data)
 	{
 		if (!this->m_switched)
 		{
-			data.change_state(GameState::game);
+			data.transition_state(GameState::game);
 
 			this->m_switched = true;
 		}
@@ -225,7 +217,7 @@ void Game::process(GameData& data)
 			data.play_next();
 
 			data.active_map_index++;
-			data.change_state(GameState::game);
+			data.transition_state(GameState::game);
 
 			this->m_switched = true;
 		}
@@ -259,28 +251,6 @@ void Game::render(GameData& /*data*/)
 		Vector2(floor(GameData::GAME_SIZE.x - name_dim.x), floor(GameData::GAME_SIZE.y - GameData::GAP + 1)),
 		Vector2Zero(), 0, 5.0f, 0.1f, WHITE
 	);
-
-	if (this->m_paused)
-	{
-		DrawRectangleV(
-			Vector2Zero(), GameData::GAME_SIZE,
-			Fade(BLACK, 0.7f)
-		);
-
-		Vector2 dim = MeasureTextEx(resource[font], "PAUSED", 10.0f, 0.1f);
-		DrawTextPro(
-			resource[font],
-			"PAUSED",
-			Vector2((GameData::GAME_SIZE.x - dim.x) / 2, 5),
-			Vector2Zero(),
-			0, 10.0f, 0.1f, WHITE
-		);
-
-		for (auto& btn : this->m_buttons)
-		{
-			btn.render();
-		}
-	}
 }
 
 } // namespace sokoboom

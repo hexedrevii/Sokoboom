@@ -1,7 +1,7 @@
 #pragma once
 
+#include "../state.hpp"
 #include "../ui.hpp"
-#include "state.hpp"
 
 #include <array>
 
@@ -23,14 +23,14 @@ private:
 			"play", {ui::center, 50},
 			[](GameData& data, Menu& /*menu*/, Button<Menu>& /*self*/) {
 				data.play_click();
-				data.change_state(GameState::game);
+				data.transition_state(GameState::game);
 			}
 		},
 		{
 			"options", {ui::center, 60},
 			[](GameData& data, Menu& /*menu*/, Button<Menu>& /*self*/) {
 				data.play_click();
-				data.change_state(GameState::settings);
+				data.transition_state(GameState::settings);
 			}
 		},
 		{

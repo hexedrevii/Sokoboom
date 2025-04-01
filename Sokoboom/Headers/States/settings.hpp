@@ -1,8 +1,8 @@
 #pragma once
 
 #include "../data.hpp"
+#include "../state.hpp"
 #include "../ui.hpp"
-#include "state.hpp"
 
 #include <json.hpp>
 
@@ -43,7 +43,7 @@ private:
 				f << json.dump(4);
 			}
 
-			data.change_state(GameState::menu);
+			data.transition_state(GameState::menu);
 		}
 	},
 	{
@@ -85,7 +85,7 @@ public:
 	void render(GameData& /*data*/) override
 	{
 		ClearBackground(clear_color);
-		DrawRectangleV({}, GameData::GAME_SIZE, Fade(fade_color, fade_alpha));
+		DrawRectangleV({}, GameData::GAME_SIZE, ::Fade(fade_color, fade_alpha));
 
 		for (auto& label  : this->m_labels ) label .render();
 		for (auto& button : this->m_buttons) button.render();
