@@ -1,12 +1,13 @@
-#include "../Headers/map.hpp"
+#include "map.hpp"
 
-#include "../Headers/data.hpp"
+#include "data.hpp"
 
 #include <json.hpp>
 
 #include <raymath.h>
 
 #include <fstream>
+#include <iostream>
 
 namespace sokoboom {
 
@@ -19,7 +20,7 @@ void Map::load(std::string_view path)
 {
 	const auto data = [&path] {
 		std::ifstream file(GetApplicationDirectory() / std::filesystem::path(path));
-		return nlohmann::json::parse(file);
+		return nlohmann::json::parse(file, nullptr, false);
 	}();
 
 	this->layers = data["layers"];

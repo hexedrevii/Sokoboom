@@ -1,6 +1,6 @@
-#include "../../Headers/resource.hpp"
+#include "resource.hpp"
 
-#include "../../Headers/utilities.hpp"
+#include "utilities.hpp"
 
 #include <filesystem>
 

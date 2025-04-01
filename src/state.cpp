@@ -1,10 +1,10 @@
-#include "../../Headers/state.hpp"
+#include "state.hpp"
 
-#include "../../Headers/data.hpp"
-#include "../../Headers/States/end.hpp"
-#include "../../Headers/States/game.hpp"
-#include "../../Headers/States/menu.hpp"
-#include "../../Headers/States/settings.hpp"
+#include "data.hpp"
+#include "states/end.hpp"
+#include "states/game.hpp"
+#include "states/menu.hpp"
+#include "states/settings.hpp"
 
 namespace sokoboom {
 

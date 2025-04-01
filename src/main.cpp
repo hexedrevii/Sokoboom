@@ -1,7 +1,7 @@
-#include "../Headers/data.hpp"
-#include "../Headers/map.hpp"
-#include "../Headers/resource.hpp"
-#include "../Headers/utilities.hpp"
+#include "data.hpp"
+#include "map.hpp"
+#include "resource.hpp"
+#include "utilities.hpp"
 
 #include <raylib.h>
 #include <raymath.h>

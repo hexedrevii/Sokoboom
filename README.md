@@ -5,7 +5,7 @@ Made with my own TileMap Editor, [PicoMapper](https://github.com/EveMeows/PicoMa
 
 ## Showcase
 
-![showcase](./Github/showcase.png)
+![showcase](./github/showcase.png)
 
 ## Credits
 The font used throughout the game is made by Zep and the Pico8 team.
@@ -23,7 +23,7 @@ If you wish to make modifications, or even contribute to the game, you can compi
 First, you must download Visual Studio 2022. Head over to the [official site](https://visualstudio.microsoft.com/), and click "Download Visual Studio".
 
 Run "VisualStudioSetup.exe". Once the setup finishes, you will see a window akin to the one below.
-![Installer](./Github/Installation/installer.png)
+![Installer](./github/installation/installer.png)
 Click "Desktop development with C++" then at the bottom right corner, click the button with the Administrator Shield (it may have different text).
 
 After the installer is done, you should be able to just start Visual Studio!
@@ -32,14 +32,14 @@ After the installer is done, you should be able to just start Visual Studio!
 Time to compile and run the application.
 
 Open Visual Studio. You should see something like this.
-![Menu](./Github/Installation/menu.png)
+![Menu](./github/installation/menu.png)
 Click the "Clone a repository" button.
 
 On the next screen, paste "https://github.com/EveMeows/Sokoboom" into the "Repository location" field. You are free to change the "Path" field however you like. Click "Clone"
 
 Once the editor is done loading, and cloning the repository, you should see an empty window. At the top left corner to middle centre you should see a green button, "Local Windows Debugger" next to it.
 
-![Run](./Github/Installation/run.png)
+![Run](./github/installation/run.png)
 
 Click it, and, after the app compiles, you're done! You should be able to run the game.
 

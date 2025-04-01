@@ -1,7 +1,7 @@
 #pragma once
 
-#include "../../Headers/resource.hpp"
-#include "../../Headers/utilities.hpp"
+#include "resource.hpp"
+#include "utilities.hpp"
 
 #include <raylib.h>
 

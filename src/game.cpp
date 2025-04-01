@@ -1,7 +1,7 @@
-#include "../../Headers/States/game.hpp"
+#include "states/game.hpp"
 
-#include "../../Headers/data.hpp"
-#include "../../Headers/utilities.hpp"
+#include "data.hpp"
+#include "utilities.hpp"
 
 #include <raymath.h>
 
