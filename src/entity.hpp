@@ -1,7 +1,6 @@
 #pragma once
 
-#include "../map.hpp"
-#include "../resource.hpp"
+#include "map.hpp"
 
 namespace sokoboom {
 

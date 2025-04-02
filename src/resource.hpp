@@ -31,7 +31,7 @@ private:
 	T m_data;
 
 public:
-	/*implicit*/ Owner(T data) : m_data(data) {}
+	explicit(0) Owner(T data) : m_data(data) {}
 
 	Owner(const Owner&) = delete;
 	void operator=(const Owner&) = delete;

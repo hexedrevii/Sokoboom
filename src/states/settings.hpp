@@ -70,8 +70,8 @@ private:
 
 public:
 	explicit Settings(GameData& data)
-		: m_mute_sfx(data.mute_sfx)
-		, m_mute_move(data.mute_move)
+		: m_mute_move(data.mute_move)
+		, m_mute_sfx(data.mute_sfx)
 	{
 	}
 

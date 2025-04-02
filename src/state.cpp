@@ -9,10 +9,10 @@
 namespace sokoboom {
 
 Fade::Fade(State& prev, State& next, Color color, float alpha, float speed)
-	: m_state({&prev, &next})
-	, m_color(color)
+	: m_color(color)
 	, m_alpha(alpha)
 	, m_speed(speed)
+	, m_state({&prev, &next})
 {
 }
 
