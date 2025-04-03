@@ -21,15 +21,15 @@ void Resource::load()
 	assert(m_fonts   .empty());
 	assert(m_sounds  .empty());
 
-#define X(name, path) this->texture2d(path).release();
+#define X(name, path) (void)this->texture2d(path).release();
 	SOKOBOOM_X_RESOURCE_TEXTURES(X)
 #undef X
 
-#define X(name, path) this->font(path).release();
+#define X(name, path) (void)this->font(path).release();
 	SOKOBOOM_X_RESOURCE_FONTS(X)
 #undef X
 
-#define X(name, path) this->sound(path).release();
+#define X(name, path) (void)this->sound(path).release();
 	SOKOBOOM_X_RESOURCE_SOUNDS(X)
 #undef X
 }

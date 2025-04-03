@@ -1,4 +1,5 @@
 #pragma once
+
 #include <raylib.h>
 
 #include <cassert>
@@ -24,8 +25,8 @@ namespace sokoboom {
 	X(explode, "Content/Audio/explosion.wav")\
 	X(click  , "Content/Audio/click.wav"    )
 
-template <typename T, typename Deleter>
-class Owner : private Deleter
+template <typename T, typename Destroyer>
+class Owner : private Destroyer
 {
 private:
 	T m_data;
@@ -37,35 +38,22 @@ public:
 	void operator=(const Owner&) = delete;
 
 	Owner(Owner&& rhs) noexcept
-		: m_data(rhs.m_data)
+		: m_data(rhs.release())
 	{
-		rhs.release();
 	}
 	Owner& operator=(Owner&& rhs) noexcept
 	{
-		this->m_data = rhs.m_data;
-		rhs.release();
+		this->destroy();
+		this->m_data = rhs.release();
 		return *this;
 	}
 
-	~Owner()
-	{
-		this->destroy();
-	}
+	~Owner() { this->destroy(); }
 
 	T& get() { return this->m_data; }
 
-	T release()
-	{
-		auto ret = std::move(m_data);
-		this->m_data = T{};
-		return ret;
-	}
-
-	void destroy() noexcept
-	{
-		(*this)(this->m_data);
-	}
+	[[nodiscard]] T release() noexcept { return std::exchange(this->m_data, T{}); }
+	void destroy() noexcept { (*this)(this->m_data); }
 };
 
 struct Texture2D;
@@ -116,32 +104,35 @@ public:
 	};
 
 private:
-	struct Texture2DDeleter
+	struct Texture2DDestroyer
 	{
 		void operator()(::Texture2D& a) noexcept
 		{
+			// Requires 0 check -- raylib seems to do it
 			::UnloadTexture(a);
 		}
 	};
-	using TextureOwner = Owner<::Texture2D, Texture2DDeleter>;
+	using TextureOwner = Owner<::Texture2D, Texture2DDestroyer>;
 
-	struct FontDeleter
+	struct FontDestroyer
 	{
 		void operator()(::Font& a) noexcept
 		{
+			// Requires 0 check -- raylib seems to do it
 			::UnloadFont(a);
 		}
 	};
-	using FontOwner = Owner<::Font, FontDeleter>;
+	using FontOwner = Owner<::Font, FontDestroyer>;
 
-	struct SoundDeleter
+	struct SoundDestroyer
 	{
 		void operator()(::Sound& a) noexcept
 		{
+			// Requires 0 check -- raylib seems to do it
 			::UnloadSound(a);
 		}
 	};
-	using SoundOwner = Owner<::Sound, SoundDeleter>;
+	using SoundOwner = Owner<::Sound, SoundDestroyer>;
 
 	std::vector<TextureOwner> m_textures;
 	std::vector<FontOwner   > m_fonts   ;
