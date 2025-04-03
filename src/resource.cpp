@@ -48,9 +48,11 @@ void Resource::unload()
 	SOKOBOOM_X_RESOURCE_SOUNDS(X)
 #undef X
 
+#ifndef NDEBUG
 	for (auto rc : m_rc_textures) assert(rc == 0);
 	for (auto rc : m_rc_fonts   ) assert(rc == 0);
 	for (auto rc : m_rc_sounds  ) assert(rc == 0);
+#endif
 
 	m_textures.clear(); m_rc_textures.clear(); m_index_textures.clear();
 	m_fonts   .clear(); m_rc_fonts   .clear(); m_index_fonts   .clear();

@@ -110,6 +110,7 @@ private:
 		{
 			// Requires 0 check -- raylib seems to do it
 			::UnloadTexture(a);
+			a = {};
 		}
 	};
 	using TextureOwner = Owner<::Texture2D, Texture2DDestroyer>;
@@ -120,6 +121,7 @@ private:
 		{
 			// Requires 0 check -- raylib seems to do it
 			::UnloadFont(a);
+			a = {};
 		}
 	};
 	using FontOwner = Owner<::Font, FontDestroyer>;
@@ -130,6 +132,7 @@ private:
 		{
 			// Requires 0 check -- raylib seems to do it
 			::UnloadSound(a);
+			a = {};
 		}
 	};
 	using SoundOwner = Owner<::Sound, SoundDestroyer>;
