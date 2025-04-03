@@ -24,7 +24,7 @@ private:
 
 	int m_ticks = 0;
 
-	MapData m_map;
+	Map m_map;
 
 	Position m_goal;
 	Position m_box;

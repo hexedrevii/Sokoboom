@@ -26,12 +26,12 @@ void Game::move_player(GameData& data, Direction direction)
 	const auto    box_dst = this->m_box   .position + heading;
 
 	// Player hits wall
-	const bool hit_wall = this->m_map.map.get_at_position(player_dst, Map::Layer::solid) == Map::CellKind::wall;
+	const bool hit_wall = this->m_map.get(player_dst, Map::Layer::solid).is_wall();
 
 	// Box moves
 	const bool hit_box = this->m_box_count && player_dst == this->m_box.position;
 	const bool hit_box_wall = hit_box
-		&& this->m_map.map.get_at_position(box_dst, Map::Layer::solid) == Map::CellKind::wall;
+		&& this->m_map.get(box_dst, Map::Layer::solid).is_wall();
 
 	const bool player_moved = !hit_wall && !hit_box_wall;
 	if (player_moved)
@@ -77,36 +77,36 @@ void Game::undo()
 void Game::awake(GameData& data)
 {
 	reset(*this);
-	this->m_map = data.maps[data.active_map_index];
 
 	std::size_t goals = 0;
 	std::size_t boxes = 0;
 	std::size_t players = 0;
-	for (std::size_t layerIdx = 0, layerSize = this->m_map.map.layers.size(); layerIdx < layerSize; ++layerIdx)
+	this->m_map = data.active_map();
+	for (std::size_t layerIdx = 0, layerSize = this->m_map.layers.size(); layerIdx < layerSize; ++layerIdx)
 	{
-		auto& layer = this->m_map.map.layers[layerIdx];
-		auto& map = this->m_map.map;
+		auto& grid = this->m_map.layers[layerIdx];
 
-		Map::Position pos;
-		const int rowSize = shrink(layer.size());
-		for (pos.x = 0; pos.x < rowSize; ++pos.x)
+		for (Map::Position pos{}; pos.x < grid->width; ++pos.x)
 		{
-			const int colSize = shrink(layer[pos.x].size());
-			for (pos.y = 0; pos.y < colSize; ++pos.y)
+			for (pos.y = 0; pos.y < grid->height; ++pos.y)
 			{
-				switch (map.get_at_position(pos, layerIdx))
+				const auto cell = grid->get(pos);
+				if (cell.goal)
 				{
-					case Map::CellKind::none: [[fallthrough]];
-					case Map::CellKind::wall:
+					this->m_goal.position = pos;
+					++goals;
+				}
+				switch (cell.object)
+				{
+					case Map::Cell::Object::none: [[fallthrough]];
+					case Map::Cell::Object::wall:
 						continue;
 
-					case Map::CellKind::box   : this->m_box   .position = pos; ++boxes  ; break;
-					case Map::CellKind::goal  : this->m_goal  .position = pos; ++goals  ; break;
-					case Map::CellKind::player: this->m_player.position = pos; ++players; break;
+					case Map::Cell::Object::box   : this->m_box   .position = pos; ++boxes  ; break;
+					case Map::Cell::Object::player: this->m_player.position = pos; ++players; break;
 
 					default: unreachable();
 				}
-				map.set_at_position(pos, layerIdx, Map::CellKind::none);
 			}
 		}
 	}
@@ -204,8 +204,8 @@ void Game::process(GameData& data)
 				this->m_finished = true;
 
 				// Gate
-				this->m_map.map.set_at_position(9, 8, Map::Layer::solid, Map::CellKind::none);
-				this->m_map.map.set_at_position(9, 7, Map::Layer::solid, Map::CellKind::none);
+				this->m_map.set({9, 8}, Map::Layer::solid, Map::Cell{});
+				this->m_map.set({9, 7}, Map::Layer::solid, Map::Cell{});
 
 				data.play_explode();
 
@@ -224,14 +224,14 @@ void Game::process(GameData& data)
 	}
 }
 
-void Game::render(GameData& /*data*/)
+void Game::render(GameData& data)
 {
 	ClearBackground(DARKBLUE);
 
 	DrawTextureV(resource[Resource::fixed::Texture::goal], Vector2(this->m_goal.position) * GameData::TILE_SIZE, WHITE);
 	if (this->m_box_count) DrawTextureV(resource[Resource::fixed::Texture::box], Vector2(this->m_box.position) * GameData::TILE_SIZE, WHITE);
 	DrawTextureV(resource[Resource::fixed::Texture::player], Vector2(this->m_player.position) * GameData::TILE_SIZE, WHITE);
-	this->m_map.map.draw(resource[Resource::fixed::Texture::wall]);
+	this->m_map.draw(resource[Resource::fixed::Texture::wall]);
 
 	DrawRectangle(0, trunc(GameData::GAME_SIZE.y) - GameData::GAP, trunc(GameData::GAME_SIZE.x), GameData::GAP, GRAY);
 
@@ -242,7 +242,7 @@ void Game::render(GameData& /*data*/)
 		Vector2Zero(), 0, 5.0f, 0.1f, WHITE
 	);
 	
-	std::string name = std::format("-{}-", this->m_map.name);
+	std::string name = std::format("-{}-", data.active_map_name());
 	Vector2 name_dim = MeasureTextEx(resource[font], name.c_str(), 5.0f, 0.1f);
 
 	DrawTextPro(

@@ -41,6 +41,9 @@ struct GameData
 
 	void load_maps();
 
+	const Map& active_map() { return this->maps[this->active_map_index].map; }
+	std::string_view active_map_name() { return this->maps[this->active_map_index].name; }
+
 	void play_move   () { if (!this->mute_sfx && !this->mute_move) PlaySound(resource[Resource::fixed::Sound::move]); }
 	void play_next   () { if (!this->mute_sfx) PlaySound(resource[Resource::fixed::Sound::next   ]); }
 	void play_explode() { if (!this->mute_sfx) PlaySound(resource[Resource::fixed::Sound::explode]); }
