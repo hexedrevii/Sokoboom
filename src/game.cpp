@@ -11,6 +11,17 @@
 
 namespace sokoboom {
 
+constexpr Map::Position DirectionVector[] {
+#define X(name, vec) Map::Position vec,
+	SOKOBOOM_X_DIRECTIONS(X)
+#undef X
+};
+
+static constexpr int2 toVector(Direction dir) noexcept
+{
+	return DirectionVector[std::size_t(dir)];
+}
+
 void Game::process_player(GameData& data)
 {
 	if (IsKeyPressed(KEY_A)) this->move_player(data, Direction::left );
@@ -55,7 +66,6 @@ void Game::move_player(GameData& data, Direction direction)
 		// todo: generalize
 		if (this->m_player.position.x == 9 && (this->m_player.position.y == 8 || this->m_player.position.y == 7))
 		{
-			this->m_player.locked = true;
 			data.total_moves += this->m_player.tyler_the_creator;
 
 			data.transition_state(GameState::end);
@@ -138,16 +148,12 @@ void Game::process(GameData& data)
 	}
 #endif
 
-	if (!this->m_player.locked) this->process_player(data);
+	this->process_player(data);
 
 	if (IsKeyPressed(KEY_R))
 	{
-		if (!this->m_switched)
-		{
-			data.transition_state(GameState::game);
-
-			this->m_switched = true;
-		}
+		data.transition_state(GameState::game);
+		return;
 	}
 
 	// Low budget pressed repeat function
@@ -191,36 +197,29 @@ void Game::process(GameData& data)
 	{
 		this->m_ticks = 0;
 
-		if (!this->m_switched)
+		if (this->m_box.position != this->m_goal.position) return;
+
+		// The end
+		if (data.active_map_index == data.maps.size() - 1)
 		{
-			if (this->m_box.position != this->m_goal.position) return;
+			this->m_box_count = 0;
+			this->m_finished = true;
 
-			// The end
-			if (data.active_map_index == 11)
-			{
-				this->m_box_count = 0;
+			// Gate
+			this->m_map.set({9, 8}, Map::Layer::solid, Map::Cell{});
+			this->m_map.set({9, 7}, Map::Layer::solid, Map::Cell{});
 
-				this->m_switched = true;
-				this->m_finished = true;
+			data.play_explode();
 
-				// Gate
-				this->m_map.set({9, 8}, Map::Layer::solid, Map::Cell{});
-				this->m_map.set({9, 7}, Map::Layer::solid, Map::Cell{});
-
-				data.play_explode();
-
-				return;
-			}
-
-			data.total_moves += this->m_player.tyler_the_creator;
-
-			data.play_next();
-
-			data.active_map_index++;
-			data.transition_state(GameState::game);
-
-			this->m_switched = true;
+			return;
 		}
+
+		data.total_moves += this->m_player.tyler_the_creator;
+
+		data.play_next();
+
+		data.active_map_index++;
+		data.transition_state(GameState::game);
 	}
 }
 

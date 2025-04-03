@@ -172,7 +172,6 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\src\data.hpp" />
-    <ClInclude Include="..\src\entity.hpp" />
     <ClInclude Include="..\src\map.hpp" />
     <ClInclude Include="..\src\resource.hpp" />
     <ClInclude Include="..\src\state.hpp" />

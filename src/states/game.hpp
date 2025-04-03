@@ -1,7 +1,7 @@
 #pragma once
 
 #include "../data.hpp"
-#include "../entity.hpp"
+#include "../map.hpp"
 #include "../state.hpp"
 #include "pause.hpp"
 
@@ -9,13 +9,20 @@
 
 namespace sokoboom {
 
-struct GameData;
+#define SOKOBOOM_X_DIRECTIONS(X)\
+	X(left , (-1, +0))\
+	X(right, (+1, +0))\
+	X(up   , (+0, -1))\
+	X(down , (+0, +1))
 
-struct MoveData
+enum class Direction
 {
-	Map::Position player_position;
-	Map::Position box_position;
+#define X(name, vec) name,
+	SOKOBOOM_X_DIRECTIONS(X)
+#undef X
 };
+
+struct GameData;
 
 class Game : public State
 {
@@ -26,20 +33,29 @@ private:
 
 	Map m_map;
 
+	struct Position
+	{
+		Map::Position position;
+	};
+	
 	Position m_goal;
 	Position m_box;
 	std::size_t m_box_count = 0;
-	
-	struct Player : Position, Tyler, Lockable
+
+	struct Player : Position
 	{
+		int tyler_the_creator = 0;
 	} m_player;
 
+	struct MoveData
+	{
+		Map::Position player_position;
+		Map::Position box_position;
+	};
 	std::vector<MoveData> m_undos; // size() >= 1
 
 	void process_player(GameData& data);
 	void move_player(GameData& data, Direction direction);
-
-	bool m_switched = false;
 
 	float m_time = 0;
 	float m_undo_delay = 0.35f;

@@ -36,9 +36,6 @@
     <ClInclude Include="..\src\data.hpp">
       <Filter>src</Filter>
     </ClInclude>
-    <ClInclude Include="..\src\entity.hpp">
-      <Filter>src</Filter>
-    </ClInclude>
     <ClInclude Include="..\src\map.hpp">
       <Filter>src</Filter>
     </ClInclude>
@@ -69,10 +66,5 @@
     <ClInclude Include="..\src\states\settings.hpp">
       <Filter>src\states</Filter>
     </ClInclude>
-  </ItemGroup>
-  <ItemGroup>
-    <CopyFileToFolders Include="..\content\settings.json">
-      <Filter>content</Filter>
-    </CopyFileToFolders>
   </ItemGroup>
 </Project>
