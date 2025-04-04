@@ -28,6 +28,8 @@ class Game : public State
 {
 private:
 	static constexpr auto font = Resource::fixed::Font::pico8;
+	static constexpr float undo_repeat_delay_initial = 0.35f;
+	static constexpr float undo_repeat_delay         = 0.05f;
 
 	Map m_map;
 
@@ -55,9 +57,8 @@ private:
 	void process_player(GameData& data);
 	bool move_player(GameData& data, Direction direction);
 
-	float m_time = 0;
-	float m_undo_delay = 0.35f;
-	bool m_undoing = false;
+	float m_undo_time = 0;
+	float m_undo_delay = 0;
 	void record_undo();
 	void undo();
 

@@ -167,10 +167,9 @@ void Game::process(GameData& data)
 		return;
 	}
 
-	// Low budget pressed repeat function
 	if (IsKeyDown(KEY_Z))
 	{
-		if (!this->m_undoing)
+		if (this->m_undo_delay == 0)
 		{
 			// Remove the last stored movement if its the same position.
 			if (this->m_undos.size() > 1 && this->m_player.position == this->m_undos.back().player_position)
@@ -179,28 +178,23 @@ void Game::process(GameData& data)
 			}
 
 			this->undo();
-			this->m_undoing = true;
+			this->m_undo_delay = undo_repeat_delay_initial;
+			this->m_undo_time = 0;
+		}
+		else 
+		{
+			this->m_undo_time += GetFrameTime();
+			if (this->m_undo_time >= this->m_undo_delay)
+			{
+				this->undo();
+				this->m_undo_delay = undo_repeat_delay;
+				this->m_undo_time = 0;
+			}
 		}
 	}
-	else
+	else if (this->m_undo_delay != 0)
 	{
-		if (this->m_undoing)
-		{
-			this->m_time = 0;
-			this->m_undoing = false;
-			this->m_undo_delay = 0.35f;
-		}
-	}
-
-	if (this->m_undoing)
-	{
-		this->m_time += GetFrameTime();
-		if (this->m_time >= this->m_undo_delay)
-		{
-			this->m_time = 0;
-			this->m_undo_delay = 0.05f;
-			this->undo();
-		}
+		this->m_undo_delay = 0;
 	}
 }
 
