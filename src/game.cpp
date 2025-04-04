@@ -169,7 +169,7 @@ void Game::process(GameData& data)
 
 	if (IsKeyDown(KEY_Z))
 	{
-		if (this->m_undo_delay == 0)
+		if (is_nan(this->m_undo_time))
 		{
 			// Remove the last stored movement if its the same position.
 			if (this->m_undos.size() > 1 && this->m_player.position == this->m_undos.back().player_position)
@@ -178,23 +178,21 @@ void Game::process(GameData& data)
 			}
 
 			this->undo();
-			this->m_undo_delay = undo_repeat_delay_initial;
-			this->m_undo_time = 0;
+			this->m_undo_time = -undo_repeat_delay_initial;
 		}
-		else 
+		else
 		{
 			this->m_undo_time += GetFrameTime();
-			if (this->m_undo_time >= this->m_undo_delay)
+			if (this->m_undo_time >= 0)
 			{
 				this->undo();
-				this->m_undo_delay = undo_repeat_delay;
-				this->m_undo_time = 0;
+				this->m_undo_time -= undo_repeat_delay;
 			}
 		}
 	}
-	else if (this->m_undo_delay != 0)
+	else
 	{
-		this->m_undo_delay = 0;
+		this->m_undo_time = NAN;
 	}
 }
 

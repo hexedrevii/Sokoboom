@@ -57,8 +57,7 @@ private:
 	void process_player(GameData& data);
 	bool move_player(GameData& data, Direction direction);
 
-	float m_undo_time = 0;
-	float m_undo_delay = 0;
+	float m_undo_time = NAN;
 	void record_undo();
 	void undo();
 

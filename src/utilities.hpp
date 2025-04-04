@@ -39,9 +39,14 @@ constexpr NanExtract<Payload> nan_extract(float x) noexcept
 {
 	const auto n = std::bit_cast<std::uint32_t>(x);
 	return {
-		(n & 0x7ff0'0000) == 0x7ff0'0000,
-		Payload(n & 0xffff)
+		(n & 0x7ff0'0000u) == 0x7ff0'0000u,
+		Payload(n & 0xffffu)
 	};
+}
+
+constexpr bool is_nan(float x) noexcept
+{
+	return x != x;
 }
 
 // todo: replace with std::unreachable()
