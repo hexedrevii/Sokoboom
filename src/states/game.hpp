@@ -29,8 +29,6 @@ class Game : public State
 private:
 	static constexpr auto font = Resource::fixed::Font::pico8;
 
-	int m_ticks = 0;
-
 	Map m_map;
 
 	struct Position
@@ -55,14 +53,42 @@ private:
 	std::vector<MoveData> m_undos; // size() >= 1
 
 	void process_player(GameData& data);
-	void move_player(GameData& data, Direction direction);
+	bool move_player(GameData& data, Direction direction);
 
 	float m_time = 0;
 	float m_undo_delay = 0.35f;
 	bool m_undoing = false;
+	void record_undo();
 	void undo();
 
-	bool m_finished = false;
+	struct Finished : State
+	{
+		Game* game;
+
+		explicit Finished(Game& game)
+			: game(&game)
+		{
+		}
+
+		void process(GameData& data) override
+		{
+			game->process_player(data);
+
+			// Reached gate.
+			// todo: generalize
+			if (game->m_player.position.x == 9
+				&& (game->m_player.position.y == 8 || game->m_player.position.y == 7))
+			{
+				data.total_moves += game->m_player.tyler_the_creator;
+				data.transition_state(GameState::end);
+			}
+		}
+
+		void render(GameData& data) override
+		{
+			return game->render(data);
+		}
+	} m_finished { *this };
 
 	Pause m_pause { *this };
 

@@ -24,13 +24,13 @@ static constexpr int2 toVector(Direction dir) noexcept
 
 void Game::process_player(GameData& data)
 {
-	if (IsKeyPressed(KEY_A)) this->move_player(data, Direction::left );
-	if (IsKeyPressed(KEY_D)) this->move_player(data, Direction::right);
-	if (IsKeyPressed(KEY_W)) this->move_player(data, Direction::up   );
-	if (IsKeyPressed(KEY_S)) this->move_player(data, Direction::down );
+	if (IsKeyPressed(KEY_A)) if (this->move_player(data, Direction::left )) this->record_undo();
+	if (IsKeyPressed(KEY_D)) if (this->move_player(data, Direction::right)) this->record_undo();
+	if (IsKeyPressed(KEY_W)) if (this->move_player(data, Direction::up   )) this->record_undo();
+	if (IsKeyPressed(KEY_S)) if (this->move_player(data, Direction::down )) this->record_undo();
 }
 
-void Game::move_player(GameData& data, Direction direction)
+bool Game::move_player(GameData& data, Direction direction)
 {
 	const auto heading = toVector(direction);
 	const auto player_dst = this->m_player.position + heading;
@@ -50,33 +50,20 @@ void Game::move_player(GameData& data, Direction direction)
 		auto const box_pos = hit_box ? box_dst : this->m_box.position;
 		this->m_player.position = player_dst;
 		this->m_box   .position = box_pos;
-
-		if (!this->m_finished)
-		{
-			this->m_undos.emplace_back(player_dst, box_pos);
-			this->m_player.tyler_the_creator += 1;
-		}
-
 		data.play_move();
 	}
 
-	if (this->m_finished)
-	{
-		// Reached gate.
-		// todo: generalize
-		if (this->m_player.position.x == 9 && (this->m_player.position.y == 8 || this->m_player.position.y == 7))
-		{
-			data.total_moves += this->m_player.tyler_the_creator;
+	return player_moved;
+}
 
-			data.transition_state(GameState::end);
-		}
-	}
+void Game::record_undo()
+{
+	this->m_undos.emplace_back(this->m_player.position, this->m_box.position);
+	this->m_player.tyler_the_creator += 1;
 }
 
 void Game::undo()
 {
-	if (this->m_finished) return;
-
 	MoveData last = this->m_undos.back();
 	this->m_player.position = last.player_position;
 	this->m_box   .position = last.box_position   ;
@@ -128,7 +115,7 @@ void Game::awake(GameData& data)
 	this->m_box_count = boxes;
 	this->m_undos.emplace_back(this->m_player.position, this->m_box.position);
 
-	assert(m_undos.size() >= 1);
+	assert(m_undos.size() == 1);
 }
 
 void Game::process(GameData& data)
@@ -139,8 +126,6 @@ void Game::process(GameData& data)
 		return;
 	}
 
-	if (!this->m_finished) this->m_ticks++;
-
 #ifndef NDEBUG
 	if (IsKeyPressed(KEY_T))
 	{
@@ -149,6 +134,32 @@ void Game::process(GameData& data)
 #endif
 
 	this->process_player(data);
+
+	if (this->m_box.position == this->m_goal.position)
+	{
+		// The end
+		if (data.active_map_index == data.maps.size() - 1)
+		{
+			this->m_box_count = 0;
+
+			// Gate
+			this->m_map.set({9, 8}, Map::Layer::solid, Map::Cell{});
+			this->m_map.set({9, 7}, Map::Layer::solid, Map::Cell{});
+
+			data.play_explode();
+
+			data.state_handler.replace(m_finished);
+			return;
+		}
+
+		data.total_moves += this->m_player.tyler_the_creator;
+
+		data.play_next();
+
+		data.active_map_index++;
+		data.transition_state(GameState::game);
+		return;
+	}
 
 	if (IsKeyPressed(KEY_R))
 	{
@@ -190,36 +201,6 @@ void Game::process(GameData& data)
 			this->m_undo_delay = 0.05f;
 			this->undo();
 		}
-	}
-
-	// todo: this whole ticks counter thing doens't make any sense
-	if (this->m_ticks == 30 && !this->m_finished)
-	{
-		this->m_ticks = 0;
-
-		if (this->m_box.position != this->m_goal.position) return;
-
-		// The end
-		if (data.active_map_index == data.maps.size() - 1)
-		{
-			this->m_box_count = 0;
-			this->m_finished = true;
-
-			// Gate
-			this->m_map.set({9, 8}, Map::Layer::solid, Map::Cell{});
-			this->m_map.set({9, 7}, Map::Layer::solid, Map::Cell{});
-
-			data.play_explode();
-
-			return;
-		}
-
-		data.total_moves += this->m_player.tyler_the_creator;
-
-		data.play_next();
-
-		data.active_map_index++;
-		data.transition_state(GameState::game);
 	}
 }
 
