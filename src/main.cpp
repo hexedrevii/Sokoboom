@@ -104,11 +104,6 @@ void main()
 
 } // namespace sokoboom
 
-// Disable terminal in release mode only
-#ifndef _DEBUG
-#pragma comment(linker, "/SUBSYSTEM:windows /ENTRY:mainCRTStartup")
-#endif // !_DEBUG
-
 int main()
 {
 	sokoboom::main();
